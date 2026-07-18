@@ -31,10 +31,7 @@ class IncomeService {
       body['end_date'] = endDate;
     }
 
-    final response = await ApiClient.post(
-      'incomes.php',
-      body: body,
-    );
+    final response = await ApiClient.post('incomes.php', body: body);
 
     return _decodeJson(response.body);
   }
@@ -47,7 +44,6 @@ class IncomeService {
     required String date,
   }) async {
     final safeDate = _normalizeDate(date);
-    print("Enviando fecha: $safeDate");
 
     final response = await ApiClient.post(
       'create_income.php',
@@ -73,7 +69,6 @@ class IncomeService {
     required String date,
   }) async {
     final safeDate = _normalizeDate(date);
-    print("Enviando fecha: $safeDate");
 
     final response = await ApiClient.post(
       'update_income.php',

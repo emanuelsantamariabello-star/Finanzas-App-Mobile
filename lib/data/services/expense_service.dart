@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import 'package:finanzas_app_mobile/core/network/http_client.dart';
 
 class ExpenseService {
-  static const String baseUrl = 'http://192.168.20.29/finanzas_app/api';
-
   static Future<Map<String, dynamic>> getExpenses(
     int userId, {
     String? startDate,
@@ -15,8 +14,8 @@ class ExpenseService {
       body['end_date'] = endDate;
     }
 
-    final response = await http.post(
-      Uri.parse('$baseUrl/expenses.php'),
+    final response = await ApiClient.post(
+      'expenses.php',
       body: body,
     );
 
@@ -30,8 +29,8 @@ class ExpenseService {
     required String note,
     required String expenseDate,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/create_expense.php'),
+    final response = await ApiClient.post(
+      'create_expense.php',
       body: {
         'user_id': userId.toString(),
         'income_id': incomeId.toString(),
@@ -50,8 +49,8 @@ class ExpenseService {
     required String note,
     required String expenseDate,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/update_expense.php'),
+    final response = await ApiClient.post(
+      'update_expense.php',
       body: {
         'id': id.toString(),
         'amount': amount,
@@ -67,12 +66,9 @@ class ExpenseService {
     required int id,
     required int userId,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/delete_expense.php'),
-      body: {
-        'id': id.toString(),
-        'user_id': userId.toString(),
-      },
+    final response = await ApiClient.post(
+      'delete_expense.php',
+      body: {'id': id.toString(), 'user_id': userId.toString()},
     );
 
     return jsonDecode(response.body);

@@ -91,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void showMessage(String msg) {
-    AppSnackbar.success(context, 'Cuenta creada correctamente');
+    AppSnackbar.success(context, msg);
   }
 
   @override

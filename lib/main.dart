@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
+import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 
 void main() {
   runApp(const FinanzasApp());
@@ -21,6 +22,7 @@ class FinanzasApp extends StatefulWidget {
 class _FinanzasAppState extends State<FinanzasApp> {
   bool? isLoggedIn;
   final DashboardProvider _dashboardProvider = DashboardProvider();
+  final ThemeProvider _themeProvider = ThemeProvider();
   static const _locale = Locale('es', 'CO');
   static const List<Locale> _supportedLocales = [
     Locale('es', 'CO'),
@@ -36,11 +38,13 @@ class _FinanzasAppState extends State<FinanzasApp> {
   void initState() {
     super.initState();
     checkLogin();
+    _themeProvider.loadThemeMode();
   }
 
   @override
   void dispose() {
     _dashboardProvider.dispose();
+    _themeProvider.dispose();
     super.dispose();
   }
 
@@ -53,16 +57,29 @@ class _FinanzasAppState extends State<FinanzasApp> {
   }
 
   Widget _buildApp({required Widget home}) {
-    return ChangeNotifierProvider<DashboardProvider>.value(
-      value: _dashboardProvider,
-      child: MaterialApp(
-        title: 'Finanzas App',
-        debugShowCheckedModeBanner: false,
-        locale: _locale,
-        supportedLocales: _supportedLocales,
-        localizationsDelegates: _localizationsDelegates,
-        theme: AppTheme.darkTheme,
-        home: home,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DashboardProvider>.value(
+          value: _dashboardProvider,
+        ),
+        ChangeNotifierProvider<ThemeProvider>.value(
+          value: _themeProvider,
+        ),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: 'Finanzas App',
+            debugShowCheckedModeBanner: false,
+            locale: _locale,
+            supportedLocales: _supportedLocales,
+            localizationsDelegates: _localizationsDelegates,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            home: home,
+          );
+        },
       ),
     );
   }

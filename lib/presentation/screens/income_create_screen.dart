@@ -133,12 +133,18 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final fillColor = theme.inputDecorationTheme.fillColor ?? theme.cardColor;
+    final borderColor =
+        theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
+        theme.dividerColor;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.income == null ? "Nuevo ingreso" : "Editar ingreso"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
@@ -149,7 +155,10 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(labelText: "Monto"),
+                decoration: const InputDecoration(
+                  labelText: "Monto",
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
                 validator: (value) {
                   final v = value?.trim() ?? '';
                   if (v.isEmpty) return "Ingrese un monto";
@@ -177,7 +186,10 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
                   if (value == null) return;
                   setState(() => type = value);
                 },
-                decoration: const InputDecoration(labelText: "Tipo"),
+                decoration: const InputDecoration(
+                  labelText: "Tipo",
+                  prefixIcon: Icon(Icons.category),
+                ),
               ),
 
               const SizedBox(height: 12),
@@ -185,31 +197,80 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
               // 📝 NOTA
               TextFormField(
                 controller: noteController,
-                decoration: const InputDecoration(labelText: "Nota"),
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: "Nota",
+                  prefixIcon: Icon(Icons.note_alt_outlined),
+                ),
               ),
 
               const SizedBox(height: 12),
 
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text("Fecha"),
-                subtitle: Text(DateFormat('dd/MM/yyyy').format(selectedDate)),
-                trailing: const Icon(Icons.calendar_today),
+              InkWell(
                 onTap: _pickDate,
+                borderRadius: BorderRadius.circular(14),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Fecha',
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
+                    suffixIcon: const Icon(Icons.expand_more_rounded),
+                    filled: true,
+                    fillColor: fillColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: borderColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary,
+                        width: 1.4,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
+                  ),
+                  child: Text(
+                    DateFormat('dd/MM/yyyy').format(selectedDate),
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
               ),
 
               const SizedBox(height: 20),
 
               // 🚀 BOTÓN
-              ElevatedButton(
-                onPressed: isLoading ? null : saveIncome,
-                child: isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text("Guardar"),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: isLoading ? null : saveIncome,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00C853),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.save_outlined),
+                  label: Text(
+                    widget.income == null
+                        ? "Guardar ingreso"
+                        : "Actualizar ingreso",
+                  ),
+                ),
               ),
             ],
           ),

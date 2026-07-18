@@ -287,7 +287,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
             child: const Text(
               "Cancelar",
               style: TextStyle(
-                color: const Color(0xFF00E676),
+                color: Color(0xFF00E676),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -430,47 +430,112 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: ListTile(
-                                    title: Text(expense['type'] ?? "Gasto"),
-                                    subtitle: Text(
-                                      "${expense['note'] ?? 'Sin descripción'}\n${formatDate(expense['expense_date'])}",
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          formatAmount(expense['amount']),
+                                          (expense['type'] ?? 'Gasto')
+                                              .toString()
+                                              .toUpperCase(),
                                           style: const TextStyle(
-                                            color: Colors.red,
                                             fontWeight: FontWeight.bold,
+                                            fontSize: 15,
                                           ),
                                         ),
-
-                                        const SizedBox(width: 8),
-
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            color: Colors.blue,
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          (expense['note'] ??
+                                                  'Sin descripci?n')
+                                              .toString(),
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                            height: 1.35,
                                           ),
-                                          onPressed: () async {
-                                            await openCreateExpense(
-                                              expense: expense,
-                                            );
-                                          },
                                         ),
-
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () =>
-                                              deleteExpense(expense['id']),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.calendar_today_outlined,
+                                              size: 14,
+                                              color: Colors.white54,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              formatDate(
+                                                expense['expense_date'],
+                                              ),
+                                              style: const TextStyle(
+                                                color: Colors.white54,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 14),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              formatAmount(expense['amount']),
+                                              style: const TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 19,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.edit,
+                                                    color: Colors.blue,
+                                                  ),
+                                                  iconSize: 20,
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                    minWidth: 36,
+                                                    minHeight: 36,
+                                                  ),
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  onPressed: () async {
+                                                    await openCreateExpense(
+                                                      expense: expense,
+                                                    );
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                  iconSize: 20,
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                    minWidth: 36,
+                                                    minHeight: 36,
+                                                  ),
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  onPressed: () =>
+                                                      deleteExpense(
+                                                    expense['id'],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                    isThreeLine: true,
                                   ),
                                 );
                               },

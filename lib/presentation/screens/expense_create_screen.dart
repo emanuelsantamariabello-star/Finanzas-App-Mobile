@@ -158,10 +158,16 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final fillColor = theme.inputDecorationTheme.fillColor ?? theme.cardColor;
+    final borderColor =
+        theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
+        theme.dividerColor;
+
     return Scaffold(
       appBar: AppBar(title: Text(isEditMode ? "Editar gasto" : "Nuevo gasto")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: isLoadingIncomes
             ? const Center(child: CircularProgressIndicator())
             : Form(
@@ -171,7 +177,10 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                     TextFormField(
                       controller: amountController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "Monto"),
+                      decoration: const InputDecoration(
+                        labelText: "Monto",
+                        prefixIcon: Icon(Icons.attach_money),
+                      ),
                       validator: (value) =>
                           value!.isEmpty ? "Ingrese un monto" : null,
                     ),
@@ -193,6 +202,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       },
                       decoration: const InputDecoration(
                         labelText: "Seleccionar ingreso",
+                        prefixIcon: Icon(Icons.account_balance_wallet),
                       ),
                     ),
 
@@ -200,28 +210,77 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
                     TextFormField(
                       controller: noteController,
-                      decoration: const InputDecoration(labelText: "Nota"),
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: "Nota",
+                        prefixIcon: Icon(Icons.note_alt_outlined),
+                      ),
                     ),
 
                     const SizedBox(height: 12),
 
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text("Fecha"),
-                      subtitle: Text(
-                        DateFormat('dd/MM/yyyy').format(selectedDate),
-                      ),
-                      trailing: const Icon(Icons.calendar_today),
+                    InkWell(
                       onTap: _pickDate,
+                      borderRadius: BorderRadius.circular(14),
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: 'Fecha',
+                          prefixIcon: const Icon(Icons.calendar_today_outlined),
+                          suffixIcon: const Icon(Icons.expand_more_rounded),
+                          filled: true,
+                          fillColor: fillColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(color: borderColor),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(
+                              color: theme.colorScheme.primary,
+                              width: 1.4,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 14,
+                          ),
+                        ),
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(selectedDate),
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ),
                     ),
 
                     const SizedBox(height: 20),
 
-                    ElevatedButton(
-                      onPressed: isLoading ? null : saveExpense,
-                      child: isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text("Guardar"),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: isLoading ? null : saveExpense,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00C853),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        icon: isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.save_outlined),
+                        label: Text(
+                          isEditMode ? "Actualizar gasto" : "Guardar gasto",
+                        ),
+                      ),
                     ),
                   ],
                 ),

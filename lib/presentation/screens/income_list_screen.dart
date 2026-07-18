@@ -289,7 +289,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
             child: const Text(
               "Cancelar",
               style: TextStyle(
-                color: const Color(0xFF00E676),
+                color: Color(0xFF00E676),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -372,7 +372,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
               icon: Icons.trending_up_rounded,
               title: 'Aún no tienes ingresos',
               subtitle:
-                  'Agrega tu primer ingreso para ver aquí\ntu historial y tu progreso financiero.',
+                  'Agrega tu primer ingreso para ver aquí tu historial y tu progreso financiero.',
             )
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -421,7 +421,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                               icon: Icons.search_off_rounded,
                               title: 'Sin resultados',
                               subtitle:
-                                  'No se encontraron ingresos\ncon los filtros seleccionados.',
+                                  'No se encontraron ingresos con los filtros seleccionados.',
                               iconColor: Colors.white70,
                             )
                           : ListView.builder(
@@ -431,6 +431,15 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                               itemCount: filteredIncomes.length,
                               itemBuilder: (context, index) {
                                 final income = filteredIncomes[index];
+                                final type = (income['type'] ?? 'Ingreso')
+                                    .toString()
+                                    .toUpperCase();
+                                final note = (income['note'] ?? 'Sin nota')
+                                    .toString();
+                                final amount = formatAmount(income['amount']);
+                                final date = formatDate(
+                                  income['income_date'] ?? income['date'],
+                                );
 
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 10),
@@ -438,50 +447,106 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   elevation: 2,
-                                  child: ListTile(
-                                    title: Text(
-                                      income['type'].toString().toUpperCase(),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      "${income['note'] ?? ''}\n${formatDate(income['income_date'] ?? income['date'])}",
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          formatAmount(income['amount']),
+                                          type,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.green,
+                                            fontSize: 15,
                                           ),
                                         ),
-
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            color: Colors.blue,
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          note,
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                            height: 1.35,
                                           ),
-                                          onPressed: () async {
-                                            await openCreateIncome(
-                                              income: income,
-                                            );
-                                          },
                                         ),
-
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () =>
-                                              deleteIncome(income['id']),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.calendar_today_outlined,
+                                              size: 14,
+                                              color: Colors.white54,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              date,
+                                              style: const TextStyle(
+                                                color: Colors.white54,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 14),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              amount,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.green,
+                                                fontSize: 19,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.edit,
+                                                    color: Colors.blue,
+                                                  ),
+                                                  iconSize: 20,
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                    minWidth: 36,
+                                                    minHeight: 36,
+                                                  ),
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  onPressed: () async {
+                                                    await openCreateIncome(
+                                                      income: income,
+                                                    );
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                  iconSize: 20,
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                    minWidth: 36,
+                                                    minHeight: 36,
+                                                  ),
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  onPressed: () =>
+                                                      deleteIncome(
+                                                        income['id'],
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                    isThreeLine: true,
                                   ),
                                 );
                               },

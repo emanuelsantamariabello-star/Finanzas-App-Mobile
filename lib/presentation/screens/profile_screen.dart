@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/presentation/screens/change_password_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
+import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     setState(() {
       _userName = prefs.getString('userName') ?? '';
       _userEmail = prefs.getString('userEmail') ?? '';
@@ -50,16 +53,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return '?';
   }
 
+  Future<void> _openThemeSelector() async {
+    final themeProvider = context.read<ThemeProvider>();
+    final currentMode = themeProvider.themeMode;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 46,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Theme.of(sheetContext).dividerColor,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'Tema',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(sheetContext).colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Selecciona el aspecto visual de la app.',
+                style: TextStyle(
+                  color: Theme.of(sheetContext).colorScheme.onSurface.withOpacity(0.72),
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 18),
+              _buildThemeOption(
+                context: sheetContext,
+                label: 'Claro',
+                icon: Icons.wb_sunny_outlined,
+                isSelected: currentMode == ThemeMode.light,
+                onTap: () async {
+                  await themeProvider.setThemeMode(ThemeMode.light);
+                  if (sheetContext.mounted) Navigator.pop(sheetContext);
+                },
+              ),
+              const SizedBox(height: 10),
+              _buildThemeOption(
+                context: sheetContext,
+                label: 'Oscuro',
+                icon: Icons.nightlight_round,
+                isSelected: currentMode == ThemeMode.dark,
+                onTap: () async {
+                  await themeProvider.setThemeMode(ThemeMode.dark);
+                  if (sheetContext.mounted) Navigator.pop(sheetContext);
+                },
+              ),
+              const SizedBox(height: 10),
+              _buildThemeOption(
+                context: sheetContext,
+                label: 'Sistema',
+                icon: Icons.settings_outlined,
+                isSelected: currentMode == ThemeMode.system,
+                onTap: () async {
+                  await themeProvider.setThemeMode(ThemeMode.system);
+                  if (sheetContext.mounted) Navigator.pop(sheetContext);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _logout() async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF161B22),
+        backgroundColor: Theme.of(ctx).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Cerrar sesión'),
-        content: const Text(
+        title: Text(
+          'Cerrar sesión',
+          style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+        ),
+        content: Text(
           '¿Estás seguro de que deseas cerrar sesión?',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(
+            color: Theme.of(ctx).colorScheme.onSurface.withOpacity(0.72),
+          ),
         ),
         actions: [
           TextButton(
@@ -79,7 +171,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final prefs = await SharedPreferences.getInstance();
 
-    // Preserve "remember credentials" for LoginScreen.
     const keysToRemove = [
       'isLoggedIn',
       'userEmail',
@@ -101,32 +192,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ── Header del usuario ──
-  Widget _buildUserHeader() {
+  Widget _buildUserHeader(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.5)),
       ),
       child: Column(
         children: [
-          // Avatar con inicial
           Container(
             width: 76,
             height: 76,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: [Color(0xFF00C853), Color(0xFF00E676)],
+                colors: [AppTheme.corporateGreen, Color(0xFF00E676)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00C853).withValues(alpha: 0.3),
+                  color: AppTheme.corporateGreen.withOpacity(0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 6),
                 ),
@@ -144,22 +234,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          // Nombre
           Text(
             _userName.isNotEmpty ? _userName : 'Usuario',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.3,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 4),
-          // Email
           Text(
             _userEmail.isNotEmpty ? _userEmail : '—',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.white54,
+              color: theme.colorScheme.onSurface.withOpacity(0.55),
               letterSpacing: 0.2,
             ),
           ),
@@ -168,44 +257,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ── Resumen financiero ──
-  Widget _buildFinancialSummary(Map<String, dynamic> dashboardData) {
+  Widget _buildFinancialSummary(BuildContext context, Map<String, dynamic> dashboardData) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Resumen financiero',
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.2,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 16),
           _buildFinancialRow(
+            context,
             icon: Icons.arrow_downward_rounded,
-            color: const Color(0xFF4CAF50),
+            color: AppTheme.corporateGreen,
             label: 'Total ingresos',
             value: dashboardData['total_income'],
           ),
-          const Divider(color: Colors.white10, height: 24),
+          const Divider(height: 24),
           _buildFinancialRow(
+            context,
             icon: Icons.arrow_upward_rounded,
-            color: const Color(0xFFEF5350),
+            color: AppTheme.corporateRed,
             label: 'Total gastos',
             value: dashboardData['total_expense'],
           ),
-          const Divider(color: Colors.white10, height: 24),
+          const Divider(height: 24),
           _buildFinancialRow(
+            context,
             icon: Icons.account_balance_wallet_rounded,
-            color: const Color(0xFF42A5F5),
+            color: AppTheme.corporateBlue,
             label: 'Balance',
             value: dashboardData['balance'],
           ),
@@ -214,19 +307,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildFinancialRow({
+  Widget _buildFinancialRow(
+    BuildContext context, {
     required IconData icon,
     required Color color,
     required String label,
     required dynamic value,
   }) {
+    final theme = Theme.of(context);
     return Row(
       children: [
         Container(
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
+            color: color.withOpacity(0.15),
             borderRadius: BorderRadius.circular(11),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -235,9 +330,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.white70,
+              color: theme.colorScheme.onSurface.withOpacity(0.75),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -254,28 +349,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ── Sección de acciones ──
-  Widget _buildActionsSection() {
+  Widget _buildActionsSection(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Configuración',
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.2,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
           _buildActionTile(
+            context,
             icon: Icons.person_outline_rounded,
             label: 'Editar perfil',
             subtitle: 'Nombre, email y más',
@@ -290,8 +387,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
           ),
-          const Divider(color: Colors.white10, height: 4),
+          Divider(color: theme.dividerColor.withOpacity(0.5), height: 4),
           _buildActionTile(
+            context,
+            icon: Icons.palette_outlined,
+            label: 'Tema',
+            subtitle: 'Claro, oscuro o sistema',
+            onTap: _openThemeSelector,
+          ),
+          Divider(color: theme.dividerColor.withOpacity(0.5), height: 4),
+          _buildActionTile(
+            context,
             icon: Icons.lock_outline_rounded,
             label: 'Cambiar contraseña',
             subtitle: 'Actualiza tu contraseña',
@@ -312,8 +418,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
           ),
-          const Divider(color: Colors.white10, height: 4),
+          Divider(color: theme.dividerColor.withOpacity(0.5), height: 4),
           _buildActionTile(
+            context,
             icon: Icons.logout_rounded,
             label: 'Cerrar sesión',
             subtitle: 'Salir de tu cuenta',
@@ -325,13 +432,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildActionTile({
+  Widget _buildActionTile(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String subtitle,
     required VoidCallback onTap,
-    Color color = Colors.white,
+    Color? color,
   }) {
+    final theme = Theme.of(context);
+    final tileColor = color ?? theme.colorScheme.onSurface;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -343,10 +453,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: tileColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(11),
               ),
-              child: Icon(icon, color: color.withValues(alpha: 0.8), size: 20),
+              child: Icon(icon, color: tileColor.withOpacity(0.8), size: 20),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -358,7 +468,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: color,
+                      color: tileColor,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -366,7 +476,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: color.withValues(alpha: 0.5),
+                      color: tileColor.withOpacity(0.5),
                     ),
                   ),
                 ],
@@ -374,9 +484,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: color.withValues(alpha: 0.4),
+              color: theme.colorScheme.onSurface.withOpacity(0.35),
               size: 22,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption({
+    required BuildContext context,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppTheme.corporateGreen.withOpacity(0.12)
+              : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppTheme.corporateGreen : theme.dividerColor.withOpacity(0.5),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppTheme.corporateGreen.withOpacity(0.18)
+                    : theme.dividerColor.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? AppTheme.corporateGreen : theme.colorScheme.onSurface.withOpacity(0.75),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle_rounded,
+                color: AppTheme.corporateGreen,
+                size: 20,
+              ),
           ],
         ),
       ),
@@ -394,11 +566,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildUserHeader(),
+            _buildUserHeader(context),
             const SizedBox(height: 16),
-            _buildFinancialSummary(dashboardData),
+            _buildFinancialSummary(context, dashboardData),
             const SizedBox(height: 16),
-            _buildActionsSection(),
+            _buildActionsSection(context),
             const SizedBox(height: 32),
           ],
         ),

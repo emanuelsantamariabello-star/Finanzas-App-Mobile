@@ -79,26 +79,39 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  bool _isSuccessResponse(dynamic value) {
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      return normalized == 'true' ||
+          normalized == '1' ||
+          normalized == 'success' ||
+          normalized == 'ok';
+    }
+    return false;
+  }
+
   void handleLogin() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      showMessage('Todos los campos son obligatorios');
+      showMessage('Todos los campos son obligatorios', isError: true);
       return;
     }
 
     if (!email.contains('@')) {
-      showMessage('Correo inv\u00e1lido');
+      showMessage('Correo inválido', isError: true);
       return;
     }
 
     try {
       final response = await AuthService.login(email, password);
+      final isSuccess = _isSuccessResponse(response['success']);
+      final message = response['message']?.toString();
 
-      if (response['success'] == true) {
-        showMessage('Login exitoso');
-
+      if (isSuccess) {
         final prefs = await SharedPreferences.getInstance();
 
         await prefs.setBool('isLoggedIn', true);
@@ -108,22 +121,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
         await _persistRememberedCredentials();
 
-        print('Sesi\u00f3n guardada'); // debug
+        if (!mounted) return;
+        showMessage('Bienvenido nuevamente');
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
         );
       } else {
-        showMessage(response['message'] ?? 'Credenciales incorrectas');
+        showMessage(message ?? 'Credenciales incorrectas', isError: true);
       }
     } catch (e) {
-      showMessage('Error de conexi\u00f3n con el servidor');
+      showMessage('Error de conexión con el servidor', isError: true);
     }
   }
 
-  void showMessage(String message) {
-    AppSnackbar.success(context, 'Bienvenido nuevamente');
+  void showMessage(String message, {bool isError = false}) {
+    if (isError) {
+      AppSnackbar.error(context, message);
+    } else {
+      AppSnackbar.success(context, message);
+    }
   }
 
   @override

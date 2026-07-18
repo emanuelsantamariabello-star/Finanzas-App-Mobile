@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
 
@@ -23,7 +25,8 @@ class _MovementsScreenState extends State<MovementsScreen> {
     super.dispose();
   }
 
-  Widget _buildQuickFilterChip(String label) {
+  Widget _buildQuickFilterChip(BuildContext context, String label) {
+    final theme = Theme.of(context);
     final selected = quickFilter == label;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -33,22 +36,30 @@ class _MovementsScreenState extends State<MovementsScreen> {
         onSelected: (_) {
           setState(() => quickFilter = label);
         },
-        selectedColor: const Color(0xFF00C853),
-        backgroundColor: const Color(0xFF161B22),
+        selectedColor: AppTheme.corporateGreen,
+        backgroundColor: theme.cardColor,
         labelStyle: TextStyle(
-          color: selected ? Colors.black : Colors.white70,
+          color: selected ? Colors.black : theme.colorScheme.onSurface.withOpacity(0.75),
           fontWeight: FontWeight.w600,
         ),
-        side: BorderSide.none,
+        side: BorderSide(color: theme.dividerColor.withOpacity(0.5)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
 
   Future<void> _openCreateIncome() async {
-    final state = _incomeListKey.currentState;
-    if (state == null) return;
-    await (state as dynamic).openCreateIncome();
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const IncomeCreateScreen()),
+    );
+
+    if (result == true) {
+      final state = _incomeListKey.currentState;
+      if (state != null) {
+        await (state as dynamic).loadIncomes();
+      }
+    }
   }
 
   Future<void> _openCreateExpense() async {
@@ -59,18 +70,17 @@ class _MovementsScreenState extends State<MovementsScreen> {
 
   Future<void> _showMovementActionsSheet() async {
     final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
 
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       useSafeArea: true,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (sheetContext) {
-        final onSurface = theme.colorScheme.onSurface;
-
         Widget buildActionTile({
           required String title,
           required String subtitle,
@@ -115,15 +125,14 @@ class _MovementsScreenState extends State<MovementsScreen> {
                   'Nuevo movimiento',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
+                    color: onSurface,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(
-                    theme.brightness == Brightness.dark ? 0.35 : 1,
-                  ),
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Column(
@@ -132,7 +141,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
                       title: 'Agregar ingreso',
                       subtitle: 'Registra una entrada de dinero',
                       icon: Icons.trending_up_rounded,
-                      accent: const Color(0xFF00C853),
+                      accent: AppTheme.corporateGreen,
                       onTap: () async {
                         Navigator.pop(sheetContext);
                         await _openCreateIncome();
@@ -147,7 +156,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
                       title: 'Agregar gasto',
                       subtitle: 'Registra una salida de dinero',
                       icon: Icons.trending_down_rounded,
-                      accent: const Color(0xFFFF5252),
+                      accent: AppTheme.corporateRed,
                       onTap: () async {
                         Navigator.pop(sheetContext);
                         await _openCreateExpense();
@@ -165,6 +174,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -201,29 +211,29 @@ class _MovementsScreenState extends State<MovementsScreen> {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        _buildQuickFilterChip('Todos'),
-                        _buildQuickFilterChip('Hoy'),
-                        _buildQuickFilterChip('Semana'),
-                        _buildQuickFilterChip('Mes'),
+                        _buildQuickFilterChip(context, 'Todos'),
+                        _buildQuickFilterChip(context, 'Hoy'),
+                        _buildQuickFilterChip(context, 'Semana'),
+                        _buildQuickFilterChip(context, 'Mes'),
                       ],
                     ),
                   ),
                   const SizedBox(height: 12),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF161B22),
+                      color: theme.cardColor,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const TabBar(
+                    child: TabBar(
                       dividerColor: Colors.transparent,
                       indicatorSize: TabBarIndicatorSize.tab,
                       indicator: BoxDecoration(
-                        color: Color(0xFF00C853),
-                        borderRadius: BorderRadius.all(Radius.circular(14)),
+                        color: AppTheme.corporateGreen,
+                        borderRadius: const BorderRadius.all(Radius.circular(14)),
                       ),
                       labelColor: Colors.black,
-                      unselectedLabelColor: Colors.white70,
-                      tabs: [
+                      unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.75),
+                      tabs: const [
                         Tab(text: 'Ingresos'),
                         Tab(text: 'Gastos'),
                       ],
@@ -252,7 +262,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: _showMovementActionsSheet,
-          backgroundColor: const Color(0xFF00C853),
+          backgroundColor: AppTheme.corporateGreen,
           foregroundColor: Colors.black,
           elevation: 6,
           child: const Icon(Icons.add_rounded),

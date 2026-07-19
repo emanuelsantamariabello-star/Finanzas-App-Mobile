@@ -126,8 +126,9 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
       if (!mounted) return;
       AppSnackbar.error(context, 'Error al guardar el ingreso');
     } finally {
-      if (!mounted) return;
-      setState(() => isLoading = false);
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
   }
 

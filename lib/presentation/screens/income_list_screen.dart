@@ -278,7 +278,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         ),
 
         content: const Text(
-          "Esta acciÃ³n eliminarÃ¡ el movimiento permanentemente.",
+          "Esta acción eliminará el movimiento permanentemente.",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white70, height: 1.4),
         ),

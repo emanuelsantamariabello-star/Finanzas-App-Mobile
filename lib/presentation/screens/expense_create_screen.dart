@@ -92,6 +92,8 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId');
 
+    if (!mounted) return;
+
     if (userId == null) {
       AppSnackbar.error(context, 'Usuario no identificado');
       return;
@@ -137,12 +139,14 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
         AppSnackbar.success(context, msg);
         Navigator.pop(context, true);
       } else {
+        if (!mounted) return;
         AppSnackbar.error(
           context,
           response['message']?.toString() ?? 'No se pudo guardar el gasto',
         );
       }
     } catch (e) {
+      if (!mounted) return;
       AppSnackbar.error(context, 'Error al guardar el gasto');
     } finally {
       setState(() => isLoading = false);
@@ -274,7 +278,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.save_outlined),
                         label: Text(

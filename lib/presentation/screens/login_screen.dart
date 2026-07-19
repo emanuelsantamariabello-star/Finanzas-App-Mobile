@@ -211,7 +211,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Switch.adaptive(
                           value: _rememberCredentials,
-                          activeColor: const Color(0xFF00C853),
+                          activeThumbColor: const Color(0xFF00C853),
+                          activeTrackColor: const Color(0xFF00C853),
                           onChanged: (v) async {
                             setState(() => _rememberCredentials = v);
                             await _persistRememberedCredentials();

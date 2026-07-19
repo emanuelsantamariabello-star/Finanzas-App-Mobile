@@ -48,7 +48,7 @@ class AppSnackbar {
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: accent.withOpacity(0.28)),
+            side: BorderSide(color: accent.withValues(alpha: 0.28)),
           ),
           content: Row(
             children: [
@@ -56,7 +56,7 @@ class AppSnackbar {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.14),
+                  color: accent.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: accent, size: 20),
@@ -90,4 +90,3 @@ class AppSnackbar {
     show(context, message: message, type: AppSnackbarType.info);
   }
 }
-

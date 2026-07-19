@@ -47,7 +47,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _nameController.text = prefs.getString('userName') ?? '';
         _emailController.text = prefs.getString('userEmail') ?? '';
         _occupationController.text =
-            prefs.getString('occupation') ?? prefs.getString('userOccupation') ?? '';
+            prefs.getString('occupation') ??
+            prefs.getString('userOccupation') ??
+            '';
         _loading = false;
       });
     } catch (e) {
@@ -134,116 +136,114 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final onSurface = theme.colorScheme.onSurface;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar perfil'),
-      ),
+      appBar: AppBar(title: const Text('Editar perfil')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _loadError != null
-              ? Center(child: Text('Error: $_loadError'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0D1117),
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: Colors.white10),
-                        ),
-                        child: Text(
-                          'Actualiza tus datos personales. Esto no afecta tus movimientos ni tu dashboard.',
-                          style: TextStyle(
-                            color: onSurface.withOpacity(0.75),
-                            height: 1.35,
-                          ),
-                        ),
+          ? Center(child: Text('Error: $_loadError'))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0D1117),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Text(
+                      'Actualiza tus datos personales. Esto no afecta tus movimientos ni tu dashboard.',
+                      style: TextStyle(
+                        color: onSurface.withValues(alpha: 0.75),
+                        height: 1.35,
                       ),
-                      const SizedBox(height: 16),
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              controller: _nameController,
-                              textInputAction: TextInputAction.next,
-                              decoration: _decoration(
-                                label: 'Nombre',
-                                icon: Icons.person_outline_rounded,
-                                hint: 'Tu nombre',
-                              ),
-                              validator: (v) {
-                                final value = v?.trim() ?? '';
-                                if (value.isEmpty) return 'Ingresa tu nombre';
-                                if (value.length < 2) return 'Nombre muy corto';
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              controller: _emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              decoration: _decoration(
-                                label: 'Email',
-                                icon: Icons.email_outlined,
-                                hint: 'correo@ejemplo.com',
-                              ),
-                              validator: (v) {
-                                final value = v?.trim() ?? '';
-                                if (value.isEmpty) return 'Ingresa tu email';
-                                if (!value.contains('@')) return 'Email inválido';
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              controller: _occupationController,
-                              textInputAction: TextInputAction.done,
-                              decoration: _decoration(
-                                label: 'Ocupación',
-                                icon: Icons.work_outline_rounded,
-                                hint: 'Ej: Estudiante, Ingeniero…',
-                              ),
-                              validator: (v) {
-                                final value = v?.trim() ?? '';
-                                if (value.isEmpty) return 'Ingresa tu ocupación';
-                                return null;
-                              },
-                              onFieldSubmitted: (_) => _save(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton.icon(
-                          onPressed: _saving ? null : _save,
-                          icon: _saving
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.save_outlined),
-                          label: Text(_saving ? 'Guardando…' : 'Guardar cambios'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00C853),
-                            foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _nameController,
+                          textInputAction: TextInputAction.next,
+                          decoration: _decoration(
+                            label: 'Nombre',
+                            icon: Icons.person_outline_rounded,
+                            hint: 'Tu nombre',
+                          ),
+                          validator: (v) {
+                            final value = v?.trim() ?? '';
+                            if (value.isEmpty) return 'Ingresa tu nombre';
+                            if (value.length < 2) return 'Nombre muy corto';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          decoration: _decoration(
+                            label: 'Email',
+                            icon: Icons.email_outlined,
+                            hint: 'correo@ejemplo.com',
+                          ),
+                          validator: (v) {
+                            final value = v?.trim() ?? '';
+                            if (value.isEmpty) return 'Ingresa tu email';
+                            if (!value.contains('@')) return 'Email inválido';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _occupationController,
+                          textInputAction: TextInputAction.done,
+                          decoration: _decoration(
+                            label: 'Ocupación',
+                            icon: Icons.work_outline_rounded,
+                            hint: 'Ej: Estudiante, Ingeniero…',
+                          ),
+                          validator: (v) {
+                            final value = v?.trim() ?? '';
+                            if (value.isEmpty) return 'Ingresa tu ocupación';
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _save(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: _saving ? null : _save,
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(_saving ? 'Guardandoâ€¦' : 'Guardar cambios'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00C853),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

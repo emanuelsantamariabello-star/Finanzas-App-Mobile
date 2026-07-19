@@ -241,6 +241,8 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
 
     if (userId == null) return;
 
+    if (!mounted) return;
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -252,7 +254,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.12),
+                color: Colors.red.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -276,7 +278,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         ),
 
         content: const Text(
-          "Esta acción eliminará el movimiento permanentemente.",
+          "Esta acciÃ³n eliminarÃ¡ el movimiento permanentemente.",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white70, height: 1.4),
         ),
@@ -326,12 +328,12 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         userId: userId,
       );
 
+      if (!mounted) return;
+
       if (response['success']) {
         AppSnackbar.success(context, 'Ingreso eliminado');
 
-        if (mounted) {
-          context.read<DashboardProvider>().refreshDashboard(userId);
-        }
+        context.read<DashboardProvider>().refreshDashboard(userId);
         loadIncomes();
       } else {
         AppSnackbar.error(
@@ -340,6 +342,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       AppSnackbar.error(context, 'Error al eliminar el ingreso');
     }
   }
@@ -355,7 +358,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
           ? null
           : AppBar(title: const Text("Ingresos")),
 
-      // 🔥 BOTÓN FLOTANTE
+      // ðŸ”¥ BOTÃ“N FLOTANTE
       floatingActionButton: widget.embeddedMode
           ? null
           : FloatingActionButton(
@@ -370,7 +373,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
           : incomes.isEmpty
           ? _buildEmptyState(
               icon: Icons.trending_up_rounded,
-              title: 'Aún no tienes ingresos',
+              title: 'AÃºn no tienes ingresos',
               subtitle:
                   'Agrega tu primer ingreso para ver aquí tu historial y tu progreso financiero.',
             )
@@ -511,9 +514,9 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
                                                   onPressed: () async {
@@ -531,15 +534,14 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
-                                                  onPressed: () =>
-                                                      deleteIncome(
-                                                        income['id'],
-                                                      ),
+                                                  onPressed: () => deleteIncome(
+                                                    income['id'],
+                                                  ),
                                                 ),
                                               ],
                                             ),

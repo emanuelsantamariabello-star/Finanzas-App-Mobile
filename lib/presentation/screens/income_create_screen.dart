@@ -72,6 +72,8 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId');
 
+    if (!mounted) return;
+
     if (userId == null) {
       AppSnackbar.error(context, 'Usuario no identificado');
       return;
@@ -126,8 +128,9 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
       if (!mounted) return;
       AppSnackbar.error(context, 'Error al guardar el ingreso');
     } finally {
-      if (!mounted) return;
-      setState(() => isLoading = false);
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
   }
 

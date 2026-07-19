@@ -239,6 +239,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
     if (userId == null) return;
 
+    if (!mounted) return;
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -250,7 +252,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.12),
+                color: Colors.red.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -274,7 +276,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         ),
 
         content: const Text(
-          "Esta acción eliminará el movimiento permanentemente.",
+          "Esta acciÃ³n eliminarÃ¡ el movimiento permanentemente.",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white70, height: 1.4),
         ),
@@ -324,13 +326,13 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         userId: userId,
       );
 
+      if (!mounted) return;
+
       if (response['success']) {
-        if (!mounted) return;
         AppSnackbar.success(context, 'Gasto eliminado');
         context.read<DashboardProvider>().refreshDashboard(userId);
         loadExpenses();
       } else {
-        if (!mounted) return;
         AppSnackbar.error(
           context,
           response['message']?.toString() ?? 'No se pudo eliminar el gasto',
@@ -365,9 +367,9 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           : expenses.isEmpty
           ? _buildEmptyState(
               icon: Icons.trending_down_rounded,
-              title: 'Aún no tienes gastos',
+              title: 'AÃºn no tienes gastos',
               subtitle:
-                  'Registra tu primer gasto para entender\nmejor en qué se va tu dinero.',
+                  'Registra tu primer gasto para entender\nmejor en quÃ© se va tu dinero.',
             )
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -447,8 +449,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          (expense['note'] ??
-                                                  'Sin descripci?n')
+                                          (expense['note'] ?? 'Sin descripci?n')
                                               .toString(),
                                           style: const TextStyle(
                                             color: Colors.white70,
@@ -500,9 +501,9 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
                                                   onPressed: () async {
@@ -520,15 +521,15 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
                                                   onPressed: () =>
                                                       deleteExpense(
-                                                    expense['id'],
-                                                  ),
+                                                        expense['id'],
+                                                      ),
                                                 ),
                                               ],
                                             ),

@@ -26,8 +26,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   String? _monthlyError;
 
   static const _monthLabels = [
-    'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
+    'Ene',
+    'Feb',
+    'Mar',
+    'Abr',
+    'May',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dic',
   ];
 
   @override
@@ -107,7 +117,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     if (raw.isEmpty) return -1;
 
     final normalized = raw.replaceAll('/', '-');
-    final parts = normalized.split('-').where((p) => p.trim().isNotEmpty).toList();
+    final parts = normalized
+        .split('-')
+        .where((p) => p.trim().isNotEmpty)
+        .toList();
 
     if (parts.length >= 2) {
       final first = int.tryParse(parts[0]);
@@ -156,7 +169,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         });
       } else {
         setState(() {
-          _monthlyError = response['message']?.toString() ?? 'Error al cargar estadísticas';
+          _monthlyError =
+              response['message']?.toString() ?? 'Error al cargar estad?sticas';
           _monthlyLoading = false;
         });
       }
@@ -193,7 +207,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     return _monthLabels[monthIndex - 1];
   }
 
-  Widget _buildSectionCard(BuildContext context, {required String title, required List<Widget> children}) {
+  Widget _buildSectionCard(
+    BuildContext context, {
+    required String title,
+    required List<Widget> children,
+  }) {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
@@ -242,13 +260,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 width: 72,
                 height: 72,
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.12),
+                  color: accent.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
                   size: 34,
-                  color: accent.withOpacity(0.75),
+                  color: accent.withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(height: 16),
@@ -267,7 +285,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 subtitle,
                 style: TextStyle(
                   fontSize: 13,
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   height: 1.4,
                 ),
                 textAlign: TextAlign.center,
@@ -279,24 +297,35 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildIncomeVsExpenseChart(BuildContext context, Map<String, dynamic> dashboardData) {
+  Widget _buildIncomeVsExpenseChart(
+    BuildContext context,
+    Map<String, dynamic> dashboardData,
+  ) {
     final theme = Theme.of(context);
-    final chartData = (dashboardData['chart'] as Map?)?.cast<String, dynamic>() ?? {};
-    final incomeValue = double.tryParse((chartData['income'] ?? 0).toString()) ?? 0;
-    final expenseValue = double.tryParse((chartData['expense'] ?? 0).toString()) ?? 0;
-    final maxValue = [incomeValue, expenseValue, 1.0].reduce((a, b) => a > b ? a : b);
+    final chartData =
+        (dashboardData['chart'] as Map?)?.cast<String, dynamic>() ?? {};
+    final incomeValue =
+        double.tryParse((chartData['income'] ?? 0).toString()) ?? 0;
+    final expenseValue =
+        double.tryParse((chartData['expense'] ?? 0).toString()) ?? 0;
+    final maxValue = [
+      incomeValue,
+      expenseValue,
+      1.0,
+    ].reduce((a, b) => a > b ? a : b);
     final leftInterval = maxValue <= 1 ? 1.0 : maxValue / 4;
 
     return _buildSectionCard(
       context,
       title: 'Ingresos vs Gastos',
       children: [
-        (incomeValue == 0 && expenseValue == 0)
+        incomeValue == 0 && expenseValue == 0
             ? _buildPremiumEmptyState(
                 context: context,
                 icon: Icons.insights_rounded,
                 title: 'Sin movimientos aún',
-                subtitle: 'No hay suficientes movimientos para generar\nestadísticas todavía.',
+                subtitle:
+                    'No hay suficientes movimientos para generar\nestadísticas todavía.',
               )
             : SizedBox(
                 height: 240,
@@ -308,14 +337,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       show: true,
                       horizontalInterval: leftInterval,
                       getDrawingHorizontalLine: (value) => FlLine(
-                        color: theme.dividerColor.withOpacity(0.5),
+                        color: theme.dividerColor.withValues(alpha: 0.5),
                         strokeWidth: 1,
                       ),
                     ),
                     borderData: FlBorderData(show: false),
                     titlesData: FlTitlesData(
-                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
@@ -330,7 +363,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 child: Text(
                                   _formatAmount(value),
                                   style: TextStyle(
-                                    color: theme.colorScheme.onSurface.withOpacity(0.55),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.55),
                                     fontSize: 10,
                                   ),
                                 ),
@@ -350,7 +384,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                   child: Text(
                                     'Ingresos',
                                     style: TextStyle(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.75),
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.75),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -361,7 +396,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                   child: Text(
                                     'Gastos',
                                     style: TextStyle(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.75),
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.75),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -447,12 +483,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.error_outline, color: theme.colorScheme.onSurface.withOpacity(0.45), size: 32),
+                  Icon(
+                    Icons.error_outline,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                    size: 32,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     _monthlyError!,
                     style: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 13,
                     ),
                     textAlign: TextAlign.center,
@@ -486,7 +526,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             context: context,
             icon: Icons.show_chart_rounded,
             title: 'Sin suficientes movimientos',
-            subtitle: 'No hay suficientes movimientos para generar\nestadísticas mensuales todavía.',
+            subtitle:
+                'No hay suficientes movimientos para generar\nestadísticas todavía.',
             accent: AppTheme.corporateBlue,
             height: 200,
           ),
@@ -502,10 +543,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     for (int i = 0; i < _monthlyData.length; i++) {
       final item = _monthlyData[i];
       final inc = _readNumber(item, [
-        'income', 'total_income', 'income_total', 'month_income', 'monthly_income', 'ingresos',
+        'income',
+        'total_income',
+        'income_total',
+        'month_income',
+        'monthly_income',
+        'ingresos',
       ]);
       final exp = _readNumber(item, [
-        'expense', 'total_expense', 'expense_total', 'month_expense', 'monthly_expense', 'gastos',
+        'expense',
+        'total_expense',
+        'expense_total',
+        'month_expense',
+        'monthly_expense',
+        'gastos',
       ]);
       final balRaw = _readNumber(item, ['balance', 'net', 'net_balance']);
       final bal = balRaw != 0 ? balRaw : (inc - exp);
@@ -544,15 +595,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 show: true,
                 horizontalInterval: yInterval,
                 getDrawingHorizontalLine: (value) => FlLine(
-                  color: theme.dividerColor.withOpacity(0.5),
+                  color: theme.dividerColor.withValues(alpha: 0.5),
                   strokeWidth: 1,
                 ),
                 drawVerticalLine: false,
               ),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
@@ -567,7 +622,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           child: Text(
                             _formatCompact(value),
                             style: TextStyle(
-                              color: theme.colorScheme.onSurface.withOpacity(0.55),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.55,
+                              ),
                               fontSize: 10,
                             ),
                           ),
@@ -582,14 +639,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     interval: 1,
                     getTitlesWidget: (value, meta) {
                       final idx = value.toInt();
-                      if (idx < 0 || idx >= _monthlyData.length) return const SizedBox.shrink();
+                      if (idx < 0 || idx >= _monthlyData.length) {
+                        return const SizedBox.shrink();
+                      }
                       final monthStr = _extractMonthRaw(_monthlyData[idx]);
                       return Padding(
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           _monthLabel(monthStr),
                           style: TextStyle(
-                            color: theme.colorScheme.onSurface.withOpacity(0.75),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.75,
+                            ),
                             fontSize: 11,
                           ),
                         ),
@@ -645,16 +706,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   isStrokeCapRound: true,
                   dotData: FlDotData(
                     show: true,
-                    getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
-                      radius: 3.5,
-                      color: AppTheme.corporateGreen,
-                      strokeWidth: 1.5,
-                      strokeColor: theme.colorScheme.surface,
-                    ),
+                    getDotPainter: (spot, percent, bar, index) =>
+                        FlDotCirclePainter(
+                          radius: 3.5,
+                          color: AppTheme.corporateGreen,
+                          strokeWidth: 1.5,
+                          strokeColor: theme.colorScheme.surface,
+                        ),
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: AppTheme.corporateGreen.withOpacity(0.08),
+                    color: AppTheme.corporateGreen.withValues(alpha: 0.08),
                   ),
                 ),
                 LineChartBarData(
@@ -666,16 +728,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   isStrokeCapRound: true,
                   dotData: FlDotData(
                     show: true,
-                    getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
-                      radius: 3.5,
-                      color: AppTheme.corporateRed,
-                      strokeWidth: 1.5,
-                      strokeColor: theme.colorScheme.surface,
-                    ),
+                    getDotPainter: (spot, percent, bar, index) =>
+                        FlDotCirclePainter(
+                          radius: 3.5,
+                          color: AppTheme.corporateRed,
+                          strokeWidth: 1.5,
+                          strokeColor: theme.colorScheme.surface,
+                        ),
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: AppTheme.corporateRed.withOpacity(0.08),
+                    color: AppTheme.corporateRed.withValues(alpha: 0.08),
                   ),
                 ),
                 LineChartBarData(
@@ -688,12 +751,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   dashArray: [6, 4],
                   dotData: FlDotData(
                     show: true,
-                    getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
-                      radius: 3,
-                      color: AppTheme.corporateBlue,
-                      strokeWidth: 1.5,
-                      strokeColor: theme.colorScheme.surface,
-                    ),
+                    getDotPainter: (spot, percent, bar, index) =>
+                        FlDotCirclePainter(
+                          radius: 3,
+                          color: AppTheme.corporateBlue,
+                          strokeWidth: 1.5,
+                          strokeColor: theme.colorScheme.surface,
+                        ),
                   ),
                   belowBarData: BarAreaData(show: false),
                 ),
@@ -712,16 +776,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         Container(
           width: 10,
           height: 10,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 5),
         Text(
           label,
           style: TextStyle(
-            color: theme.colorScheme.onSurface.withOpacity(0.75),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
             fontSize: 12,
           ),
         ),
@@ -740,38 +801,38 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       body: dashboardProvider.isLoading && dashboardData.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : dashboardProvider.error != null && dashboardData.isEmpty
-              ? Center(child: Text('Error: ${dashboardProvider.error}'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '📈 Ingresos vs Gastos',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.2,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildIncomeVsExpenseChart(context, dashboardData),
-                      const SizedBox(height: 28),
-                      Text(
-                        '📊 Evolución Mensual',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.2,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildMonthlyEvolutionChart(context),
-                    ],
+          ? Center(child: Text('Error: ${dashboardProvider.error}'))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '📈 Ingresos vs Gastos',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.2,
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  _buildIncomeVsExpenseChart(context, dashboardData),
+                  const SizedBox(height: 28),
+                  Text(
+                    '📊 Evolución Mensual',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.2,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildMonthlyEvolutionChart(context),
+                ],
+              ),
+            ),
     );
   }
 }

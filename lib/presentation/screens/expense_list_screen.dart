@@ -239,6 +239,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
     if (userId == null) return;
 
+    if (!mounted) return;
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -324,13 +326,13 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         userId: userId,
       );
 
+      if (!mounted) return;
+
       if (response['success']) {
-        if (!mounted) return;
         AppSnackbar.success(context, 'Gasto eliminado');
         context.read<DashboardProvider>().refreshDashboard(userId);
         loadExpenses();
       } else {
-        if (!mounted) return;
         AppSnackbar.error(
           context,
           response['message']?.toString() ?? 'No se pudo eliminar el gasto',
@@ -447,8 +449,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          (expense['note'] ??
-                                                  'Sin descripci?n')
+                                          (expense['note'] ?? 'Sin descripci?n')
                                               .toString(),
                                           style: const TextStyle(
                                             color: Colors.white70,
@@ -500,9 +501,9 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
                                                   onPressed: () async {
@@ -520,15 +521,15 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
                                                   onPressed: () =>
                                                       deleteExpense(
-                                                    expense['id'],
-                                                  ),
+                                                        expense['id'],
+                                                      ),
                                                 ),
                                               ],
                                             ),

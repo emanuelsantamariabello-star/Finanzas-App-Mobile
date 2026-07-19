@@ -62,6 +62,8 @@ class _HomeScreenState extends State<HomeScreen> {
       await prefs.remove(key);
     }
 
+    if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -315,215 +317,211 @@ class _HomeScreenState extends State<HomeScreen> {
       body: dashboardProvider.isLoading && dashboardData.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : dashboardProvider.error != null && dashboardData.isEmpty
-              ? Center(child: Text('Error: ${dashboardProvider.error}'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          ? Center(child: Text('Error: ${dashboardProvider.error}'))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Bienvenido $name',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Así se mueve tu dinero hoy',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.72),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  if ((dashboardData['income_count'] ?? 0) == 0 &&
+                      (dashboardData['expense_count'] ?? 0) == 0) ...[
+                    _buildDashboardEmptyBanner(context),
+                    const SizedBox(height: 12),
+                  ],
+                  _buildSummaryCard(
+                    context,
+                    title: 'Total ingresos',
+                    amount: dashboardData['total_income'],
+                    color: Colors.green,
+                    icon: Icons.arrow_downward_rounded,
+                  ),
+                  _buildSummaryCard(
+                    context,
+                    title: 'Total gastos',
+                    amount: dashboardData['total_expense'],
+                    color: Colors.red,
+                    icon: Icons.arrow_upward_rounded,
+                  ),
+                  _buildSummaryCard(
+                    context,
+                    title: 'Balance',
+                    amount: dashboardData['balance'],
+                    color: Colors.blue,
+                    icon: Icons.account_balance_wallet_rounded,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildSectionCard(
+                    context,
+                    title: 'Resumen del mes',
                     children: [
-                      Text(
-                        'Bienvenido $name',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.3,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Así se mueve tu dinero hoy',
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurface.withOpacity(0.72),
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      if ((dashboardData['income_count'] ?? 0) == 0 &&
-                          (dashboardData['expense_count'] ?? 0) == 0) ...[
-                        _buildDashboardEmptyBanner(context),
-                        const SizedBox(height: 12),
-                      ],
-                      _buildSummaryCard(
-                        context,
-                        title: 'Total ingresos',
-                        amount: dashboardData['total_income'],
-                        color: Colors.green,
-                        icon: Icons.arrow_downward_rounded,
-                      ),
-                      _buildSummaryCard(
-                        context,
-                        title: 'Total gastos',
-                        amount: dashboardData['total_expense'],
-                        color: Colors.red,
-                        icon: Icons.arrow_upward_rounded,
-                      ),
-                      _buildSummaryCard(
-                        context,
-                        title: 'Balance',
-                        amount: dashboardData['balance'],
-                        color: Colors.blue,
-                        icon: Icons.account_balance_wallet_rounded,
-                      ),
-                      const SizedBox(height: 10),
-                      _buildSectionCard(
-                        context,
-                        title: 'Resumen del mes',
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: Colors.green.withOpacity(0.22),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 34,
-                                            height: 34,
-                                            decoration: BoxDecoration(
-                                              color: Colors.green.withOpacity(
-                                                0.16,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: const Icon(
-                                              Icons.arrow_downward_rounded,
-                                              color: Colors.green,
-                                              size: 18,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              'Ingresos del mes',
-                                              style: TextStyle(
-                                                color: theme.colorScheme.onSurface.withOpacity(0.75),
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 14),
-                                      Text(
-                                        formatAmount(
-                                          dashboardData['month_income'],
-                                        ),
-                                        style: const TextStyle(
-                                          color: Colors.green,
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.2,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: Colors.red.withOpacity(0.22),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 34,
-                                            height: 34,
-                                            decoration: BoxDecoration(
-                                              color: Colors.red.withOpacity(
-                                                0.16,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: const Icon(
-                                              Icons.arrow_upward_rounded,
-                                              color: Colors.red,
-                                              size: 18,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              'Gastos del mes',
-                                              style: TextStyle(
-                                                color: theme.colorScheme.onSurface.withOpacity(0.75),
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 14),
-                                      Text(
-                                        formatAmount(
-                                          dashboardData['month_expense'],
-                                        ),
-                                        style: const TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.2,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
                       Row(
                         children: [
-                          _buildMiniStat(
-                            context,
-                            label: 'Cantidad de ingresos',
-                            value: dashboardData['income_count'] ?? 0,
-                            icon: Icons.trending_up_rounded,
-                            accentColor: Colors.green,
-                            description: 'Ingresos registrados',
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.green.withOpacity(0.22),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 34,
+                                        height: 34,
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withOpacity(0.16),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.arrow_downward_rounded,
+                                          color: Colors.green,
+                                          size: 18,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Ingresos del mes',
+                                          style: TextStyle(
+                                            color: theme.colorScheme.onSurface
+                                                .withOpacity(0.75),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Text(
+                                    formatAmount(dashboardData['month_income']),
+                                    style: const TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 12),
-                          _buildMiniStat(
-                            context,
-                            label: 'Cantidad de gastos',
-                            value: dashboardData['expense_count'] ?? 0,
-                            icon: Icons.trending_down_rounded,
-                            accentColor: Colors.red,
-                            description: 'Gastos registrados',
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(0.22),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 34,
+                                        height: 34,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(0.16),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.arrow_upward_rounded,
+                                          color: Colors.red,
+                                          size: 18,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Gastos del mes',
+                                          style: TextStyle(
+                                            color: theme.colorScheme.onSurface
+                                                .withOpacity(0.75),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Text(
+                                    formatAmount(
+                                      dashboardData['month_expense'],
+                                    ),
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _buildMiniStat(
+                        context,
+                        label: 'Cantidad de ingresos',
+                        value: dashboardData['income_count'] ?? 0,
+                        icon: Icons.trending_up_rounded,
+                        accentColor: Colors.green,
+                        description: 'Ingresos registrados',
+                      ),
+                      const SizedBox(width: 12),
+                      _buildMiniStat(
+                        context,
+                        label: 'Cantidad de gastos',
+                        value: dashboardData['expense_count'] ?? 0,
+                        icon: Icons.trending_down_rounded,
+                        accentColor: Colors.red,
+                        description: 'Gastos registrados',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

@@ -93,7 +93,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Text(
                 'Selecciona el aspecto visual de la app.',
                 style: TextStyle(
-                  color: Theme.of(sheetContext).colorScheme.onSurface.withOpacity(0.72),
+                  color: Theme.of(
+                    sheetContext,
+                  ).colorScheme.onSurface.withOpacity(0.72),
                   fontSize: 13,
                 ),
               ),
@@ -257,7 +259,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildFinancialSummary(BuildContext context, Map<String, dynamic> dashboardData) {
+  Widget _buildFinancialSummary(
+    BuildContext context,
+    Map<String, dynamic> dashboardData,
+  ) {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
@@ -407,7 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
               );
 
-              if (!mounted) return;
+              if (!context.mounted) return;
               if (updated == true) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -512,7 +517,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppTheme.corporateGreen : theme.dividerColor.withOpacity(0.5),
+            color: isSelected
+                ? AppTheme.corporateGreen
+                : theme.dividerColor.withOpacity(0.5),
           ),
         ),
         child: Row(
@@ -528,7 +535,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Icon(
                 icon,
-                color: isSelected ? AppTheme.corporateGreen : theme.colorScheme.onSurface.withOpacity(0.75),
+                color: isSelected
+                    ? AppTheme.corporateGreen
+                    : theme.colorScheme.onSurface.withOpacity(0.75),
                 size: 20,
               ),
             ),

@@ -241,6 +241,8 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
 
     if (userId == null) return;
 
+    if (!mounted) return;
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -326,12 +328,12 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         userId: userId,
       );
 
+      if (!mounted) return;
+
       if (response['success']) {
         AppSnackbar.success(context, 'Ingreso eliminado');
 
-        if (mounted) {
-          context.read<DashboardProvider>().refreshDashboard(userId);
-        }
+        context.read<DashboardProvider>().refreshDashboard(userId);
         loadIncomes();
       } else {
         AppSnackbar.error(
@@ -340,6 +342,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       AppSnackbar.error(context, 'Error al eliminar el ingreso');
     }
   }
@@ -511,9 +514,9 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
                                                   onPressed: () async {
@@ -531,15 +534,14 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                   padding: EdgeInsets.zero,
                                                   constraints:
                                                       const BoxConstraints(
-                                                    minWidth: 36,
-                                                    minHeight: 36,
-                                                  ),
+                                                        minWidth: 36,
+                                                        minHeight: 36,
+                                                      ),
                                                   visualDensity:
                                                       VisualDensity.compact,
-                                                  onPressed: () =>
-                                                      deleteIncome(
-                                                        income['id'],
-                                                      ),
+                                                  onPressed: () => deleteIncome(
+                                                    income['id'],
+                                                  ),
                                                 ),
                                               ],
                                             ),

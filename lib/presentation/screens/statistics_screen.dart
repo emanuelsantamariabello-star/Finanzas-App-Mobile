@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/services/statistics_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -24,6 +26,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<Map<String, dynamic>> _monthlyData = [];
   bool _monthlyLoading = true;
   String? _monthlyError;
+  DashboardProvider? _dashboardProvider;
+  bool _monthlyReloadQueued = false;
 
   static const _monthLabels = [
     'Ene',
@@ -44,6 +48,32 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   void initState() {
     super.initState();
     _loadMonthlyStats();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final provider = context.read<DashboardProvider>();
+    if (_dashboardProvider == provider) return;
+
+    _dashboardProvider?.removeListener(_handleDashboardChanged);
+    _dashboardProvider = provider;
+    provider.addListener(_handleDashboardChanged);
+  }
+
+  void _handleDashboardChanged() {
+    if (!mounted) return;
+
+    final provider = _dashboardProvider;
+    if (provider == null || provider.isLoading) return;
+
+    if (_monthlyLoading) {
+      _monthlyReloadQueued = true;
+      return;
+    }
+
+    unawaited(_loadMonthlyStats());
   }
 
   double _toDouble(dynamic value) {
@@ -170,7 +200,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       } else {
         setState(() {
           _monthlyError =
-              response['message']?.toString() ?? 'Error al cargar estad?sticas';
+              response['message']?.toString() ?? 'Error al cargar estadísticas';
           _monthlyLoading = false;
         });
       }
@@ -179,6 +209,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         _monthlyError = e.toString();
         _monthlyLoading = false;
       });
+    } finally {
+      if (mounted) {
+        final shouldReload = _monthlyReloadQueued;
+        _monthlyReloadQueued = false;
+
+        if (shouldReload) {
+          unawaited(_loadMonthlyStats());
+        }
+      }
     }
   }
 
@@ -788,6 +827,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _dashboardProvider?.removeListener(_handleDashboardChanged);
+    super.dispose();
   }
 
   @override

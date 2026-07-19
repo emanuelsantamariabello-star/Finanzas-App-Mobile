@@ -39,10 +39,12 @@ class _MovementsScreenState extends State<MovementsScreen> {
         selectedColor: AppTheme.corporateGreen,
         backgroundColor: theme.cardColor,
         labelStyle: TextStyle(
-          color: selected ? Colors.black : theme.colorScheme.onSurface.withOpacity(0.75),
+          color: selected
+              ? Colors.black
+              : theme.colorScheme.onSurface.withValues(alpha: 0.75),
           fontWeight: FontWeight.w600,
         ),
-        side: BorderSide(color: theme.dividerColor.withOpacity(0.5)),
+        side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.5)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
@@ -94,7 +96,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: accent.withOpacity(0.14),
+                color: accent.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, color: accent),
@@ -105,11 +107,11 @@ class _MovementsScreenState extends State<MovementsScreen> {
             ),
             subtitle: Text(
               subtitle,
-              style: TextStyle(color: onSurface.withOpacity(0.72)),
+              style: TextStyle(color: onSurface.withValues(alpha: 0.72)),
             ),
             trailing: Icon(
               Icons.chevron_right_rounded,
-              color: onSurface.withOpacity(0.55),
+              color: onSurface.withValues(alpha: 0.55),
             ),
           );
         }
@@ -150,7 +152,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: onSurface.withOpacity(0.08),
+                      color: onSurface.withValues(alpha: 0.08),
                     ),
                     buildActionTile(
                       title: 'Agregar gasto',
@@ -229,10 +231,13 @@ class _MovementsScreenState extends State<MovementsScreen> {
                       indicatorSize: TabBarIndicatorSize.tab,
                       indicator: BoxDecoration(
                         color: AppTheme.corporateGreen,
-                        borderRadius: const BorderRadius.all(Radius.circular(14)),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(14),
+                        ),
                       ),
                       labelColor: Colors.black,
-                      unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.75),
+                      unselectedLabelColor: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.75),
                       tabs: const [
                         Tab(text: 'Ingresos'),
                         Tab(text: 'Gastos'),

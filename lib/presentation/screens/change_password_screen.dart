@@ -129,149 +129,151 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _loadError != null
-              ? Center(child: Text('Error: $_loadError'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0D1117),
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: Colors.white10),
-                        ),
-                        child: Text(
-                          'Por seguridad, ingresa tu contraseña actual y define una nueva.',
-                          style: TextStyle(
-                            color: onSurface.withOpacity(0.75),
-                            height: 1.35,
-                          ),
-                        ),
+          ? Center(child: Text('Error: $_loadError'))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0D1117),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Text(
+                      'Por seguridad, ingresa tu contraseña actual y define una nueva.',
+                      style: TextStyle(
+                        color: onSurface.withValues(alpha: 0.75),
+                        height: 1.35,
                       ),
-                      const SizedBox(height: 16),
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              controller: _currentController,
-                              obscureText: !_showCurrent,
-                              textInputAction: TextInputAction.next,
-                              decoration: _decoration(
-                                label: 'Contraseña actual',
-                                icon: Icons.lock_outline_rounded,
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() => _showCurrent = !_showCurrent);
-                                  },
-                                  icon: Icon(
-                                    _showCurrent
-                                        ? Icons.visibility_off_rounded
-                                        : Icons.visibility_rounded,
-                                  ),
-                                ),
-                              ),
-                              validator: (v) {
-                                final value = v ?? '';
-                                if (value.trim().isEmpty) {
-                                  return 'Ingresa tu contraseña actual';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              controller: _newController,
-                              obscureText: !_showNew,
-                              textInputAction: TextInputAction.next,
-                              decoration: _decoration(
-                                label: 'Nueva contraseña',
-                                icon: Icons.password_rounded,
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() => _showNew = !_showNew);
-                                  },
-                                  icon: Icon(
-                                    _showNew
-                                        ? Icons.visibility_off_rounded
-                                        : Icons.visibility_rounded,
-                                  ),
-                                ),
-                              ),
-                              validator: (v) {
-                                final value = v ?? '';
-                                if (value.trim().isEmpty) {
-                                  return 'Ingresa una nueva contraseña';
-                                }
-                                if (value.length < _minPasswordLength) {
-                                  return 'Mínimo $_minPasswordLength caracteres';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              controller: _confirmController,
-                              obscureText: !_showConfirm,
-                              textInputAction: TextInputAction.done,
-                              decoration: _decoration(
-                                label: 'Confirmar nueva contraseña',
-                                icon: Icons.password_rounded,
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() => _showConfirm = !_showConfirm);
-                                  },
-                                  icon: Icon(
-                                    _showConfirm
-                                        ? Icons.visibility_off_rounded
-                                        : Icons.visibility_rounded,
-                                  ),
-                                ),
-                              ),
-                              validator: (v) {
-                                final value = v ?? '';
-                                if (value.trim().isEmpty) {
-                                  return 'Confirma tu nueva contraseña';
-                                }
-                                if (value != _newController.text) {
-                                  return 'Las contraseñas no coinciden';
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (_) => _save(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton.icon(
-                          onPressed: _saving ? null : _save,
-                          icon: _saving
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.save_outlined),
-                          label: Text(_saving ? 'Guardando…' : 'Cambiar contraseña'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00C853),
-                            foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _currentController,
+                          obscureText: !_showCurrent,
+                          textInputAction: TextInputAction.next,
+                          decoration: _decoration(
+                            label: 'Contraseña actual',
+                            icon: Icons.lock_outline_rounded,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() => _showCurrent = !_showCurrent);
+                              },
+                              icon: Icon(
+                                _showCurrent
+                                    ? Icons.visibility_off_rounded
+                                    : Icons.visibility_rounded,
+                              ),
+                            ),
+                          ),
+                          validator: (v) {
+                            final value = v ?? '';
+                            if (value.trim().isEmpty) {
+                              return 'Ingresa tu contraseña actual';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _newController,
+                          obscureText: !_showNew,
+                          textInputAction: TextInputAction.next,
+                          decoration: _decoration(
+                            label: 'Nueva contraseña',
+                            icon: Icons.password_rounded,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() => _showNew = !_showNew);
+                              },
+                              icon: Icon(
+                                _showNew
+                                    ? Icons.visibility_off_rounded
+                                    : Icons.visibility_rounded,
+                              ),
+                            ),
+                          ),
+                          validator: (v) {
+                            final value = v ?? '';
+                            if (value.trim().isEmpty) {
+                              return 'Ingresa una nueva contraseña';
+                            }
+                            if (value.length < _minPasswordLength) {
+                              return 'Mínimo $_minPasswordLength caracteres';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _confirmController,
+                          obscureText: !_showConfirm,
+                          textInputAction: TextInputAction.done,
+                          decoration: _decoration(
+                            label: 'Confirmar nueva contraseña',
+                            icon: Icons.password_rounded,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() => _showConfirm = !_showConfirm);
+                              },
+                              icon: Icon(
+                                _showConfirm
+                                    ? Icons.visibility_off_rounded
+                                    : Icons.visibility_rounded,
+                              ),
+                            ),
+                          ),
+                          validator: (v) {
+                            final value = v ?? '';
+                            if (value.trim().isEmpty) {
+                              return 'Confirma tu nueva contraseña';
+                            }
+                            if (value != _newController.text) {
+                              return 'Las contraseñas no coinciden';
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _save(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: _saving ? null : _save,
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(
+                        _saving ? 'Guardando…' : 'Cambiar contraseña',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00C853),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

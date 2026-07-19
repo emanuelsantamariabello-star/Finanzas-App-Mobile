@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(
                   color: Theme.of(
                     sheetContext,
-                  ).colorScheme.onSurface.withOpacity(0.72),
+                  ).colorScheme.onSurface.withValues(alpha: 0.72),
                   fontSize: 13,
                 ),
               ),
@@ -152,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         content: Text(
           '¿Estás seguro de que deseas cerrar sesión?',
           style: TextStyle(
-            color: Theme.of(ctx).colorScheme.onSurface.withOpacity(0.72),
+            color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: 0.72),
           ),
         ),
         actions: [
@@ -202,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: theme.dividerColor.withOpacity(0.5)),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
       ),
       child: Column(
         children: [
@@ -218,7 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.corporateGreen.withOpacity(0.3),
+                  color: AppTheme.corporateGreen.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 6),
                 ),
@@ -247,10 +247,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            _userEmail.isNotEmpty ? _userEmail : '—',
+            _userEmail.isNotEmpty ? _userEmail : 'â€”',
             style: TextStyle(
               fontSize: 14,
-              color: theme.colorScheme.onSurface.withOpacity(0.55),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
               letterSpacing: 0.2,
             ),
           ),
@@ -326,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(11),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -337,7 +337,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: theme.colorScheme.onSurface.withOpacity(0.75),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -392,7 +392,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
           ),
-          Divider(color: theme.dividerColor.withOpacity(0.5), height: 4),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
           _buildActionTile(
             context,
             icon: Icons.palette_outlined,
@@ -400,7 +400,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             subtitle: 'Claro, oscuro o sistema',
             onTap: _openThemeSelector,
           ),
-          Divider(color: theme.dividerColor.withOpacity(0.5), height: 4),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
           _buildActionTile(
             context,
             icon: Icons.lock_outline_rounded,
@@ -423,7 +423,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
           ),
-          Divider(color: theme.dividerColor.withOpacity(0.5), height: 4),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
           _buildActionTile(
             context,
             icon: Icons.logout_rounded,
@@ -458,10 +458,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: tileColor.withOpacity(0.1),
+                color: tileColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(11),
               ),
-              child: Icon(icon, color: tileColor.withOpacity(0.8), size: 20),
+              child: Icon(
+                icon,
+                color: tileColor.withValues(alpha: 0.8),
+                size: 20,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -481,7 +485,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: tileColor.withOpacity(0.5),
+                      color: tileColor.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -489,7 +493,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: theme.colorScheme.onSurface.withOpacity(0.35),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
               size: 22,
             ),
           ],
@@ -513,13 +517,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppTheme.corporateGreen.withOpacity(0.12)
+              ? AppTheme.corporateGreen.withValues(alpha: 0.12)
               : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
                 ? AppTheme.corporateGreen
-                : theme.dividerColor.withOpacity(0.5),
+                : theme.dividerColor.withValues(alpha: 0.5),
           ),
         ),
         child: Row(
@@ -529,15 +533,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 38,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppTheme.corporateGreen.withOpacity(0.18)
-                    : theme.dividerColor.withOpacity(0.4),
+                    ? AppTheme.corporateGreen.withValues(alpha: 0.18)
+                    : theme.dividerColor.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
                 color: isSelected
                     ? AppTheme.corporateGreen
-                    : theme.colorScheme.onSurface.withOpacity(0.75),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.75),
                 size: 20,
               ),
             ),

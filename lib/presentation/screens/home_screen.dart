@@ -90,10 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.12),
+            color: color.withValues(alpha: 0.12),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.16),
+              color: color.withValues(alpha: 0.16),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: color),
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface.withOpacity(0.75),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -156,10 +156,10 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: accentColor.withOpacity(0.18)),
+          border: Border.all(color: accentColor.withValues(alpha: 0.18)),
           boxShadow: [
             BoxShadow(
-              color: accentColor.withOpacity(0.08),
+              color: accentColor.withValues(alpha: 0.08),
               blurRadius: 14,
               offset: const Offset(0, 6),
             ),
@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.16),
+                color: accentColor.withValues(alpha: 0.16),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, color: accentColor, size: 22),
@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label,
               style: TextStyle(
                 fontSize: 13,
-                color: theme.colorScheme.onSurface.withOpacity(0.75),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
                 fontWeight: FontWeight.w600,
                 height: 1.25,
               ),
@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
               description,
               style: TextStyle(
                 fontSize: 12,
-                color: theme.colorScheme.onSurface.withOpacity(0.55),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
                 height: 1.3,
               ),
             ),
@@ -253,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: theme.dividerColor.withOpacity(0.5)),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: AppTheme.corporateGreen.withOpacity(0.14),
+              color: AppTheme.corporateGreen.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -276,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tu dashboard está listo',
+                  'Tu dashboard estÃ¡ listo',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Aún no hay movimientos. Registra tu primer ingreso o gasto para empezar a ver estadísticas y balance.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: theme.colorScheme.onSurface.withOpacity(0.72),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
                     height: 1.35,
                   ),
                 ),
@@ -336,7 +336,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     'Así se mueve tu dinero hoy',
                     style: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.72),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.72,
+                      ),
                       fontSize: 14,
                     ),
                   ),
@@ -378,10 +380,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.08),
+                                color: Colors.green.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.green.withOpacity(0.22),
+                                  color: Colors.green.withValues(alpha: 0.22),
                                 ),
                               ),
                               child: Column(
@@ -393,7 +395,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: 34,
                                         height: 34,
                                         decoration: BoxDecoration(
-                                          color: Colors.green.withOpacity(0.16),
+                                          color: Colors.green.withValues(
+                                            alpha: 0.16,
+                                          ),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
@@ -410,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           'Ingresos del mes',
                                           style: TextStyle(
                                             color: theme.colorScheme.onSurface
-                                                .withOpacity(0.75),
+                                                .withValues(alpha: 0.75),
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -437,10 +441,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.08),
+                                color: Colors.red.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.red.withOpacity(0.22),
+                                  color: Colors.red.withValues(alpha: 0.22),
                                 ),
                               ),
                               child: Column(
@@ -452,7 +456,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: 34,
                                         height: 34,
                                         decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(0.16),
+                                          color: Colors.red.withValues(
+                                            alpha: 0.16,
+                                          ),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
@@ -469,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           'Gastos del mes',
                                           style: TextStyle(
                                             color: theme.colorScheme.onSurface
-                                                .withOpacity(0.75),
+                                                .withValues(alpha: 0.75),
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                           ),

@@ -254,7 +254,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.12),
+                color: Colors.red.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -278,7 +278,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         ),
 
         content: const Text(
-          "Esta acción eliminará el movimiento permanentemente.",
+          "Esta acciÃ³n eliminarÃ¡ el movimiento permanentemente.",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white70, height: 1.4),
         ),
@@ -358,7 +358,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
           ? null
           : AppBar(title: const Text("Ingresos")),
 
-      // 🔥 BOTÓN FLOTANTE
+      // ðŸ”¥ BOTÃ“N FLOTANTE
       floatingActionButton: widget.embeddedMode
           ? null
           : FloatingActionButton(
@@ -373,7 +373,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
           : incomes.isEmpty
           ? _buildEmptyState(
               icon: Icons.trending_up_rounded,
-              title: 'Aún no tienes ingresos',
+              title: 'AÃºn no tienes ingresos',
               subtitle:
                   'Agrega tu primer ingreso para ver aquí tu historial y tu progreso financiero.',
             )

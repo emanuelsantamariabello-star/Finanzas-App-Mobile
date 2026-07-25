@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/presentation/screens/change_password_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 
@@ -399,6 +400,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             label: 'Tema',
             subtitle: 'Claro, oscuro o sistema',
             onTap: _openThemeSelector,
+          ),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
+          _buildActionTile(
+            context,
+            icon: Icons.notifications_none_rounded,
+            label: 'Recordatorios',
+            subtitle: 'Pagos, gastos fijos y metas',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ReminderSettingsScreen(),
+                ),
+              );
+            },
           ),
           Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
           _buildActionTile(

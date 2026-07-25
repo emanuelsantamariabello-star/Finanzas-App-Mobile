@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/presentation/screens/home_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/movements_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/profile_screen.dart';
@@ -23,14 +24,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: IndexedStack(index: currentIndex, children: screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xFF161B22),
-        selectedItemColor: const Color(0xFF00C853),
-        unselectedItemColor: Colors.white60,
+        backgroundColor: theme.colorScheme.surface,
+        selectedItemColor: AppTheme.corporateGreen,
+        unselectedItemColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
         onTap: (index) {
           setState(() => currentIndex = index);
         },

@@ -61,16 +61,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   InputDecoration _decoration({
+    required BuildContext context,
     required String label,
     required IconData icon,
     Widget? suffixIcon,
   }) {
+    final theme = Theme.of(context);
+
     return InputDecoration(
       labelText: label,
       prefixIcon: Icon(icon),
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: const Color(0xFF161B22),
+      fillColor: theme.inputDecorationTheme.fillColor ?? theme.cardColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
@@ -146,6 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -159,18 +164,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Ingresa para continuar',
-                style: TextStyle(color: Colors.white70),
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
               ),
               const SizedBox(height: 22),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D1117),
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white10),
+                  border: Border.all(
+                    color: theme.dividerColor.withValues(alpha: 0.4),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -178,6 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: _decoration(
+                        context: context,
                         label: 'Correo',
                         icon: Icons.email_outlined,
                       ),
@@ -192,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: passwordController,
                       obscureText: !_showPassword,
                       decoration: _decoration(
+                        context: context,
                         label: 'Contraseña',
                         icon: Icons.lock_outline_rounded,
                         suffixIcon: IconButton(
@@ -211,18 +222,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Switch.adaptive(
                           value: _rememberCredentials,
-                          activeThumbColor: const Color(0xFF00C853),
-                          activeTrackColor: const Color(0xFF00C853),
+                          activeThumbColor: theme.colorScheme.surface,
+                          activeTrackColor: const Color(
+                            0xFF00C853,
+                          ).withValues(alpha: 0.45),
+                          inactiveThumbColor: theme.colorScheme.surface,
+                          inactiveTrackColor: theme.dividerColor.withValues(
+                            alpha: 0.65,
+                          ),
                           onChanged: (v) async {
                             setState(() => _rememberCredentials = v);
                             await _persistRememberedCredentials();
                           },
                         ),
                         const SizedBox(width: 6),
-                        const Expanded(
+                        Expanded(
                           child: Text(
                             'Recordar credenciales',
-                            style: TextStyle(color: Colors.white70),
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
                           ),
                         ),
                       ],

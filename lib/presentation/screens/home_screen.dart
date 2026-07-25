@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/data/models/saving_recommendation_model.dart';
 import 'package:finanzas_app_mobile/data/models/smart_insight_model.dart';
 import 'package:finanzas_app_mobile/data/services/saving_recommendation_service.dart';
@@ -47,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         context.read<DashboardProvider>().refreshDashboard(storedUserId);
+        context.read<BudgetProvider>().syncUsage(storedUserId);
       });
     }
   }
@@ -532,6 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final dashboardProvider = context.watch<DashboardProvider>();
+    final budgetProvider = context.watch<BudgetProvider>();
     final reminderProvider = context.watch<ReminderProvider>();
     final dashboardData = dashboardProvider.data;
     final theme = Theme.of(context);
@@ -545,6 +548,8 @@ class _HomeScreenState extends State<HomeScreen> {
       dashboardData: dashboardData,
       reminders: reminderProvider.reminders,
       now: now,
+      budgets: budgetProvider.budgets,
+      monthlySpentByCategory: budgetProvider.monthlySpentByCategory,
     );
     final recommendations = SavingRecommendationService.build(
       dashboardData: dashboardData,

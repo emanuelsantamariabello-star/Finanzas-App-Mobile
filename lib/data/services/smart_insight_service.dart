@@ -1,4 +1,5 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/models/budget_model.dart';
 import 'package:finanzas_app_mobile/data/models/reminder_model.dart';
 import 'package:finanzas_app_mobile/data/models/smart_insight_model.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ class SmartInsightService {
     required Map<String, dynamic> dashboardData,
     required List<ReminderModel> reminders,
     required DateTime now,
+    List<BudgetModel> budgets = const [],
+    Map<String, double> monthlySpentByCategory = const {},
   }) {
     final insights = <SmartInsightModel>[];
     final totalIncome = _toDouble(dashboardData['total_income']);
@@ -21,6 +24,10 @@ class SmartInsightService {
     final dueSoon = activeReminders
         .where((item) => _isDueSoon(item.scheduledAt, now))
         .length;
+    final exceededBudgets = budgets.where((budget) {
+      return (monthlySpentByCategory[budget.category] ?? 0) >
+          budget.limitAmount;
+    }).length;
 
     if (monthIncome > 0 && monthExpense > monthIncome) {
       insights.add(
@@ -84,6 +91,18 @@ class SmartInsightService {
               'Tu historial mantiene un saldo positivo de ${_moneyText(balance)}.',
           icon: Icons.account_balance_wallet_rounded,
           color: AppTheme.corporateGreen,
+        ),
+      );
+    }
+
+    if (exceededBudgets > 0) {
+      insights.add(
+        SmartInsightModel(
+          title: 'Presupuestos excedidos',
+          message:
+              'Tienes $exceededBudgets categoría(s) por encima del límite mensual configurado.',
+          icon: Icons.pie_chart_rounded,
+          color: AppTheme.corporateRed,
         ),
       );
     }

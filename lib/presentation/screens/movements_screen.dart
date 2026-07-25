@@ -316,50 +316,55 @@ class _MovementsScreenState extends State<MovementsScreen>
   }
 
   Future<void> _exportCurrentMovements() async {
-    final isIncomeTab = currentTabIndex == 0;
-    final state = isIncomeTab
-        ? _incomeListKey.currentState
-        : _expenseListKey.currentState;
+    try {
+      final isIncomeTab = currentTabIndex == 0;
+      final state = isIncomeTab
+          ? _incomeListKey.currentState
+          : _expenseListKey.currentState;
 
-    if (state == null) {
-      AppSnackbar.info(context, 'Aún no hay datos listos para exportar');
-      return;
-    }
+      if (state == null) {
+        AppSnackbar.info(context, 'Aún no hay datos listos para exportar');
+        return;
+      }
 
-    final rows = (state as dynamic).getExportRows() as List<List<String>>;
-    if (rows.isEmpty) {
-      AppSnackbar.info(
-        context,
-        isIncomeTab
-            ? 'No hay ingresos filtrados para exportar'
-            : 'No hay gastos filtrados para exportar',
+      final rows = (state as dynamic).getExportRows() as List<List<String>>;
+      if (rows.isEmpty) {
+        AppSnackbar.info(
+          context,
+          isIncomeTab
+              ? 'No hay ingresos filtrados para exportar'
+              : 'No hay gastos filtrados para exportar',
+        );
+        return;
+      }
+
+      final filePath = await _exportService.exportCsv(
+        filePrefix: isIncomeTab ? 'ingresos' : 'gastos',
+        headers: const ['Tipo', 'Nota', 'Fecha', 'Monto'],
+        rows: rows,
       );
-      return;
+
+      if (!mounted) return;
+
+      AppSnackbar.success(context, 'CSV exportado correctamente');
+
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Archivo exportado'),
+          content: Text(filePath),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      AppSnackbar.error(context, 'No se pudo exportar el archivo CSV');
     }
-
-    final filePath = await _exportService.exportCsv(
-      filePrefix: isIncomeTab ? 'ingresos' : 'gastos',
-      headers: const ['Tipo', 'Nota', 'Fecha', 'Monto'],
-      rows: rows,
-    );
-
-    if (!mounted) return;
-
-    AppSnackbar.success(context, 'CSV exportado correctamente');
-
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Archivo exportado'),
-        content: Text(filePath),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cerrar'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -368,6 +373,7 @@ class _MovementsScreenState extends State<MovementsScreen>
     final tabController = _tabController;
     final theme = Theme.of(context);
     final activeRange = _currentRange();
+    final appBarBottomHeight = _hasActiveRange ? 234.0 : 188.0;
 
     if (tabController == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -384,7 +390,7 @@ class _MovementsScreenState extends State<MovementsScreen>
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(188),
+          preferredSize: Size.fromHeight(appBarBottomHeight),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Column(

@@ -26,11 +26,27 @@ class MovementExportService {
   }
 
   Future<Directory> _resolveOutputDirectory() async {
-    final downloadsDirectory = await getDownloadsDirectory();
-    if (downloadsDirectory != null) {
-      await downloadsDirectory.create(recursive: true);
-      return downloadsDirectory;
-    }
+    try {
+      final downloadsDirectory = await getDownloadsDirectory();
+      if (downloadsDirectory != null) {
+        await downloadsDirectory.create(recursive: true);
+        return downloadsDirectory;
+      }
+    } catch (_) {}
+
+    try {
+      final externalDirectory = await getExternalStorageDirectory();
+      if (externalDirectory != null) {
+        await externalDirectory.create(recursive: true);
+        return externalDirectory;
+      }
+    } catch (_) {}
+
+    try {
+      final temporaryDirectory = await getTemporaryDirectory();
+      await temporaryDirectory.create(recursive: true);
+      return temporaryDirectory;
+    } catch (_) {}
 
     final documentsDirectory = await getApplicationDocumentsDirectory();
     await documentsDirectory.create(recursive: true);

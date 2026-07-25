@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/models/smart_insight_model.dart';
+import 'package:finanzas_app_mobile/data/services/smart_insight_service.dart';
 import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
@@ -329,6 +331,74 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildInsightsSection(
+    BuildContext context,
+    List<SmartInsightModel> insights,
+  ) {
+    final theme = Theme.of(context);
+
+    return _buildSectionCard(
+      context,
+      title: 'Insights rápidos',
+      children: insights
+          .map(
+            (insight) => Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: insight.color.withValues(alpha: 0.20),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: insight.color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(insight.icon, color: insight.color, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          insight.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          insight.message,
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.35,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.72,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
   Widget _buildDashboardEmptyBanner(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
@@ -360,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tu dashboard est\u00e1 listo',
+                  'Tu dashboard está listo',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -370,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'A\u00fan no hay movimientos. Registra tu primer ingreso o gasto para empezar a ver estad\u00edsticas y balance.',
+                  'Aún no hay movimientos. Registra tu primer ingreso o gasto para empezar a ver estadísticas y balance.',
                   style: TextStyle(
                     fontSize: 13,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
@@ -391,10 +461,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final reminderProvider = context.watch<ReminderProvider>();
     final dashboardData = dashboardProvider.data;
     final theme = Theme.of(context);
+    final now = DateTime.now();
     final smartSummary = SmartSummaryService.build(
       dashboardData: dashboardData,
       reminders: reminderProvider.reminders,
-      now: DateTime.now(),
+      now: now,
+    );
+    final insights = SmartInsightService.build(
+      dashboardData: dashboardData,
+      reminders: reminderProvider.reminders,
+      now: now,
     );
 
     return Scaffold(
@@ -419,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'As\u00ed se mueve tu dinero hoy',
+                    'Así se mueve tu dinero hoy',
                     style: TextStyle(
                       color: theme.colorScheme.onSurface.withValues(
                         alpha: 0.72,
@@ -597,6 +673,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
+                  _buildInsightsSection(context, insights),
                   const SizedBox(height: 12),
                   Row(
                     children: [

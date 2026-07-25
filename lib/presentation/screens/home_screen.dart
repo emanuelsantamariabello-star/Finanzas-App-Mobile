@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
-import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,30 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
         context.read<DashboardProvider>().refreshDashboard(storedUserId);
       });
     }
-  }
-
-  void logout() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    const keysToRemove = [
-      'isLoggedIn',
-      'userEmail',
-      'userName',
-      'userId',
-      'occupation',
-      'userOccupation',
-    ];
-
-    for (final key in keysToRemove) {
-      await prefs.remove(key);
-    }
-
-    if (!mounted) return;
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
   }
 
   String formatAmount(dynamic amount) {
@@ -308,12 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Finanzas App'),
-        actions: [
-          IconButton(icon: const Icon(Icons.logout), onPressed: logout),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Finanzas App')),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : dashboardProvider.error != null && dashboardData.isEmpty

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/change_password_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
@@ -413,6 +414,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 MaterialPageRoute(
                   builder: (_) => const ReminderSettingsScreen(),
                 ),
+              );
+            },
+          ),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
+          _buildActionTile(
+            context,
+            icon: Icons.flag_outlined,
+            label: 'Metas financieras',
+            subtitle: 'Ahorro, compras y objetivos',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FinancialGoalsScreen()),
               );
             },
           ),

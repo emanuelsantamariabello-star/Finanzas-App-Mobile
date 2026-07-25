@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
+import 'package:finanzas_app_mobile/providers/goal_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 
@@ -23,6 +24,7 @@ class FinanzasApp extends StatefulWidget {
 class _FinanzasAppState extends State<FinanzasApp> {
   bool? isLoggedIn;
   final DashboardProvider _dashboardProvider = DashboardProvider();
+  final GoalProvider _goalProvider = GoalProvider();
   final ReminderProvider _reminderProvider = ReminderProvider();
   final ThemeProvider _themeProvider = ThemeProvider();
   static const _locale = Locale('es', 'CO');
@@ -40,6 +42,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
   void initState() {
     super.initState();
     checkLogin();
+    _goalProvider.initialize();
     _reminderProvider.initialize();
     _themeProvider.loadThemeMode();
   }
@@ -47,6 +50,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
   @override
   void dispose() {
     _dashboardProvider.dispose();
+    _goalProvider.dispose();
     _reminderProvider.dispose();
     _themeProvider.dispose();
     super.dispose();
@@ -66,6 +70,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
         ChangeNotifierProvider<DashboardProvider>.value(
           value: _dashboardProvider,
         ),
+        ChangeNotifierProvider<GoalProvider>.value(value: _goalProvider),
         ChangeNotifierProvider<ReminderProvider>.value(
           value: _reminderProvider,
         ),

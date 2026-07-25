@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/services/movement_export_service.dart';
 import 'package:finanzas_app_mobile/data/services/movement_filter_preferences_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
 class MovementsScreen extends StatefulWidget {
   const MovementsScreen({super.key});
@@ -15,6 +17,7 @@ class MovementsScreen extends StatefulWidget {
 class _MovementsScreenState extends State<MovementsScreen>
     with SingleTickerProviderStateMixin {
   final _preferencesService = MovementFilterPreferencesService();
+  final _exportService = MovementExportService();
   final searchController = TextEditingController();
   String searchQuery = '';
   String quickFilter = 'Todos';
@@ -312,6 +315,53 @@ class _MovementsScreenState extends State<MovementsScreen>
     await _saveFilters();
   }
 
+  Future<void> _exportCurrentMovements() async {
+    final isIncomeTab = currentTabIndex == 0;
+    final state = isIncomeTab
+        ? _incomeListKey.currentState
+        : _expenseListKey.currentState;
+
+    if (state == null) {
+      AppSnackbar.info(context, 'Aún no hay datos listos para exportar');
+      return;
+    }
+
+    final rows = (state as dynamic).getExportRows() as List<List<String>>;
+    if (rows.isEmpty) {
+      AppSnackbar.info(
+        context,
+        isIncomeTab
+            ? 'No hay ingresos filtrados para exportar'
+            : 'No hay gastos filtrados para exportar',
+      );
+      return;
+    }
+
+    final filePath = await _exportService.exportCsv(
+      filePrefix: isIncomeTab ? 'ingresos' : 'gastos',
+      headers: const ['Tipo', 'Nota', 'Fecha', 'Monto'],
+      rows: rows,
+    );
+
+    if (!mounted) return;
+
+    AppSnackbar.success(context, 'CSV exportado correctamente');
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Archivo exportado'),
+        content: Text(filePath),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _ensureTabController();
@@ -326,6 +376,13 @@ class _MovementsScreenState extends State<MovementsScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Movimientos'),
+        actions: [
+          IconButton(
+            onPressed: _exportCurrentMovements,
+            tooltip: 'Exportar CSV',
+            icon: const Icon(Icons.file_download_outlined),
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(188),
           child: Padding(

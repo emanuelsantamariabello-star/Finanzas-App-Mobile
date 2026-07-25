@@ -103,6 +103,26 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         formattedDate.contains(query);
   }
 
+  List<Map<String, dynamic>> _getFilteredExpenses() {
+    return expenses
+        .where((expense) {
+          return _matchesQuickFilter(expense) && _matchesSearch(expense);
+        })
+        .cast<Map<String, dynamic>>()
+        .toList();
+  }
+
+  List<List<String>> getExportRows() {
+    return _getFilteredExpenses().map((expense) {
+      return [
+        (expense['type'] ?? 'Gasto').toString(),
+        (expense['note'] ?? 'Sin nota').toString(),
+        formatDate(expense['expense_date']),
+        formatAmount(expense['amount']),
+      ];
+    }).toList();
+  }
+
   Widget _buildEmptyState({
     required IconData icon,
     required String title,
@@ -368,9 +388,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredExpenses = expenses.where((expense) {
-      return _matchesQuickFilter(expense) && _matchesSearch(expense);
-    }).toList();
+    final filteredExpenses = _getFilteredExpenses();
 
     return Scaffold(
       appBar: widget.embeddedMode ? null : AppBar(title: const Text("Gastos")),

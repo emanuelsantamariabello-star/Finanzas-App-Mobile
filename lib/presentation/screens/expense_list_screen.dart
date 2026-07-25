@@ -11,12 +11,16 @@ class ExpenseListScreen extends StatefulWidget {
   final bool embeddedMode;
   final String searchQuery;
   final String quickFilter;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const ExpenseListScreen({
     super.key,
     this.embeddedMode = false,
     this.searchQuery = '',
     this.quickFilter = 'Todos',
+    this.startDate,
+    this.endDate,
   });
 
   @override
@@ -181,7 +185,25 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   @override
   void initState() {
     super.initState();
+    startDate = widget.startDate;
+    endDate = widget.endDate;
     loadExpenses();
+  }
+
+  @override
+  void didUpdateWidget(covariant ExpenseListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final dateRangeChanged =
+        oldWidget.startDate != widget.startDate ||
+        oldWidget.endDate != widget.endDate;
+
+    if (dateRangeChanged) {
+      startDate = widget.startDate;
+      endDate = widget.endDate;
+      isLoading = true;
+      loadExpenses();
+    }
   }
 
   void loadExpenses() async {

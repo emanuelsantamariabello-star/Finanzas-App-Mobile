@@ -11,12 +11,16 @@ class IncomeListScreen extends StatefulWidget {
   final bool embeddedMode;
   final String searchQuery;
   final String quickFilter;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const IncomeListScreen({
     super.key,
     this.embeddedMode = false,
     this.searchQuery = '',
     this.quickFilter = 'Todos',
+    this.startDate,
+    this.endDate,
   });
 
   @override
@@ -183,7 +187,25 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
   @override
   void initState() {
     super.initState();
+    startDate = widget.startDate;
+    endDate = widget.endDate;
     loadIncomes();
+  }
+
+  @override
+  void didUpdateWidget(covariant IncomeListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final dateRangeChanged =
+        oldWidget.startDate != widget.startDate ||
+        oldWidget.endDate != widget.endDate;
+
+    if (dateRangeChanged) {
+      startDate = widget.startDate;
+      endDate = widget.endDate;
+      isLoading = true;
+      loadIncomes();
+    }
   }
 
   void loadIncomes() async {

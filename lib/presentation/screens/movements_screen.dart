@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/services/movement_filter_preferences_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
@@ -11,18 +12,101 @@ class MovementsScreen extends StatefulWidget {
   State<MovementsScreen> createState() => _MovementsScreenState();
 }
 
-class _MovementsScreenState extends State<MovementsScreen> {
+class _MovementsScreenState extends State<MovementsScreen>
+    with SingleTickerProviderStateMixin {
+  final _preferencesService = MovementFilterPreferencesService();
   final searchController = TextEditingController();
   String searchQuery = '';
   String quickFilter = 'Todos';
+  int currentTabIndex = 0;
+  DateTime? incomeStartDate;
+  DateTime? incomeEndDate;
+  DateTime? expenseStartDate;
+  DateTime? expenseEndDate;
 
   final GlobalKey _incomeListKey = GlobalKey();
   final GlobalKey _expenseListKey = GlobalKey();
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_handleTabChange);
+    _loadSavedFilters();
+  }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange);
+    _tabController.dispose();
     searchController.dispose();
     super.dispose();
+  }
+
+  void _handleTabChange() {
+    if (_tabController.indexIsChanging) return;
+    if (currentTabIndex == _tabController.index) return;
+
+    setState(() => currentTabIndex = _tabController.index);
+    _saveFilters();
+  }
+
+  Future<void> _loadSavedFilters() async {
+    final data = await _preferencesService.load();
+    if (!mounted) return;
+
+    final restoredTabIndex =
+        int.tryParse(data['tabIndex']?.toString() ?? '') ?? 0;
+    final safeTabIndex = restoredTabIndex.clamp(0, 1);
+
+    setState(() {
+      searchQuery = data['searchQuery']?.toString() ?? '';
+      quickFilter = data['quickFilter']?.toString() ?? 'Todos';
+      currentTabIndex = safeTabIndex;
+      incomeStartDate = _parseDate(data['incomeStartDate']);
+      incomeEndDate = _parseDate(data['incomeEndDate']);
+      expenseStartDate = _parseDate(data['expenseStartDate']);
+      expenseEndDate = _parseDate(data['expenseEndDate']);
+      searchController.text = searchQuery;
+    });
+
+    _tabController.index = safeTabIndex;
+  }
+
+  Future<void> _saveFilters() async {
+    await _preferencesService.save({
+      'searchQuery': searchQuery,
+      'quickFilter': quickFilter,
+      'tabIndex': currentTabIndex,
+      'incomeStartDate': incomeStartDate?.toIso8601String(),
+      'incomeEndDate': incomeEndDate?.toIso8601String(),
+      'expenseStartDate': expenseStartDate?.toIso8601String(),
+      'expenseEndDate': expenseEndDate?.toIso8601String(),
+    });
+  }
+
+  DateTime? _parseDate(dynamic rawValue) {
+    final value = rawValue?.toString().trim() ?? '';
+    if (value.isEmpty) return null;
+    return DateTime.tryParse(value);
+  }
+
+  String _formatRange(DateTime start, DateTime end) {
+    String two(int value) => value.toString().padLeft(2, '0');
+    return '${two(start.day)}/${two(start.month)}/${start.year} - ${two(end.day)}/${two(end.month)}/${end.year}';
+  }
+
+  ({DateTime? start, DateTime? end}) _currentRange() {
+    if (currentTabIndex == 0) {
+      return (start: incomeStartDate, end: incomeEndDate);
+    }
+    return (start: expenseStartDate, end: expenseEndDate);
+  }
+
+  bool get _hasActiveRange {
+    final range = _currentRange();
+    return range.start != null && range.end != null;
   }
 
   Widget _buildQuickFilterChip(BuildContext context, String label) {
@@ -35,6 +119,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
         selected: selected,
         onSelected: (_) {
           setState(() => quickFilter = label);
+          _saveFilters();
         },
         selectedColor: AppTheme.corporateGreen,
         backgroundColor: theme.cardColor,
@@ -174,104 +259,235 @@ class _MovementsScreenState extends State<MovementsScreen> {
     );
   }
 
+  Future<void> _openAdvancedFilters() async {
+    final now = DateTime.now();
+    final currentRange = _currentRange();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      initialDateRange: currentRange.start != null && currentRange.end != null
+          ? DateTimeRange(start: currentRange.start!, end: currentRange.end!)
+          : null,
+      currentDate: now,
+      helpText: currentTabIndex == 0
+          ? 'Filtrar ingresos por fecha'
+          : 'Filtrar gastos por fecha',
+    );
+
+    if (!mounted || picked == null) return;
+
+    setState(() {
+      if (currentTabIndex == 0) {
+        incomeStartDate = picked.start;
+        incomeEndDate = picked.end;
+      } else {
+        expenseStartDate = picked.start;
+        expenseEndDate = picked.end;
+      }
+    });
+
+    await _saveFilters();
+  }
+
+  Future<void> _clearAdvancedFilters() async {
+    setState(() {
+      if (currentTabIndex == 0) {
+        incomeStartDate = null;
+        incomeEndDate = null;
+      } else {
+        expenseStartDate = null;
+        expenseEndDate = null;
+      }
+    });
+
+    await _saveFilters();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Movimientos'),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(146),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: searchController,
-                    onChanged: (value) {
-                      setState(() => searchQuery = value);
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Buscar por nota, tipo, monto o fecha',
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      suffixIcon: searchQuery.isEmpty
-                          ? null
-                          : IconButton(
-                              onPressed: () {
-                                searchController.clear();
-                                setState(() => searchQuery = '');
-                              },
-                              icon: const Icon(Icons.close_rounded),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 38,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildQuickFilterChip(context, 'Todos'),
-                        _buildQuickFilterChip(context, 'Hoy'),
-                        _buildQuickFilterChip(context, 'Semana'),
-                        _buildQuickFilterChip(context, 'Mes'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: TabBar(
-                      dividerColor: Colors.transparent,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      indicator: BoxDecoration(
-                        color: AppTheme.corporateGreen,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(14),
+    final activeRange = _currentRange();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Movimientos'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(188),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          setState(() => searchQuery = value);
+                          _saveFilters();
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Buscar por nota, tipo, monto o fecha',
+                          prefixIcon: const Icon(Icons.search_rounded),
+                          suffixIcon: searchQuery.isEmpty
+                              ? null
+                              : IconButton(
+                                  onPressed: () {
+                                    searchController.clear();
+                                    setState(() => searchQuery = '');
+                                    _saveFilters();
+                                  },
+                                  icon: const Icon(Icons.close_rounded),
+                                ),
                         ),
                       ),
-                      labelColor: Colors.black,
-                      unselectedLabelColor: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.75),
-                      tabs: const [
-                        Tab(text: 'Ingresos'),
-                        Tab(text: 'Gastos'),
-                      ],
                     ),
+                    const SizedBox(width: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: _hasActiveRange
+                            ? AppTheme.corporateGreen.withValues(alpha: 0.12)
+                            : theme.cardColor,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: _hasActiveRange
+                              ? AppTheme.corporateGreen.withValues(alpha: 0.30)
+                              : theme.dividerColor.withValues(alpha: 0.45),
+                        ),
+                      ),
+                      child: IconButton(
+                        onPressed: _openAdvancedFilters,
+                        icon: Icon(
+                          Icons.tune_rounded,
+                          color: _hasActiveRange
+                              ? AppTheme.corporateGreen
+                              : theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.75,
+                                ),
+                        ),
+                        tooltip: 'Filtros avanzados',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 38,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildQuickFilterChip(context, 'Todos'),
+                      _buildQuickFilterChip(context, 'Hoy'),
+                      _buildQuickFilterChip(context, 'Semana'),
+                      _buildQuickFilterChip(context, 'Mes'),
+                    ],
+                  ),
+                ),
+                if (activeRange.start != null && activeRange.end != null) ...[
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.corporateGreen.withValues(
+                              alpha: 0.10,
+                            ),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.date_range_rounded,
+                                size: 16,
+                                color: AppTheme.corporateGreen,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _formatRange(
+                                    activeRange.start!,
+                                    activeRange.end!,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: _clearAdvancedFilters,
+                        child: const Text('Limpiar'),
+                      ),
+                    ],
                   ),
                 ],
-              ),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    dividerColor: Colors.transparent,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicator: BoxDecoration(
+                      color: AppTheme.corporateGreen,
+                      borderRadius: const BorderRadius.all(Radius.circular(14)),
+                    ),
+                    labelColor: Colors.black,
+                    unselectedLabelColor: theme.colorScheme.onSurface
+                        .withValues(alpha: 0.75),
+                    tabs: const [
+                      Tab(text: 'Ingresos'),
+                      Tab(text: 'Gastos'),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        body: TabBarView(
-          children: [
-            IncomeListScreen(
-              key: _incomeListKey,
-              embeddedMode: true,
-              searchQuery: searchQuery,
-              quickFilter: quickFilter,
-            ),
-            ExpenseListScreen(
-              key: _expenseListKey,
-              embeddedMode: true,
-              searchQuery: searchQuery,
-              quickFilter: quickFilter,
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _showMovementActionsSheet,
-          backgroundColor: AppTheme.corporateGreen,
-          foregroundColor: Colors.black,
-          elevation: 6,
-          child: const Icon(Icons.add_rounded),
-        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          IncomeListScreen(
+            key: _incomeListKey,
+            embeddedMode: true,
+            searchQuery: searchQuery,
+            quickFilter: quickFilter,
+            startDate: incomeStartDate,
+            endDate: incomeEndDate,
+          ),
+          ExpenseListScreen(
+            key: _expenseListKey,
+            embeddedMode: true,
+            searchQuery: searchQuery,
+            quickFilter: quickFilter,
+            startDate: expenseStartDate,
+            endDate: expenseEndDate,
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showMovementActionsSheet,
+        backgroundColor: AppTheme.corporateGreen,
+        foregroundColor: Colors.black,
+        elevation: 6,
+        child: const Icon(Icons.add_rounded),
       ),
     );
   }

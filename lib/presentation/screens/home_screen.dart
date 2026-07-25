@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
+import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -220,6 +222,113 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildSmartSummaryCard(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required String highlight,
+    required IconData icon,
+    required Color color,
+    required List<String> chips,
+  }) {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.10),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            message,
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.4,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            highlight,
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.35,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+          if (chips.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: chips
+                  .map(
+                    (chip) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        chip,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildDashboardEmptyBanner(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
@@ -279,8 +388,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final dashboardProvider = context.watch<DashboardProvider>();
+    final reminderProvider = context.watch<ReminderProvider>();
     final dashboardData = dashboardProvider.data;
     final theme = Theme.of(context);
+    final smartSummary = SmartSummaryService.build(
+      dashboardData: dashboardData,
+      reminders: reminderProvider.reminders,
+      now: DateTime.now(),
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Finanzas App')),
@@ -313,6 +428,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  _buildSmartSummaryCard(
+                    context,
+                    title: smartSummary.title,
+                    message: smartSummary.message,
+                    highlight: smartSummary.highlight,
+                    icon: smartSummary.icon,
+                    color: smartSummary.color,
+                    chips: smartSummary.chips,
+                  ),
                   if ((dashboardData['income_count'] ?? 0) == 0 &&
                       (dashboardData['expense_count'] ?? 0) == 0) ...[
                     _buildDashboardEmptyBanner(context),

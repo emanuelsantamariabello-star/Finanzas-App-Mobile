@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
 
 class AuthService {
-  // LOGIN
   static Future<Map<String, dynamic>> login(
     String email,
     String password,
@@ -20,11 +19,13 @@ class AuthService {
     try {
       return jsonDecode(response.body);
     } catch (_) {
-      return {'success': false, 'message': 'Respuesta inválida del servidor'};
+      return {
+        'success': false,
+        'message': 'Respuesta inv\u00e1lida del servidor',
+      };
     }
   }
 
-  // REGISTER
   static Future<Map<String, dynamic>> register(
     String username,
     String email,
@@ -47,17 +48,10 @@ class AuthService {
     try {
       return jsonDecode(response.body);
     } catch (_) {
-      return {'success': false, 'message': 'Respuesta inválida del servidor'};
+      return {
+        'success': false,
+        'message': 'Respuesta inv\u00e1lida del servidor',
+      };
     }
-  }
-
-  // DASHBOARD
-  static Future<Map<String, dynamic>> getDashboard(int userId) async {
-    final response = await ApiClient.post(
-      'dashboard.php',
-      body: {'user_id': userId.toString()},
-    );
-
-    return jsonDecode(response.body);
   }
 }

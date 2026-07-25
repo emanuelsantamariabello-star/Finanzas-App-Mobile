@@ -14,19 +14,13 @@ class AuthService {
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      return {
-        'success': false,
-        'message': 'HTTP ${response.statusCode}',
-      };
+      return {'success': false, 'message': 'HTTP ${response.statusCode}'};
     }
 
     try {
       return jsonDecode(response.body);
     } catch (_) {
-      return {
-        'success': false,
-        'message': 'Respuesta inválida del servidor',
-      };
+      return {'success': false, 'message': 'Respuesta inválida del servidor'};
     }
   }
 
@@ -47,19 +41,13 @@ class AuthService {
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      return {
-        'success': false,
-        'message': 'HTTP ${response.statusCode}',
-      };
+      return {'success': false, 'message': 'HTTP ${response.statusCode}'};
     }
 
     try {
       return jsonDecode(response.body);
     } catch (_) {
-      return {
-        'success': false,
-        'message': 'Respuesta inválida del servidor',
-      };
+      return {'success': false, 'message': 'Respuesta inválida del servidor'};
     }
   }
 

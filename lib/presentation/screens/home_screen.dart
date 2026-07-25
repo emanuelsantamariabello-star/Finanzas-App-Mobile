@@ -286,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Aún no hay movimientos. Registra tu primer ingreso o gasto para empezar a ver estadísticas y balance.',
+                  'A\u00fan no hay movimientos. Registra tu primer ingreso o gasto para empezar a ver estad\u00edsticas y balance.',
                   style: TextStyle(
                     fontSize: 13,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Así se mueve tu dinero hoy',
+                    'As\u00ed se mueve tu dinero hoy',
                     style: TextStyle(
                       color: theme.colorScheme.onSurface.withValues(
                         alpha: 0.72,

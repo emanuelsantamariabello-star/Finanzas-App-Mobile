@@ -276,7 +276,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         ),
 
         content: const Text(
-          "Esta acción eliminará el movimiento permanentemente.",
+          "Esta acci\u00f3n eliminar\u00e1 el movimiento permanentemente.",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white70, height: 1.4),
         ),
@@ -367,9 +367,9 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
           : expenses.isEmpty
           ? _buildEmptyState(
               icon: Icons.trending_down_rounded,
-              title: 'AÃºn no tienes gastos',
+              title: 'A\u00fan no tienes gastos',
               subtitle:
-                  'Registra tu primer gasto para entender\nmejor en quÃ© se va tu dinero.',
+                  'Registra tu primer gasto para entender\nmejor en qu\u00e9 se va tu dinero.',
             )
           : Padding(
               padding: const EdgeInsets.all(16),

@@ -13,6 +13,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Bienvenido'), findsOneWidget);
-    expect(find.text('Iniciar sesión'), findsOneWidget);
+    expect(find.text('Iniciar sesi\u00f3n'), findsOneWidget);
+  });
+
+  testWidgets('muestra la navegacion principal cuando hay sesion activa', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({'isLoggedIn': true});
+
+    await tester.pumpWidget(const FinanzasApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Inicio'), findsOneWidget);
+    expect(find.text('Movimientos'), findsOneWidget);
+    expect(find.text('Perfil'), findsOneWidget);
   });
 }

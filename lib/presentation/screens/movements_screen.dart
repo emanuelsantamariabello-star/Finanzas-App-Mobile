@@ -26,29 +26,37 @@ class _MovementsScreenState extends State<MovementsScreen>
 
   final GlobalKey _incomeListKey = GlobalKey();
   final GlobalKey _expenseListKey = GlobalKey();
-  late final TabController _tabController;
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(_handleTabChange);
+    _ensureTabController();
     _loadSavedFilters();
   }
 
   @override
   void dispose() {
-    _tabController.removeListener(_handleTabChange);
-    _tabController.dispose();
+    _tabController?.removeListener(_handleTabChange);
+    _tabController?.dispose();
     searchController.dispose();
     super.dispose();
   }
 
-  void _handleTabChange() {
-    if (_tabController.indexIsChanging) return;
-    if (currentTabIndex == _tabController.index) return;
+  void _ensureTabController() {
+    if (_tabController != null) return;
 
-    setState(() => currentTabIndex = _tabController.index);
+    final controller = TabController(length: 2, vsync: this);
+    controller.addListener(_handleTabChange);
+    _tabController = controller;
+  }
+
+  void _handleTabChange() {
+    final controller = _tabController;
+    if (controller == null || controller.indexIsChanging) return;
+    if (currentTabIndex == controller.index) return;
+
+    setState(() => currentTabIndex = controller.index);
     _saveFilters();
   }
 
@@ -71,7 +79,7 @@ class _MovementsScreenState extends State<MovementsScreen>
       searchController.text = searchQuery;
     });
 
-    _tabController.index = safeTabIndex;
+    _tabController?.index = safeTabIndex;
   }
 
   Future<void> _saveFilters() async {
@@ -306,8 +314,14 @@ class _MovementsScreenState extends State<MovementsScreen>
 
   @override
   Widget build(BuildContext context) {
+    _ensureTabController();
+    final tabController = _tabController;
     final theme = Theme.of(context);
     final activeRange = _currentRange();
+
+    if (tabController == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -440,7 +454,7 @@ class _MovementsScreenState extends State<MovementsScreen>
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: TabBar(
-                    controller: _tabController,
+                    controller: tabController,
                     dividerColor: Colors.transparent,
                     indicatorSize: TabBarIndicatorSize.tab,
                     indicator: BoxDecoration(
@@ -462,7 +476,7 @@ class _MovementsScreenState extends State<MovementsScreen>
         ),
       ),
       body: TabBarView(
-        controller: _tabController,
+        controller: tabController,
         children: [
           IncomeListScreen(
             key: _incomeListKey,

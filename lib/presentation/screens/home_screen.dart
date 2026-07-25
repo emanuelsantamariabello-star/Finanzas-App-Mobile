@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/models/saving_recommendation_model.dart';
 import 'package:finanzas_app_mobile/data/models/smart_insight_model.dart';
+import 'package:finanzas_app_mobile/data/services/saving_recommendation_service.dart';
 import 'package:finanzas_app_mobile/data/services/smart_insight_service.dart';
 import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -399,6 +401,78 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildRecommendationsSection(
+    BuildContext context,
+    List<SavingRecommendationModel> recommendations,
+  ) {
+    final theme = Theme.of(context);
+
+    return _buildSectionCard(
+      context,
+      title: 'Sugerencias de ahorro',
+      children: recommendations
+          .map(
+            (recommendation) => Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: recommendation.color.withValues(alpha: 0.20),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: recommendation.color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      recommendation.icon,
+                      color: recommendation.color,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          recommendation.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          recommendation.message,
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.35,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.72,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
   Widget _buildDashboardEmptyBanner(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
@@ -471,6 +545,10 @@ class _HomeScreenState extends State<HomeScreen> {
       dashboardData: dashboardData,
       reminders: reminderProvider.reminders,
       now: now,
+    );
+    final recommendations = SavingRecommendationService.build(
+      dashboardData: dashboardData,
+      reminders: reminderProvider.reminders,
     );
 
     return Scaffold(
@@ -675,6 +753,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildInsightsSection(context, insights),
+                  const SizedBox(height: 12),
+                  _buildRecommendationsSection(context, recommendations),
                   const SizedBox(height: 12),
                   Row(
                     children: [

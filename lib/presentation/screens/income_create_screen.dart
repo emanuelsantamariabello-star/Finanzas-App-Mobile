@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/models/category_suggestion_model.dart';
+import 'package:finanzas_app_mobile/data/services/category_suggestion_service.dart';
 import 'package:finanzas_app_mobile/data/services/income_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
@@ -24,6 +27,7 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
   String type = 'mensual';
   DateTime selectedDate = DateTime.now();
   bool isLoading = false;
+  CategorySuggestionModel? incomeSuggestion;
 
   @override
   void initState() {
@@ -35,6 +39,9 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
       type = widget.income!['type'];
       selectedDate = _parseDate(widget.income!['income_date']);
     }
+
+    noteController.addListener(_updateSuggestion);
+    _updateSuggestion();
   }
 
   DateTime _parseDate(dynamic rawDate) {
@@ -57,11 +64,96 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
     }
   }
 
+  void _updateSuggestion() {
+    final nextSuggestion = CategorySuggestionService.suggestIncomeCategory(
+      noteController.text,
+    );
+
+    if (incomeSuggestion?.label == nextSuggestion?.label &&
+        incomeSuggestion?.confidence == nextSuggestion?.confidence) {
+      return;
+    }
+
+    setState(() => incomeSuggestion = nextSuggestion);
+  }
+
   @override
   void dispose() {
+    noteController.removeListener(_updateSuggestion);
     amountController.dispose();
     noteController.dispose();
     super.dispose();
+  }
+
+  Widget _buildSuggestionCard(BuildContext context) {
+    if (incomeSuggestion == null) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    final suggestion = incomeSuggestion!;
+    final confidenceLabel = suggestion.confidence >= 0.5 ? 'Alta' : 'Media';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.corporateGreen.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.corporateGreen.withValues(alpha: 0.22),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: AppTheme.corporateGreen.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: AppTheme.corporateGreen,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Categoría sugerida',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  suggestion.label,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.corporateGreen,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Confianza $confidenceLabel según la descripción ingresada.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.70),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> saveIncome() async {
@@ -208,6 +300,8 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
               ),
 
               const SizedBox(height: 12),
+              _buildSuggestionCard(context),
+              if (incomeSuggestion != null) const SizedBox(height: 12),
 
               InkWell(
                 onTap: _pickDate,

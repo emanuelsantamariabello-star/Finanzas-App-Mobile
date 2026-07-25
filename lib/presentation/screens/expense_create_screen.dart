@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/models/category_suggestion_model.dart';
+import 'package:finanzas_app_mobile/data/services/category_suggestion_service.dart';
 import 'package:finanzas_app_mobile/data/services/expense_service.dart';
 import 'package:finanzas_app_mobile/data/services/income_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -28,6 +31,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
   bool isLoading = false;
   bool isLoadingIncomes = true;
+  CategorySuggestionModel? expenseSuggestion;
 
   @override
   void initState() {
@@ -40,6 +44,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       selectedIncomeId = widget.expense!['income_id'];
       selectedDate = _parseDate(widget.expense!['expense_date']);
     }
+
+    noteController.addListener(_updateSuggestion);
+    _updateSuggestion();
   }
 
   bool get isEditMode => widget.expense != null;
@@ -62,6 +69,19 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     if (picked != null) {
       setState(() => selectedDate = picked);
     }
+  }
+
+  void _updateSuggestion() {
+    final nextSuggestion = CategorySuggestionService.suggestExpenseCategory(
+      noteController.text,
+    );
+
+    if (expenseSuggestion?.label == nextSuggestion?.label &&
+        expenseSuggestion?.confidence == nextSuggestion?.confidence) {
+      return;
+    }
+
+    setState(() => expenseSuggestion = nextSuggestion);
   }
 
   Future<void> loadIncomes() async {
@@ -155,9 +175,81 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
   @override
   void dispose() {
+    noteController.removeListener(_updateSuggestion);
     amountController.dispose();
     noteController.dispose();
     super.dispose();
+  }
+
+  Widget _buildSuggestionCard(BuildContext context) {
+    if (expenseSuggestion == null) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    final suggestion = expenseSuggestion!;
+    final confidenceLabel = suggestion.confidence >= 0.5 ? 'Alta' : 'Media';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.corporateBlue.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.corporateBlue.withValues(alpha: 0.22),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: AppTheme.corporateBlue.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: AppTheme.corporateBlue,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Categoría sugerida',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  suggestion.label,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.corporateBlue,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Confianza $confidenceLabel según la descripción ingresada.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.70),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -222,6 +314,8 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                     ),
 
                     const SizedBox(height: 12),
+                    _buildSuggestionCard(context),
+                    if (expenseSuggestion != null) const SizedBox(height: 12),
 
                     InkWell(
                       onTap: _pickDate,

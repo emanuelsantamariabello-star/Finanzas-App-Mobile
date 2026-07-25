@@ -27,16 +27,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   InputDecoration _decoration({
+    required BuildContext context,
     required String label,
     required IconData icon,
     Widget? suffixIcon,
   }) {
+    final theme = Theme.of(context);
+
     return InputDecoration(
       labelText: label,
       prefixIcon: Icon(icon),
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: const Color(0xFF161B22),
+      fillColor: theme.inputDecorationTheme.fillColor ?? theme.cardColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
@@ -96,6 +99,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Crear cuenta')),
       body: SafeArea(
@@ -105,9 +110,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: const Color(0xFF0D1117),
+              color: theme.cardColor,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(
+                color: theme.dividerColor.withValues(alpha: 0.4),
+              ),
             ),
             child: Column(
               children: [
@@ -115,6 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: usernameController,
                   textInputAction: TextInputAction.next,
                   decoration: _decoration(
+                    context: context,
                     label: 'Nombre',
                     icon: Icons.person_outline_rounded,
                   ),
@@ -125,6 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   decoration: _decoration(
+                    context: context,
                     label: 'Correo',
                     icon: Icons.email_outlined,
                   ),
@@ -135,6 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: !_showPassword,
                   textInputAction: TextInputAction.done,
                   decoration: _decoration(
+                    context: context,
                     label: 'Contraseña',
                     icon: Icons.lock_outline_rounded,
                     suffixIcon: IconButton(

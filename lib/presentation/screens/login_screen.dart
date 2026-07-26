@@ -4,6 +4,10 @@ import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/presentation/screens/register_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/providers/budget_provider.dart';
+import 'package:finanzas_app_mobile/providers/goal_provider.dart';
+import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -123,6 +127,13 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setInt('userId', response['user']['id']);
 
         await _persistRememberedCredentials();
+
+        if (!mounted) return;
+        await Future.wait([
+          context.read<BudgetProvider>().initialize(),
+          context.read<GoalProvider>().initialize(),
+          context.read<ReminderProvider>().initialize(),
+        ]);
 
         if (!mounted) return;
         showMessage('Bienvenido nuevamente');

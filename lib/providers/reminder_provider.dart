@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/data/models/reminder_model.dart';
 import 'package:finanzas_app_mobile/data/services/notification_service.dart';
 import 'package:finanzas_app_mobile/data/services/reminder_storage_service.dart';
+import 'package:finanzas_app_mobile/data/services/user_scoped_storage_service.dart';
 
 class ReminderProvider extends ChangeNotifier {
   static const Duration _notificationTimeout = Duration(seconds: 3);
@@ -19,6 +20,7 @@ class ReminderProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _isInitialized = false;
+  int? _initializedUserId;
 
   List<ReminderModel> get reminders => List.unmodifiable(_reminders);
   bool get isLoading => _isLoading;
@@ -26,10 +28,12 @@ class ReminderProvider extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
 
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    final userId = await UserScopedStorageService.currentUserId();
+    if (_isInitialized && _initializedUserId == userId) return;
 
     await _notificationService.initialize();
     await loadReminders();
+    _initializedUserId = userId;
     _isInitialized = true;
     notifyListeners();
   }

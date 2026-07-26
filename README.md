@@ -43,7 +43,8 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Compartir archivos CSV mediante el selector nativo del dispositivo.
 
 > Los recordatorios, metas, presupuestos y filtros se almacenan localmente en
-> el dispositivo. Actualmente no se sincronizan con el backend.
+> el dispositivo, separados por el usuario activo. Actualmente no se
+> sincronizan con el backend.
 
 ## Capturas de pantalla
 
@@ -261,8 +262,8 @@ debe considerarse listo para producción.
 ### Estabilización activa
 
 La rama `codex/stability-hardening` parte de una línea base limpia. La
-codificación residual ya fue corregida y el trabajo continuará de forma
-secuencial con el aislamiento de datos locales por usuario, el ciclo de sesión,
+codificación residual y el aislamiento de datos locales por usuario ya fueron
+completados. El trabajo continuará de forma secuencial con el ciclo de sesión,
 la configuración de API, la configuración Android de desarrollo y la
 evaluación controlada de dependencias.
 
@@ -271,7 +272,6 @@ Antes de un despliegue productivo todavía conviene reforzar:
 - migrar la API a HTTPS y definir entornos de desarrollo y producción;
 - reemplazar el identificador Android de ejemplo y configurar firma release;
 - reforzar el manejo de sesión y el almacenamiento de información sensible;
-- separar por usuario los recordatorios, metas, presupuestos y filtros locales;
 - ampliar la cobertura con pruebas de integración contra un backend controlado;
 - revisar las actualizaciones mayores pendientes de dependencias de forma
   aislada y con pruebas de regresión.

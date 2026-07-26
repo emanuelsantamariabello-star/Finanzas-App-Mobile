@@ -2,6 +2,7 @@ import 'package:finanzas_app_mobile/data/models/budget_model.dart';
 import 'package:finanzas_app_mobile/data/services/budget_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/category_suggestion_service.dart';
 import 'package:finanzas_app_mobile/data/services/expense_service.dart';
+import 'package:finanzas_app_mobile/data/services/user_scoped_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -15,6 +16,7 @@ class BudgetProvider extends ChangeNotifier {
   List<BudgetModel> _budgets = [];
   bool _isLoading = false;
   bool _isInitialized = false;
+  int? _initializedUserId;
   String? _error;
 
   List<BudgetModel> get budgets => List.unmodifiable(_budgets);
@@ -25,8 +27,11 @@ class BudgetProvider extends ChangeNotifier {
       Map.unmodifiable(_monthlySpentByCategory);
 
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    final userId = await UserScopedStorageService.currentUserId();
+    if (_isInitialized && _initializedUserId == userId) return;
+
     await loadBudgets();
+    _initializedUserId = userId;
     _isInitialized = true;
     notifyListeners();
   }

@@ -33,6 +33,7 @@ class _FinancialGoalsScreenState extends State<FinancialGoalsScreen> {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -488,6 +489,7 @@ class _GoalFormSheetState extends State<_GoalFormSheet> {
     return AppFormScrollView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       includeKeyboardInset: true,
+      includeBottomSafeInset: true,
       child: Form(
         key: _formKey,
         child: Column(

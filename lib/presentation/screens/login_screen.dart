@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
+import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/presentation/screens/register_screen.dart';
@@ -23,8 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberCredentials = true;
   bool _showPassword = false;
 
-  static const _rememberEmailKey = 'rememberedEmail';
-  static const _rememberEnabledKey = 'rememberCredentials';
+  final SessionStorageService _sessionStorageService = SessionStorageService();
 
   @override
   void initState() {
@@ -41,8 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loadRememberedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
-    final enabled = prefs.getBool(_rememberEnabledKey) ?? true;
-    final rememberedEmail = prefs.getString(_rememberEmailKey) ?? '';
+    final enabled = prefs.getBool(SessionKeys.rememberCredentials) ?? true;
+    final rememberedEmail = prefs.getString(SessionKeys.rememberedEmail) ?? '';
 
     if (!mounted) return;
     setState(() {
@@ -55,12 +56,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _persistRememberedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_rememberEnabledKey, _rememberCredentials);
+    await prefs.setBool(SessionKeys.rememberCredentials, _rememberCredentials);
 
     if (_rememberCredentials) {
-      await prefs.setString(_rememberEmailKey, emailController.text.trim());
+      await prefs.setString(
+        SessionKeys.rememberedEmail,
+        emailController.text.trim(),
+      );
     } else {
-      await prefs.remove(_rememberEmailKey);
+      await prefs.remove(SessionKeys.rememberedEmail);
     }
   }
 
@@ -119,12 +123,28 @@ class _LoginScreenState extends State<LoginScreen> {
       final message = response['message']?.toString();
 
       if (isSuccess) {
-        final prefs = await SharedPreferences.getInstance();
+        final user = response['user'];
+        final userId = user is Map
+            ? int.tryParse(user['id']?.toString() ?? '')
+            : null;
+        final userName = user is Map
+            ? user['name']?.toString().trim() ?? ''
+            : '';
+        final occupation = user is Map
+            ? (user['occupation'] ?? user['user_occupation'])?.toString()
+            : null;
 
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('userEmail', email);
-        await prefs.setString('userName', response['user']['name']);
-        await prefs.setInt('userId', response['user']['id']);
+        if (userId == null || userName.isEmpty) {
+          showMessage('Respuesta de sesión inválida', isError: true);
+          return;
+        }
+
+        await _sessionStorageService.saveAuthenticatedUser(
+          userId: userId,
+          userName: userName,
+          userEmail: email,
+          occupation: occupation,
+        );
 
         await _persistRememberedCredentials();
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/expense_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -228,7 +229,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
   void loadExpenses() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt(SessionKeys.userId);
 
     if (userId == null) {
       setState(() {
@@ -277,7 +278,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
   Future<void> deleteExpense(int expenseId) async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt(SessionKeys.userId);
 
     if (userId == null) return;
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final SessionStorageService _sessionStorageService = SessionStorageService();
 
   bool _showPassword = false;
 
@@ -64,21 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (response['success'] == true) {
         showMessage('Registro exitoso');
 
-        final prefs = await SharedPreferences.getInstance();
-
-        // IMPORTANT: After registering, do NOT reuse any previous session.
-        // Return to LoginScreen and keep "remember credentials" keys intact.
-        const sessionKeysToRemove = [
-          'isLoggedIn',
-          'userEmail',
-          'userName',
-          'userId',
-          'occupation',
-          'userOccupation',
-        ];
-        for (final key in sessionKeysToRemove) {
-          await prefs.remove(key);
-        }
+        await _sessionStorageService.clearSession();
 
         if (!mounted) return;
         Navigator.of(context).pushAndRemoveUntil(

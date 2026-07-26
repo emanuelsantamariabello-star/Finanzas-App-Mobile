@@ -3,6 +3,7 @@ import 'package:finanzas_app_mobile/data/models/budget_model.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +30,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
   Future<void> _syncUsage() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt(SessionKeys.userId);
     if (userId == null || !mounted) return;
     await context.read<BudgetProvider>().syncUsage(userId);
   }

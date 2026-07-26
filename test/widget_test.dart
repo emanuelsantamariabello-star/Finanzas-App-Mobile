@@ -19,7 +19,7 @@ void main() {
   testWidgets('muestra la navegacion principal cuando hay sesion activa', (
     WidgetTester tester,
   ) async {
-    SharedPreferences.setMockInitialValues({'isLoggedIn': true});
+    SharedPreferences.setMockInitialValues({'isLoggedIn': true, 'userId': 7});
 
     await tester.pumpWidget(const FinanzasApp());
     await tester.pumpAndSettle();

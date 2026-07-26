@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
@@ -30,6 +32,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
   final DashboardProvider _dashboardProvider = DashboardProvider();
   final GoalProvider _goalProvider = GoalProvider();
   final ReminderProvider _reminderProvider = ReminderProvider();
+  final SessionStorageService _sessionStorageService = SessionStorageService();
   final ThemeProvider _themeProvider = ThemeProvider();
   static const _locale = Locale('es', 'CO');
   static const List<Locale> _supportedLocales = [
@@ -47,9 +50,6 @@ class _FinanzasAppState extends State<FinanzasApp> {
     super.initState();
     checkLogin();
     _appSettingsProvider.initialize();
-    _budgetProvider.initialize();
-    _goalProvider.initialize();
-    _reminderProvider.initialize();
     _themeProvider.loadThemeMode();
   }
 
@@ -65,11 +65,21 @@ class _FinanzasAppState extends State<FinanzasApp> {
   }
 
   void checkLogin() async {
-    final prefs = await SharedPreferences.getInstance();
+    final hasActiveSession = await _sessionStorageService.hasActiveSession();
     if (!mounted) return;
     setState(() {
-      isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      isLoggedIn = hasActiveSession;
     });
+
+    if (hasActiveSession) {
+      unawaited(
+        Future.wait([
+          _budgetProvider.initialize(),
+          _goalProvider.initialize(),
+          _reminderProvider.initialize(),
+        ]),
+      );
+    }
   }
 
   Widget _buildApp({required Widget home}) {

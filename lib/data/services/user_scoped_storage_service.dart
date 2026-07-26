@@ -1,11 +1,10 @@
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserScopedStorageService {
-  static const String _userIdKey = 'userId';
-
   static Future<int?> currentUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_userIdKey);
+    return prefs.getInt(SessionKeys.userId);
   }
 
   static Future<String> resolveStringListKey(
@@ -45,7 +44,7 @@ class UserScopedStorageService {
   }
 
   static String _scopedKey(SharedPreferences prefs, String baseKey) {
-    final userId = prefs.getInt(_userIdKey);
+    final userId = prefs.getInt(SessionKeys.userId);
     return userId == null ? baseKey : '${baseKey}_user_$userId';
   }
 }

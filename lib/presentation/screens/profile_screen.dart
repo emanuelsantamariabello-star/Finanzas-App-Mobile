@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/change_password_screen.dart';
@@ -28,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _userName = '';
   String _userEmail = '';
+  final SessionStorageService _sessionStorageService = SessionStorageService();
 
   @override
   void initState() {
@@ -39,8 +42,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
-      _userName = prefs.getString('userName') ?? '';
-      _userEmail = prefs.getString('userEmail') ?? '';
+      _userName = prefs.getString(SessionKeys.userName) ?? '';
+      _userEmail = prefs.getString(SessionKeys.userEmail) ?? '';
     });
   }
 
@@ -88,20 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (confirm != true || !mounted) return;
 
-    final prefs = await SharedPreferences.getInstance();
-
-    const keysToRemove = [
-      'isLoggedIn',
-      'userEmail',
-      'userName',
-      'userId',
-      'occupation',
-      'userOccupation',
-    ];
-
-    for (final key in keysToRemove) {
-      await prefs.remove(key);
-    }
+    await _sessionStorageService.clearSession();
 
     if (!mounted) return;
 

@@ -14,6 +14,7 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 
 - Registro e inicio de sesión.
 - Persistencia de sesión con `SharedPreferences`.
+- Validación y limpieza automática de sesiones locales incompletas.
 - Recordar credenciales de acceso.
 - Dashboard financiero con resumen general.
 - Gestión de ingresos.
@@ -262,16 +263,16 @@ debe considerarse listo para producción.
 ### Estabilización activa
 
 La rama `codex/stability-hardening` parte de una línea base limpia. La
-codificación residual y el aislamiento de datos locales por usuario ya fueron
-completados. El trabajo continuará de forma secuencial con el ciclo de sesión,
-la configuración de API, la configuración Android de desarrollo y la
+codificación residual, el aislamiento de datos locales por usuario y el ciclo
+de sesión ya fueron estabilizados. El trabajo continuará de forma secuencial
+con la configuración de API, la configuración Android de desarrollo y la
 evaluación controlada de dependencias.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 
 - migrar la API a HTTPS y definir entornos de desarrollo y producción;
 - reemplazar el identificador Android de ejemplo y configurar firma release;
-- reforzar el manejo de sesión y el almacenamiento de información sensible;
+- migrar la sesión a un mecanismo seguro basado en tokens antes de producción;
 - ampliar la cobertura con pruebas de integración contra un backend controlado;
 - revisar las actualizaciones mayores pendientes de dependencias de forma
   aislada y con pruebas de regresión.

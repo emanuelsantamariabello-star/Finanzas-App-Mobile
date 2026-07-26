@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
@@ -47,7 +48,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        _userId = prefs.getInt('userId');
+        _userId = prefs.getInt(SessionKeys.userId);
         _loading = false;
       });
     } catch (e) {

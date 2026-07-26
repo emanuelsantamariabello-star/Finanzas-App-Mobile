@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,7 +87,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
   Future<void> loadIncomes() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt(SessionKeys.userId);
 
     if (userId == null) return;
 
@@ -110,7 +111,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt(SessionKeys.userId);
 
     if (!mounted) return;
 

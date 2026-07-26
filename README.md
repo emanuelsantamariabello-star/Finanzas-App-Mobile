@@ -258,6 +258,13 @@ Validación técnica realizada el 25 de julio de 2026:
 El proyecto está funcional y estable para continuar su desarrollo, pero aún no
 debe considerarse listo para producción.
 
+### Estabilización activa
+
+La rama `codex/stability-hardening` parte de una línea base limpia y trabajará
+de forma secuencial la codificación residual, el aislamiento de datos locales
+por usuario, el ciclo de sesión, la configuración de API, la configuración
+Android de desarrollo y la evaluación controlada de dependencias.
+
 Antes de un despliegue productivo todavía conviene reforzar:
 
 - migrar la API a HTTPS y definir entornos de desarrollo y producción;

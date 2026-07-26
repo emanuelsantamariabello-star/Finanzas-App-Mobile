@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/services/statistics_service.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -279,64 +280,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildPremiumEmptyState({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    Color accent = AppTheme.corporateGreen,
-    double height = 240,
-  }) {
-    final theme = Theme.of(context);
-    return SizedBox(
-      height: height,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  size: 34,
-                  color: accent.withValues(alpha: 0.75),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
-                  color: theme.colorScheme.onSurface,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildIncomeVsExpenseChart(
     BuildContext context,
     Map<String, dynamic> dashboardData,
@@ -360,12 +303,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       title: 'Ingresos vs Gastos',
       children: [
         incomeValue == 0 && expenseValue == 0
-            ? _buildPremiumEmptyState(
-                context: context,
-                icon: Icons.insights_rounded,
-                title: 'Sin movimientos aún',
-                subtitle:
-                    'No hay suficientes movimientos para generar\nestadísticas todavía.',
+            ? const SizedBox(
+                height: 240,
+                child: AppEmptyState(
+                  icon: Icons.insights_rounded,
+                  title: 'Sin movimientos aún',
+                  message:
+                      'No hay suficientes movimientos para generar\nestadísticas todavía.',
+                  accentColor: AppTheme.corporateGreen,
+                  compact: true,
+                ),
               )
             : SizedBox(
                 height: 240,
@@ -506,7 +453,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         children: const [
           SizedBox(
             height: 200,
-            child: Center(child: CircularProgressIndicator()),
+            child: AppLoadingState(
+              message: 'Cargando evolución mensual…',
+              compact: true,
+            ),
           ),
         ],
       );
@@ -519,38 +469,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         children: [
           SizedBox(
             height: 200,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
-                    size: 32,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _monthlyError!,
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 13,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _monthlyLoading = true;
-                        _monthlyError = null;
-                      });
-                      _loadMonthlyStats();
-                    },
-                    icon: const Icon(Icons.refresh, size: 18),
-                    label: const Text('Reintentar'),
-                  ),
-                ],
-              ),
+            child: AppErrorState(
+              message: _monthlyError!,
+              compact: true,
+              onRetry: () {
+                setState(() {
+                  _monthlyLoading = true;
+                  _monthlyError = null;
+                });
+                _loadMonthlyStats();
+              },
             ),
           ),
         ],
@@ -562,14 +490,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         context,
         title: 'Evolución Mensual',
         children: [
-          _buildPremiumEmptyState(
-            context: context,
-            icon: Icons.show_chart_rounded,
-            title: 'Sin suficientes movimientos',
-            subtitle:
-                'No hay suficientes movimientos para generar\nestadísticas todavía.',
-            accent: AppTheme.corporateBlue,
+          const SizedBox(
             height: 200,
+            child: AppEmptyState(
+              icon: Icons.show_chart_rounded,
+              title: 'Sin suficientes movimientos',
+              message:
+                  'No hay suficientes movimientos para generar\nestadísticas todavía.',
+              accentColor: AppTheme.corporateBlue,
+              compact: true,
+            ),
           ),
         ],
       );
@@ -845,9 +775,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Estadísticas')),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Preparando tus estadísticas…')
           : dashboardProvider.error != null && dashboardData.isEmpty
-          ? Center(child: Text('Error: ${dashboardProvider.error}'))
+          ? AppErrorState(message: dashboardProvider.error!)
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

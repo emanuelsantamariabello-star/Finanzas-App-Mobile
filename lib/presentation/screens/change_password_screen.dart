@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -47,13 +48,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<void> _loadUserId() async {
+    setState(() {
+      _loading = true;
+      _loadError = null;
+    });
+
     try {
       final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
       setState(() {
         _userId = prefs.getInt(SessionKeys.userId);
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _loadError = e.toString();
         _loading = false;
@@ -114,9 +122,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Cambiar contraseña')),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Preparando la configuración…')
           : _loadError != null
-          ? Center(child: Text('Error: $_loadError'))
+          ? AppErrorState(message: _loadError!, onRetry: _loadUserId)
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

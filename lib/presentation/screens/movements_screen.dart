@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.da
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MovementsScreen extends StatefulWidget {
@@ -420,7 +421,9 @@ class _MovementsScreenState extends State<MovementsScreen>
     final appBarBottomHeight = _hasActiveRange ? 234.0 : 188.0;
 
     if (tabController == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: AppLoadingState(message: 'Preparando tus movimientos…'),
+      );
     }
 
     return Scaffold(

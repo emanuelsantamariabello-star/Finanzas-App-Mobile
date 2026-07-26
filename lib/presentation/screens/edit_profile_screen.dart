@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -43,10 +44,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _loadInitial() async {
+    setState(() {
+      _loading = true;
+      _loadError = null;
+    });
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getInt(SessionKeys.userId);
 
+      if (!mounted) return;
       setState(() {
         _userId = userId;
         _nameController.text = prefs.getString(SessionKeys.userName) ?? '';
@@ -58,6 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _loadError = e.toString();
         _loading = false;
@@ -127,9 +135,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Editar perfil')),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando tu perfil…')
           : _loadError != null
-          ? Center(child: Text('Error: $_loadError'))
+          ? AppErrorState(message: _loadError!, onRetry: _loadInitial)
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

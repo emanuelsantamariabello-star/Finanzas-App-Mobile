@@ -306,7 +306,11 @@ Avance actual:
 - formularios unificados en Login, Registro, Editar Perfil, Cambiar
   Contraseña, Ingresos y Gastos;
 - estados de carga integrados en el botón principal para evitar acciones
-  repetidas.
+  repetidas;
+- estados reutilizables de carga, error y contenido vacío con acciones claras
+  de reintento o creación;
+- estados unificados en Inicio, Movimientos, Estadísticas, Perfil,
+  Recordatorios, Presupuestos y Metas financieras.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

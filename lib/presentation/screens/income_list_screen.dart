@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/income_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -8,6 +9,7 @@ import 'income_create_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
 class IncomeListScreen extends StatefulWidget {
   final bool embeddedMode;
@@ -125,57 +127,6 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         formatAmount(income['amount']),
       ];
     }).toList();
-  }
-
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    Color iconColor = const Color(0xFF4CAF50),
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 38,
-                color: iconColor.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.2,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white54,
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   String _formatApiDate(DateTime date) {
@@ -412,15 +363,18 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
             ),
 
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando ingresos…')
           : error != null
-          ? Center(child: Text("Error: $error"))
+          ? AppErrorState(message: error!, onRetry: loadIncomes)
           : incomes.isEmpty
-          ? _buildEmptyState(
+          ? AppEmptyState(
               icon: Icons.trending_up_rounded,
               title: 'A\u00fan no tienes ingresos',
-              subtitle:
+              message:
                   'Agrega tu primer ingreso para ver aqu\u00ed tu historial y tu progreso financiero.',
+              accentColor: AppTheme.corporateGreen,
+              actionLabel: 'Agregar ingreso',
+              onAction: openCreateIncome,
             )
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -465,12 +419,12 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 220),
                       child: filteredIncomes.isEmpty
-                          ? _buildEmptyState(
+                          ? const AppEmptyState(
                               icon: Icons.search_off_rounded,
                               title: 'Sin resultados',
-                              subtitle:
+                              message:
                                   'No se encontraron ingresos con los filtros seleccionados.',
-                              iconColor: Colors.white70,
+                              compact: true,
                             )
                           : ListView.builder(
                               key: ValueKey(

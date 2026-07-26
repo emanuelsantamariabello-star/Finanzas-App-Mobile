@@ -13,6 +13,7 @@ import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
@@ -719,9 +720,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Finanzas App')),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Preparando tu resumen financiero…')
           : dashboardProvider.error != null && dashboardData.isEmpty
-          ? Center(child: Text('Error: ${dashboardProvider.error}'))
+          ? AppErrorState(message: dashboardProvider.error!, onRetry: loadUser)
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

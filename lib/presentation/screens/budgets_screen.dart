@@ -1,6 +1,7 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/budget_model.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
@@ -99,7 +100,12 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         label: const Text('Nuevo presupuesto'),
       ),
       body: budgetProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando presupuestos…')
+          : budgetProvider.error != null && budgets.isEmpty
+          ? AppErrorState(
+              message: budgetProvider.error!,
+              onRetry: budgetProvider.loadBudgets,
+            )
           : Column(
               children: [
                 Container(
@@ -160,46 +166,14 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 ),
                 Expanded(
                   child: budgets.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 84,
-                                  height: 84,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.corporateGreen.withValues(
-                                      alpha: 0.12,
-                                    ),
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: const Icon(
-                                    Icons.pie_chart_outline_rounded,
-                                    size: 40,
-                                    color: AppTheme.corporateGreen,
-                                  ),
-                                ),
-                                const SizedBox(height: 18),
-                                Text(
-                                  'Aún no tienes presupuestos',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Define límites por categoría para controlar cuánto gastas cada mes.',
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.72),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                      ? AppEmptyState(
+                          icon: Icons.pie_chart_outline_rounded,
+                          title: 'Aún no tienes presupuestos',
+                          message:
+                              'Define límites por categoría para controlar cuánto gastas cada mes.',
+                          accentColor: AppTheme.corporateGreen,
+                          actionLabel: 'Crear presupuesto',
+                          onAction: () => _openBudgetForm(),
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),

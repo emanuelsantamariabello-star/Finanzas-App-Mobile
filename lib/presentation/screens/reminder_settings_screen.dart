@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/reminder_model.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 
 class ReminderSettingsScreen extends StatefulWidget {
@@ -114,48 +115,21 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
         label: const Text('Nuevo'),
       ),
       body: reminderProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando recordatorios…')
+          : reminderProvider.error != null && reminders.isEmpty
+          ? AppErrorState(
+              message: reminderProvider.error!,
+              onRetry: reminderProvider.loadReminders,
+            )
           : reminders.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 84,
-                      height: 84,
-                      decoration: BoxDecoration(
-                        color: AppTheme.corporateGreen.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: const Icon(
-                        Icons.notifications_active_outlined,
-                        size: 40,
-                        color: AppTheme.corporateGreen,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    Text(
-                      'Aún no tienes recordatorios',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Programa avisos para pagos, gastos fijos o metas y recíbelos a tiempo.',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.72,
-                        ),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+          ? AppEmptyState(
+              icon: Icons.notifications_active_outlined,
+              title: 'Aún no tienes recordatorios',
+              message:
+                  'Programa avisos para pagos, gastos fijos o metas y recíbelos a tiempo.',
+              accentColor: AppTheme.corporateGreen,
+              actionLabel: 'Crear recordatorio',
+              onAction: () => _openReminderForm(),
             )
           : ListView.separated(
               padding: const EdgeInsets.all(16),

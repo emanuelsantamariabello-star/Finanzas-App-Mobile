@@ -1,6 +1,7 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/financial_goal_model.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
 import 'package:flutter/material.dart';
@@ -135,7 +136,12 @@ class _FinancialGoalsScreenState extends State<FinancialGoalsScreen> {
         label: const Text('Nueva meta'),
       ),
       body: goalProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando metas financieras…')
+          : goalProvider.error != null && goals.isEmpty
+          ? AppErrorState(
+              message: goalProvider.error!,
+              onRetry: goalProvider.loadGoals,
+            )
           : Column(
               children: [
                 Container(
@@ -194,46 +200,14 @@ class _FinancialGoalsScreenState extends State<FinancialGoalsScreen> {
                 ),
                 Expanded(
                   child: goals.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 84,
-                                  height: 84,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.corporateGreen.withValues(
-                                      alpha: 0.12,
-                                    ),
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: const Icon(
-                                    Icons.flag_outlined,
-                                    size: 40,
-                                    color: AppTheme.corporateGreen,
-                                  ),
-                                ),
-                                const SizedBox(height: 18),
-                                Text(
-                                  'Aún no tienes metas',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Crea metas para seguir objetivos de ahorro, compras importantes o fondos específicos.',
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.72),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                      ? AppEmptyState(
+                          icon: Icons.flag_outlined,
+                          title: 'Aún no tienes metas',
+                          message:
+                              'Crea metas para seguir objetivos de ahorro, compras importantes o fondos específicos.',
+                          accentColor: AppTheme.corporateGreen,
+                          actionLabel: 'Crear meta',
+                          onAction: () => _openGoalForm(),
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),

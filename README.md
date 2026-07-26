@@ -34,6 +34,7 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Cierre de sesión.
 - Recordatorios locales diarios, semanales, quincenales y mensuales.
 - Notificaciones locales programadas para pagos, gastos fijos y metas.
+- Restauración de recordatorios programados después de reiniciar Android.
 - Resumen financiero inteligente e insights generados localmente.
 - Sugerencias automáticas de categorías según la descripción del movimiento.
 - Recomendaciones locales de ahorro.
@@ -268,9 +269,9 @@ debe considerarse listo para producción.
 
 La rama `codex/stability-hardening` parte de una línea base limpia. La
 codificación residual, el aislamiento de datos locales por usuario, el ciclo
-de sesión y la configuración del cliente API ya fueron estabilizados. El
-trabajo continuará de forma secuencial con la configuración Android de
-desarrollo y la evaluación controlada de dependencias.
+de sesión, la configuración del cliente API y Android para desarrollo ya
+fueron estabilizados. El trabajo continuará con la evaluación controlada de
+dependencias.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

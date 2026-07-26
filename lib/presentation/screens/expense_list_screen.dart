@@ -489,7 +489,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          (expense['note'] ?? 'Sin descripci?n')
+                                          (expense['note'] ?? 'Sin descripción')
                                               .toString(),
                                           style: const TextStyle(
                                             color: Colors.white70,

@@ -164,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            _userEmail.isNotEmpty ? _userEmail : 'â€”',
+            _userEmail.isNotEmpty ? _userEmail : '—',
             style: TextStyle(
               fontSize: 14,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.55),

@@ -260,10 +260,11 @@ debe considerarse listo para producción.
 
 ### Estabilización activa
 
-La rama `codex/stability-hardening` parte de una línea base limpia y trabajará
-de forma secuencial la codificación residual, el aislamiento de datos locales
-por usuario, el ciclo de sesión, la configuración de API, la configuración
-Android de desarrollo y la evaluación controlada de dependencias.
+La rama `codex/stability-hardening` parte de una línea base limpia. La
+codificación residual ya fue corregida y el trabajo continuará de forma
+secuencial con el aislamiento de datos locales por usuario, el ciclo de sesión,
+la configuración de API, la configuración Android de desarrollo y la
+evaluación controlada de dependencias.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 
@@ -271,7 +272,6 @@ Antes de un despliegue productivo todavía conviene reforzar:
 - reemplazar el identificador Android de ejemplo y configurar firma release;
 - reforzar el manejo de sesión y el almacenamiento de información sensible;
 - separar por usuario los recordatorios, metas, presupuestos y filtros locales;
-- corregir cadenas residuales con codificación dañada;
 - ampliar la cobertura con pruebas de integración contra un backend controlado;
 - revisar las actualizaciones mayores pendientes de dependencias de forma
   aislada y con pruebas de regresión.

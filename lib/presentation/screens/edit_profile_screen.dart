@@ -231,7 +231,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.save_outlined),
-                      label: Text(_saving ? 'Guardandoâ€¦' : 'Guardar cambios'),
+                      label: Text(_saving ? 'Guardando…' : 'Guardar cambios'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00C853),
                         foregroundColor: Colors.black,

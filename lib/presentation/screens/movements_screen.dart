@@ -214,8 +214,13 @@ class _MovementsScreenState extends State<MovementsScreen>
           );
         }
 
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
+        return SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            6,
+            16,
+            16 + MediaQuery.viewPaddingOf(sheetContext).bottom,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

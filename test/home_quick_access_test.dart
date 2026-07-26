@@ -18,6 +18,7 @@ void main() {
   Future<void> pumpHome(
     WidgetTester tester, {
     AppSettingsProvider? appSettingsProvider,
+    TextScaler textScaler = TextScaler.noScaling,
   }) async {
     SharedPreferences.setMockInitialValues({'userName': 'Usuario'});
     final settingsProvider = appSettingsProvider ?? AppSettingsProvider();
@@ -40,6 +41,10 @@ void main() {
           ChangeNotifierProvider(create: (_) => ReminderProvider()),
         ],
         child: MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+            child: child!,
+          ),
           locale: const Locale('es', 'CO'),
           supportedLocales: const [Locale('es', 'CO')],
           localizationsDelegates: const [
@@ -96,6 +101,19 @@ void main() {
     await tester.tap(find.text('Presupuestos'));
     await tester.pumpAndSettle();
     expect(find.byType(BudgetsScreen), findsOneWidget);
+  });
+
+  testWidgets('adapta los accesos rápidos al texto ampliado', (tester) async {
+    await pumpHome(tester, textScaler: const TextScaler.linear(1.8));
+
+    expect(find.text('Recordatorios'), findsOneWidget);
+    await tester.drag(
+      find.byKey(const ValueKey('home_quick_access_list')),
+      const Offset(-220, 0),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Presupuestos'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('oculta y muestra análisis de Inicio de forma reactiva', (

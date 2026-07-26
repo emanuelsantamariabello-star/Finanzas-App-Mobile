@@ -14,22 +14,27 @@ class AppLoadingState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(compact ? 16 : 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(strokeWidth: 3),
-            SizedBox(height: compact ? 12 : 18),
-            Text(
-              message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
+    return Semantics(
+      liveRegion: true,
+      label: message,
+      excludeSemantics: true,
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(compact ? 16 : 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(strokeWidth: 3),
+              SizedBox(height: compact ? 12 : 18),
+              Text(
+                message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -64,7 +69,8 @@ class AppEmptyState extends StatelessWidget {
     final containerSize = compact ? 64.0 : 84.0;
 
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
+        primary: false,
         padding: EdgeInsets.symmetric(
           horizontal: compact ? 20 : 32,
           vertical: compact ? 16 : 28,
@@ -79,7 +85,9 @@ class AppEmptyState extends StatelessWidget {
                 color: accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(compact ? 20 : 24),
               ),
-              child: Icon(icon, size: iconSize, color: accent),
+              child: ExcludeSemantics(
+                child: Icon(icon, size: iconSize, color: accent),
+              ),
             ),
             SizedBox(height: compact ? 14 : 18),
             Text(
@@ -137,7 +145,8 @@ class AppErrorState extends StatelessWidget {
     final containerSize = compact ? 64.0 : 84.0;
 
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
+        primary: false,
         padding: EdgeInsets.symmetric(
           horizontal: compact ? 20 : 32,
           vertical: compact ? 16 : 28,
@@ -152,10 +161,12 @@ class AppErrorState extends StatelessWidget {
                 color: errorColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(compact ? 20 : 24),
               ),
-              child: Icon(
-                Icons.cloud_off_rounded,
-                size: iconSize,
-                color: errorColor,
+              child: ExcludeSemantics(
+                child: Icon(
+                  Icons.cloud_off_rounded,
+                  size: iconSize,
+                  color: errorColor,
+                ),
               ),
             ),
             SizedBox(height: compact ? 14 : 18),

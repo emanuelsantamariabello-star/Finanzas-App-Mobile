@@ -229,12 +229,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ),
-        Text(
-          _formatAmount(value),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
+        Flexible(
+          child: Text(
+            _formatAmount(value),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
         ),
       ],
@@ -380,56 +385,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     final theme = Theme.of(context);
     final tileColor = color ?? theme.colorScheme.onSurface;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: tileColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(11),
+    return Semantics(
+      button: true,
+      label: '$label. $subtitle',
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: tileColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Icon(
+                  icon,
+                  color: tileColor.withValues(alpha: 0.8),
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: tileColor.withValues(alpha: 0.8),
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: tileColor,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: tileColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: tileColor.withValues(alpha: 0.5),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: tileColor.withValues(alpha: 0.5),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
-              size: 22,
-            ),
-          ],
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+                size: 22,
+              ),
+            ],
+          ),
         ),
       ),
     );

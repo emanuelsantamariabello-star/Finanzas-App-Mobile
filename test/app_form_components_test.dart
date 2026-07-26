@@ -108,4 +108,21 @@ void main() {
       ScrollViewKeyboardDismissBehavior.onDrag,
     );
   });
+
+  testWidgets('limita el ancho del formulario en pantallas grandes', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: const Scaffold(body: AppFormScrollView(child: TextField())),
+      ),
+    );
+
+    final fieldSize = tester.getSize(find.byType(TextField));
+    expect(fieldSize.width, lessThanOrEqualTo(640));
+  });
 }

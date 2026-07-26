@@ -46,6 +46,7 @@ class AppConfirmationDialog extends StatelessWidget {
         : theme.colorScheme.primary;
 
     return AlertDialog(
+      scrollable: true,
       backgroundColor: theme.cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),

@@ -55,11 +55,13 @@ class AppFormScrollView extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(20),
     this.includeKeyboardInset = false,
+    this.maxContentWidth = 640,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
   final bool includeKeyboardInset;
+  final double maxContentWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +79,13 @@ class AppFormScrollView extends StatelessWidget {
         child: SingleChildScrollView(
           padding: padding,
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: child,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxContentWidth),
+              child: child,
+            ),
+          ),
         ),
       ),
     );
@@ -103,45 +111,50 @@ class AppPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final effectiveLabel = isLoading ? loadingLabel ?? label : label;
+    final isEnabled = !isLoading && onPressed != null;
 
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton(
-        onPressed: isLoading || onPressed == null
-            ? null
-            : () {
-                FocusManager.instance.primaryFocus?.unfocus();
-                onPressed!();
-              },
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isLoading)
-              SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: theme.colorScheme.onPrimary,
-                ),
-              )
-            else if (icon != null)
-              Icon(icon),
-            if (isLoading || icon != null) const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                isLoading ? loadingLabel ?? label : label,
-                overflow: TextOverflow.ellipsis,
-              ),
+    return Semantics(
+      button: true,
+      enabled: isEnabled,
+      label: effectiveLabel,
+      excludeSemantics: true,
+      child: SizedBox(
+        width: double.infinity,
+        height: 54,
+        child: ElevatedButton(
+          onPressed: isEnabled
+              ? () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  onPressed!();
+                }
+              : null,
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isLoading)
+                SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                )
+              else if (icon != null)
+                Icon(icon),
+              if (isLoading || icon != null) const SizedBox(width: 8),
+              Flexible(
+                child: Text(effectiveLabel, overflow: TextOverflow.ellipsis),
+              ),
+            ],
+          ),
         ),
       ),
     );

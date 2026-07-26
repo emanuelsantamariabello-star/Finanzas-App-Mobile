@@ -317,7 +317,10 @@ Avance actual:
   de campo en autenticación, perfil y movimientos;
 - confirmaciones destructivas unificadas para movimientos, recordatorios,
   presupuestos, metas y cierre de sesión;
-- feedback de carga y prevención de envíos repetidos en Login y Registro.
+- feedback de carga y prevención de envíos repetidos en Login y Registro;
+- formularios centrados y con ancho controlado en pantallas amplias;
+- soporte reforzado para texto ampliado, lectores de pantalla y controles
+  adaptables en accesos rápidos, filtros y componentes de estado.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

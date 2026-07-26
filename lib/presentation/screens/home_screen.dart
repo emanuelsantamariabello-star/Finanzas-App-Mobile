@@ -539,6 +539,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildQuickAccessSection(BuildContext context) {
     final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1).clamp(1.0, 1.6).toDouble();
+    final quickAccessHeight = 116 + ((textScale - 1) * 44);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -561,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 116,
+          height: quickAccessHeight,
           child: ListView(
             key: const ValueKey('home_quick_access_list'),
             scrollDirection: Axis.horizontal,
@@ -628,54 +632,65 @@ class _HomeScreenState extends State<HomeScreen> {
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1).clamp(1.0, 1.6).toDouble();
+    final cardWidth = 132 + ((textScale - 1) * 36);
 
     return SizedBox(
-      width: 132,
-      child: Material(
-        color: theme.cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.45)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(12),
+      width: cardWidth,
+      child: Semantics(
+        button: true,
+        label: '$title, $subtitle',
+        excludeSemantics: true,
+        child: Material(
+          color: theme.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.45)),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: color, size: 20),
                   ),
-                  child: Icon(icon, color: color, size: 20),
-                ),
-                const Spacer(),
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                  const Spacer(),
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
-                    fontSize: 10,
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.58,
+                      ),
+                      fontSize: 10,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

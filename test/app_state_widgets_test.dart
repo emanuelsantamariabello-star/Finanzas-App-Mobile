@@ -57,4 +57,30 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(find.text('Cargando movimientos…'), findsOneWidget);
   });
+
+  testWidgets('mantiene accesible el error con texto ampliado', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: const Scaffold(
+          body: SizedBox(
+            height: 220,
+            child: AppErrorState(
+              message: 'No fue posible cargar la información solicitada.',
+              compact: true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('No pudimos cargar la información'), findsOneWidget);
+  });
 }

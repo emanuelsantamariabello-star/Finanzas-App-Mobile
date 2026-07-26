@@ -33,6 +33,10 @@ void main() {
 
     await tester.tap(find.text('Abrir'));
     await tester.pumpAndSettle();
+    expect(
+      tester.widget<AlertDialog>(find.byType(AlertDialog)).scrollable,
+      true,
+    );
     await tester.tap(find.text('Eliminar'));
     await tester.pumpAndSettle();
 

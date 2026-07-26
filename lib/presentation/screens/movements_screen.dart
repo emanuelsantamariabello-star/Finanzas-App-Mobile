@@ -418,7 +418,13 @@ class _MovementsScreenState extends State<MovementsScreen>
     final tabController = _tabController;
     final theme = Theme.of(context);
     final activeRange = _currentRange();
-    final appBarBottomHeight = _hasActiveRange ? 234.0 : 188.0;
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1).clamp(1.0, 1.5).toDouble();
+    final responsiveHeight = (textScale - 1) * 36;
+    final appBarBottomHeight =
+        (_hasActiveRange ? 234.0 : 188.0) + responsiveHeight;
+    final quickFilterHeight = 38 + ((textScale - 1) * 18);
 
     if (tabController == null) {
       return const Scaffold(
@@ -457,6 +463,7 @@ class _MovementsScreenState extends State<MovementsScreen>
                           suffixIcon: searchQuery.isEmpty
                               ? null
                               : IconButton(
+                                  tooltip: 'Limpiar búsqueda',
                                   onPressed: () {
                                     searchController.clear();
                                     setState(() => searchQuery = '');
@@ -497,7 +504,7 @@ class _MovementsScreenState extends State<MovementsScreen>
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
-                  height: 38,
+                  height: quickFilterHeight,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [

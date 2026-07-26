@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
@@ -127,7 +128,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppSnackbar.error(context, 'Error al actualizar el perfil');
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(e, fallback: 'Error al actualizar el perfil'),
+      );
     } finally {
       if (mounted) setState(() => _saving = false);
     }

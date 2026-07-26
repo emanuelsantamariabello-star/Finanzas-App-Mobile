@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
 
 class UserService {
@@ -7,7 +6,7 @@ class UserService {
     required String currentPassword,
     required String newPassword,
   }) async {
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'change_password.php',
       body: {
         'user_id': userId.toString(),
@@ -17,8 +16,6 @@ class UserService {
         'password_new': newPassword,
       },
     );
-
-    return jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> updateProfile({
@@ -27,7 +24,7 @@ class UserService {
     required String email,
     required String occupation,
   }) async {
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'update_profile.php',
       body: {
         'user_id': userId.toString(),
@@ -38,7 +35,5 @@ class UserService {
         'job': occupation,
       },
     );
-
-    return jsonDecode(response.body);
   }
 }

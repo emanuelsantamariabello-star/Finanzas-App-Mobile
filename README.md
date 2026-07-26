@@ -203,11 +203,15 @@ La URL base de la API se centraliza en la configuración del proyecto:
 La aplicación soporta el uso de `--dart-define` para sobrescribir la URL base:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=http://HOST/finanzas_app/api
+flutter run --dart-define=APP_ENV=dev --dart-define=API_BASE_URL=http://HOST/finanzas_app/api
 ```
 
 Notas importantes:
 
+- `AppConfig` es la única fuente de configuración utilizada por el cliente HTTP.
+- El cliente normaliza las barras de la URL para evitar rutas duplicadas.
+- Los errores de conexión, timeout, HTTP y respuesta JSON inválida se
+  clasifican y presentan mediante mensajes seguros.
 - En el emulador Android, `localhost` de la computadora normalmente se representa como `10.0.2.2`.
 - En un dispositivo físico debe usarse una dirección accesible desde la red del dispositivo.
 - El backend debe estar iniciado y disponible antes de abrir la app.
@@ -263,10 +267,10 @@ debe considerarse listo para producción.
 ### Estabilización activa
 
 La rama `codex/stability-hardening` parte de una línea base limpia. La
-codificación residual, el aislamiento de datos locales por usuario y el ciclo
-de sesión ya fueron estabilizados. El trabajo continuará de forma secuencial
-con la configuración de API, la configuración Android de desarrollo y la
-evaluación controlada de dependencias.
+codificación residual, el aislamiento de datos locales por usuario, el ciclo
+de sesión y la configuración del cliente API ya fueron estabilizados. El
+trabajo continuará de forma secuencial con la configuración Android de
+desarrollo y la evaluación controlada de dependencias.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

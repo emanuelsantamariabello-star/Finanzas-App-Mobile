@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
@@ -166,7 +167,13 @@ class _LoginScreenState extends State<LoginScreen> {
         showMessage(message ?? 'Credenciales incorrectas', isError: true);
       }
     } catch (e) {
-      showMessage('Error de conexión con el servidor', isError: true);
+      showMessage(
+        apiErrorMessage(
+          e,
+          fallback: 'No se pudo completar el inicio de sesión',
+        ),
+        isError: true,
+      );
     }
   }
 

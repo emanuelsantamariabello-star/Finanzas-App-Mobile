@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
@@ -55,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = passwordController.text.trim();
 
     if (username.isEmpty || email.isEmpty || password.isEmpty) {
-      showMessage('Todos los campos son obligatorios');
+      showMessage('Todos los campos son obligatorios', isError: true);
       return;
     }
 
@@ -73,15 +74,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
           (route) => false,
         );
       } else {
-        showMessage(response['message']?.toString() ?? 'Error al registrarse');
+        showMessage(
+          response['message']?.toString() ?? 'No se pudo completar el registro',
+          isError: true,
+        );
       }
     } catch (e) {
-      showMessage('Error: $e');
+      showMessage(
+        apiErrorMessage(e, fallback: 'No se pudo completar el registro'),
+        isError: true,
+      );
     }
   }
 
-  void showMessage(String msg) {
-    AppSnackbar.success(context, msg);
+  void showMessage(String msg, {bool isError = false}) {
+    if (isError) {
+      AppSnackbar.error(context, msg);
+    } else {
+      AppSnackbar.success(context, msg);
+    }
   }
 
   @override

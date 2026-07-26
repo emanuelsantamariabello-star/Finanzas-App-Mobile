@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/expense_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -383,7 +384,10 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppSnackbar.error(context, 'Error al eliminar el gasto');
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(e, fallback: 'Error al eliminar el gasto'),
+      );
     }
   }
 

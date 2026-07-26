@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/income_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -386,7 +387,10 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppSnackbar.error(context, 'Error al eliminar el ingreso');
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(e, fallback: 'Error al eliminar el ingreso'),
+      );
     }
   }
 

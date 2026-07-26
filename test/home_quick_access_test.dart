@@ -3,6 +3,7 @@ import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/home_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
+import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
@@ -14,8 +15,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  Future<void> pumpHome(WidgetTester tester) async {
+  Future<void> pumpHome(
+    WidgetTester tester, {
+    AppSettingsProvider? appSettingsProvider,
+  }) async {
     SharedPreferences.setMockInitialValues({'userName': 'Usuario'});
+    final settingsProvider = appSettingsProvider ?? AppSettingsProvider();
+    if (!settingsProvider.isInitialized) {
+      await settingsProvider.initialize();
+    }
 
     await tester.binding.setSurfaceSize(const Size(360, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -23,6 +31,9 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
+          ChangeNotifierProvider<AppSettingsProvider>.value(
+            value: settingsProvider,
+          ),
           ChangeNotifierProvider(create: (_) => BudgetProvider()),
           ChangeNotifierProvider(create: (_) => DashboardProvider()),
           ChangeNotifierProvider(create: (_) => GoalProvider()),
@@ -85,5 +96,34 @@ void main() {
     await tester.tap(find.text('Presupuestos'));
     await tester.pumpAndSettle();
     expect(find.byType(BudgetsScreen), findsOneWidget);
+  });
+
+  testWidgets('oculta y muestra análisis de Inicio de forma reactiva', (
+    tester,
+  ) async {
+    final appSettingsProvider = AppSettingsProvider();
+    await pumpHome(tester, appSettingsProvider: appSettingsProvider);
+
+    expect(find.text('Insights rápidos'), findsOneWidget);
+    expect(find.text('Sugerencias de ahorro'), findsOneWidget);
+
+    await appSettingsProvider.setShowHomeInsights(false);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Insights rápidos'), findsNothing);
+    expect(find.text('Sugerencias de ahorro'), findsOneWidget);
+
+    await appSettingsProvider.setShowHomeSavingRecommendations(false);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Insights rápidos'), findsNothing);
+    expect(find.text('Sugerencias de ahorro'), findsNothing);
+
+    await appSettingsProvider.setShowHomeInsights(true);
+    await appSettingsProvider.setShowHomeSavingRecommendations(true);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Insights rápidos'), findsOneWidget);
+    expect(find.text('Sugerencias de ahorro'), findsOneWidget);
   });
 }

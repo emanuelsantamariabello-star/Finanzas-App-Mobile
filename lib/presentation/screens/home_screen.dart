@@ -12,6 +12,7 @@ import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
+import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 
@@ -682,28 +683,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appSettings = context.watch<AppSettingsProvider>();
     final dashboardProvider = context.watch<DashboardProvider>();
     final budgetProvider = context.watch<BudgetProvider>();
     final reminderProvider = context.watch<ReminderProvider>();
     final dashboardData = dashboardProvider.data;
     final theme = Theme.of(context);
     final now = DateTime.now();
+    final showInsights =
+        appSettings.isInitialized && appSettings.showHomeInsights;
+    final showSavingRecommendations =
+        appSettings.isInitialized && appSettings.showHomeSavingRecommendations;
     final smartSummary = SmartSummaryService.build(
       dashboardData: dashboardData,
       reminders: reminderProvider.reminders,
       now: now,
     );
-    final insights = SmartInsightService.build(
-      dashboardData: dashboardData,
-      reminders: reminderProvider.reminders,
-      now: now,
-      budgets: budgetProvider.budgets,
-      monthlySpentByCategory: budgetProvider.monthlySpentByCategory,
-    );
-    final recommendations = SavingRecommendationService.build(
-      dashboardData: dashboardData,
-      reminders: reminderProvider.reminders,
-    );
+    final insights = showInsights
+        ? SmartInsightService.build(
+            dashboardData: dashboardData,
+            reminders: reminderProvider.reminders,
+            now: now,
+            budgets: budgetProvider.budgets,
+            monthlySpentByCategory: budgetProvider.monthlySpentByCategory,
+          )
+        : const <SmartInsightModel>[];
+    final recommendations = showSavingRecommendations
+        ? SavingRecommendationService.build(
+            dashboardData: dashboardData,
+            reminders: reminderProvider.reminders,
+          )
+        : const <SavingRecommendationModel>[];
 
     return Scaffold(
       appBar: AppBar(title: const Text('Finanzas App')),
@@ -907,10 +917,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  _buildInsightsSection(context, insights),
-                  const SizedBox(height: 12),
-                  _buildRecommendationsSection(context, recommendations),
+                  if (showInsights) ...[
+                    const SizedBox(height: 12),
+                    _buildInsightsSection(context, insights),
+                  ],
+                  if (showSavingRecommendations) ...[
+                    const SizedBox(height: 12),
+                    _buildRecommendationsSection(context, recommendations),
+                  ],
                   const SizedBox(height: 12),
                   Row(
                     children: [

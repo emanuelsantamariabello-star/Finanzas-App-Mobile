@@ -8,8 +8,8 @@ una publicación en Google Play ni a una infraestructura de producción.
 
 ## Identificación de la beta
 
-- Versión: `1.0.0-beta.1`
-- Build: `1`
+- Versión: `1.0.0-beta.2`
+- Build: `2`
 - Application ID: `com.finanzas_app_san.emanuelsantamariabello`
 - Entorno: `beta`
 - API: `https://beta-api.finanzasappsan.com/finanzas_app/api`

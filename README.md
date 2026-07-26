@@ -27,6 +27,19 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Selector de tema claro, oscuro y del sistema.
 - Persistencia de la preferencia de tema.
 - Cierre de sesión.
+- Recordatorios locales diarios, semanales, quincenales y mensuales.
+- Notificaciones locales programadas para pagos, gastos fijos y metas.
+- Resumen financiero inteligente e insights generados localmente.
+- Sugerencias automáticas de categorías según la descripción del movimiento.
+- Recomendaciones locales de ahorro.
+- Metas financieras con seguimiento de progreso.
+- Presupuestos mensuales por categoría.
+- Búsqueda avanzada y filtros persistentes de movimientos.
+- Exportación de ingresos y gastos filtrados a CSV.
+- Compartir archivos CSV mediante el selector nativo del dispositivo.
+
+> Los recordatorios, metas, presupuestos y filtros se almacenan localmente en
+> el dispositivo. Actualmente no se sincronizan con el backend.
 
 ## Capturas de pantalla
 
@@ -51,6 +64,13 @@ Las imágenes se agregarán más adelante cuando se consolide la documentación 
 ### Persistencia local
 
 - `shared_preferences`
+- `path_provider`
+
+### Notificaciones y programación
+
+- `flutter_local_notifications`
+- `flutter_timezone`
+- `timezone`
 
 ### Comunicación HTTP
 
@@ -64,6 +84,7 @@ Las imágenes se agregarán más adelante cuando se consolide la documentación 
 
 - `intl`
 - `cupertino_icons`
+- `share_plus`
 
 ### Backend externo
 
@@ -192,14 +213,28 @@ Comandos útiles para desarrollo local:
 ```bash
 flutter analyze
 flutter test
+flutter build apk --debug
 flutter run
 ```
 
 Recomendación operativa:
 
 - Ejecutar `flutter analyze` para revisar advertencias y errores estáticos.
-- Ejecutar `flutter test` cuando existan pruebas suficientes.
+- Ejecutar `flutter test` para validar sesión inicial, temas, categorización,
+  análisis financiero y persistencia local.
+- Ejecutar `flutter build apk --debug` después de modificar plugins o
+  configuración nativa.
 - Ejecutar `flutter run` para validar el comportamiento de la app en un dispositivo o emulador.
+
+La validación manual debe incluir:
+
+- creación, edición y eliminación de ingresos y gastos;
+- actualización del dashboard y las estadísticas;
+- programación y cancelación de recordatorios;
+- creación de metas y presupuestos;
+- restauración de filtros al volver a Movimientos;
+- exportación y uso de la acción `Compartir CSV`;
+- cambio entre los temas claro, oscuro y del sistema.
 
 ## Estado actual
 
@@ -207,18 +242,18 @@ El proyecto está en desarrollo activo y no debe considerarse listo para producc
 
 Antes de un despliegue productivo todavía conviene reforzar:
 
-- la limpieza de advertencias del analizador,
 - la gestión estructurada de errores,
 - la comunicación HTTP,
+- la cobertura de pruebas de integración,
+- la configuración de firma y publicación,
 - y la configuración de publicación/release.
 
 ## Hoja de ruta
 
-- Reducir advertencias de `flutter analyze`.
 - Mejorar la gestión de sesión.
 - Incorporar manejo de errores más estructurado.
 - Separar progresivamente servicios y repositorios.
-- Añadir pruebas automatizadas.
+- Ampliar pruebas automatizadas e incorporar pruebas de integración.
 - Preparar configuraciones por entorno.
 - Migrar el backend a HTTPS antes de producción.
 

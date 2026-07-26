@@ -8,6 +8,7 @@ import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'income_create_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
@@ -238,84 +239,15 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
 
     if (!mounted) return;
 
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF161B22),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-
-        title: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline,
-                color: Colors.red,
-                size: 32,
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            const Text(
-              "Eliminar ingreso",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-
-        content: const Text(
-          "Esta acci\u00f3n eliminar\u00e1 el movimiento permanentemente.",
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white70, height: 1.4),
-        ),
-
-        actionsAlignment: MainAxisAlignment.spaceEvenly,
-
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              "Cancelar",
-              style: TextStyle(
-                color: Color(0xFF00E676),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            ),
-
-            onPressed: () => Navigator.pop(context, true),
-
-            child: const Text(
-              "Eliminar",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Eliminar ingreso',
+      message: 'Esta acción eliminará el movimiento permanentemente.',
+      confirmLabel: 'Eliminar',
+      icon: Icons.delete_outline_rounded,
     );
 
-    if (confirm != true) return;
+    if (!confirm) return;
 
     try {
       final response = await IncomeService.deleteIncome(

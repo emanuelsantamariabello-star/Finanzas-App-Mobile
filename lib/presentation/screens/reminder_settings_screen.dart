@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/reminder_model.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
@@ -71,33 +72,19 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
   }
 
   Future<void> _deleteReminder(ReminderModel reminder) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Eliminar recordatorio'),
-          content: Text(
-            'Se eliminará "${reminder.title}" de forma permanente.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Eliminar'),
-            ),
-          ],
-        );
-      },
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Eliminar recordatorio',
+      message: 'Se eliminará "${reminder.title}" de forma permanente.',
+      confirmLabel: 'Eliminar',
+      icon: Icons.notifications_off_outlined,
     );
 
-    if (confirm != true || !mounted) return;
+    if (!confirm || !mounted) return;
 
     await context.read<ReminderProvider>().deleteReminder(reminder.id);
     if (!mounted) return;
-    AppSnackbar.info(context, 'Recordatorio eliminado');
+    AppSnackbar.success(context, 'Recordatorio eliminado');
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/budget_model.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
@@ -59,30 +60,18 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   }
 
   Future<void> _deleteBudget(BudgetModel budget) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Eliminar presupuesto'),
-          content: Text('Se eliminará el presupuesto de ${budget.category}.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Eliminar'),
-            ),
-          ],
-        );
-      },
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Eliminar presupuesto',
+      message: 'Se eliminará el presupuesto de ${budget.category}.',
+      confirmLabel: 'Eliminar',
+      icon: Icons.pie_chart_outline_rounded,
     );
 
-    if (confirm != true || !mounted) return;
+    if (!confirm || !mounted) return;
     await context.read<BudgetProvider>().deleteBudget(budget.id);
     if (!mounted) return;
-    AppSnackbar.info(context, 'Presupuesto eliminado');
+    AppSnackbar.success(context, 'Presupuesto eliminado');
   }
 
   @override

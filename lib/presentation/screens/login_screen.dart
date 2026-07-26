@@ -26,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _rememberCredentials = true;
   bool _showPassword = false;
+  bool _isSubmitting = false;
 
   final SessionStorageService _sessionStorageService = SessionStorageService();
 
@@ -84,6 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void handleLogin() async {
+    if (_isSubmitting) return;
+
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
@@ -96,6 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
       showMessage('Correo inválido', isError: true);
       return;
     }
+
+    setState(() => _isSubmitting = true);
 
     try {
       final response = await AuthService.login(email, password);
@@ -146,6 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
         showMessage(message ?? 'Credenciales incorrectas', isError: true);
       }
     } catch (e) {
+      if (!mounted) return;
       showMessage(
         apiErrorMessage(
           e,
@@ -153,6 +159,8 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         isError: true,
       );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -266,6 +274,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 8),
                     AppPrimaryButton(
                       label: 'Iniciar sesión',
+                      loadingLabel: 'Iniciando sesión…',
+                      isLoading: _isSubmitting,
                       onPressed: handleLogin,
                     ),
                   ],

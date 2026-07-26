@@ -1,5 +1,6 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/financial_goal_model.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
@@ -89,33 +90,19 @@ class _FinancialGoalsScreenState extends State<FinancialGoalsScreen> {
   }
 
   Future<void> _deleteGoal(FinancialGoalModel goal) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Eliminar meta'),
-          content: Text(
-            'Se eliminará "${goal.title}" y su seguimiento actual.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Eliminar'),
-            ),
-          ],
-        );
-      },
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Eliminar meta',
+      message: 'Se eliminará "${goal.title}" y su seguimiento actual.',
+      confirmLabel: 'Eliminar',
+      icon: Icons.flag_outlined,
     );
 
-    if (confirm != true || !mounted) return;
+    if (!confirm || !mounted) return;
 
     await context.read<GoalProvider>().deleteGoal(goal.id);
     if (!mounted) return;
-    AppSnackbar.info(context, 'Meta eliminada');
+    AppSnackbar.success(context, 'Meta eliminada');
   }
 
   @override

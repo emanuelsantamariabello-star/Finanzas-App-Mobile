@@ -12,6 +12,7 @@ import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dar
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/settings_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -60,36 +61,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _logout() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Theme.of(ctx).cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          'Cerrar sesión',
-          style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
-        ),
-        content: Text(
-          '¿Estás seguro de que deseas cerrar sesión?',
-          style: TextStyle(
-            color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: 0.72),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-            child: const Text('Cerrar sesión'),
-          ),
-        ],
-      ),
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas cerrar sesión?',
+      confirmLabel: 'Cerrar sesión',
+      icon: Icons.logout_rounded,
     );
 
-    if (confirm != true || !mounted) return;
+    if (!confirm || !mounted) return;
 
     await _sessionStorageService.clearSession();
 

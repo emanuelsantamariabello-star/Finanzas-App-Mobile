@@ -314,7 +314,10 @@ Avance actual:
 - formularios desplazables con cierre de teclado mediante toque exterior o
   gesto de desplazamiento;
 - acciones de teclado, autocompletado y capitalización ajustadas según el tipo
-  de campo en autenticación, perfil y movimientos.
+  de campo en autenticación, perfil y movimientos;
+- confirmaciones destructivas unificadas para movimientos, recordatorios,
+  presupuestos, metas y cierre de sesión;
+- feedback de carga y prevención de envíos repetidos en Login y Registro.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

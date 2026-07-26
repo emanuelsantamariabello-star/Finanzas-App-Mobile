@@ -20,6 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final SessionStorageService _sessionStorageService = SessionStorageService();
 
   bool _showPassword = false;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -30,6 +31,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void handleRegister() async {
+    if (_isSubmitting) return;
+
     final username = usernameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -38,6 +41,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showMessage('Todos los campos son obligatorios', isError: true);
       return;
     }
+
+    setState(() => _isSubmitting = true);
 
     try {
       final response = await AuthService.register(username, email, password);
@@ -59,10 +64,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       showMessage(
         apiErrorMessage(e, fallback: 'No se pudo completar el registro'),
         isError: true,
       );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -135,6 +143,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 AppPrimaryButton(
                   label: 'Registrarse',
+                  loadingLabel: 'Creando cuenta…',
+                  isLoading: _isSubmitting,
                   onPressed: handleRegister,
                 ),
               ],

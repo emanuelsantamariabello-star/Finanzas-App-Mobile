@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/presentation/screens/register_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
@@ -67,28 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       await prefs.remove(SessionKeys.rememberedEmail);
     }
-  }
-
-  InputDecoration _decoration({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    Widget? suffixIcon,
-  }) {
-    final theme = Theme.of(context);
-
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: theme.inputDecorationTheme.fillColor ?? theme.cardColor,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-    );
   }
 
   bool _isSuccessResponse(dynamic value) {
@@ -209,22 +188,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 22),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: theme.dividerColor.withValues(alpha: 0.4),
-                  ),
-                ),
+              AppSurfaceCard(
                 child: Column(
                   children: [
                     TextField(
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: _decoration(
+                      decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Correo',
                         icon: Icons.email_outlined,
@@ -239,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: passwordController,
                       obscureText: !_showPassword,
-                      decoration: _decoration(
+                      decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Contraseña',
                         icon: Icons.lock_outline_rounded,
@@ -287,20 +257,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00C853),
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: const Text('Iniciar sesión'),
-                      ),
+                    AppPrimaryButton(
+                      label: 'Iniciar sesión',
+                      onPressed: handleLogin,
                     ),
                   ],
                 ),

@@ -300,6 +300,14 @@ La auditoría inicial identificó estos frentes de trabajo:
 - eliminar inconsistencias residuales entre los temas claro y oscuro;
 - cerrar con regresión visual y funcional de todos los módulos.
 
+Avance actual:
+
+- componentes reutilizables para inputs, superficies y botones principales;
+- formularios unificados en Login, Registro, Editar Perfil, Cambiar
+  Contraseña, Ingresos y Gastos;
+- estados de carga integrados en el botón principal para evitar acciones
+  repetidas.
+
 Antes de un despliegue productivo todavía conviene reforzar:
 
 - migrar la API a HTTPS y definir entornos de desarrollo y producción;

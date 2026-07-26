@@ -3,6 +3,7 @@ import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -26,28 +27,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-  }
-
-  InputDecoration _decoration({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    Widget? suffixIcon,
-  }) {
-    final theme = Theme.of(context);
-
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: theme.inputDecorationTheme.fillColor ?? theme.cardColor,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-    );
   }
 
   void handleRegister() async {
@@ -97,29 +76,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Crear cuenta')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: theme.cardColor,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: theme.dividerColor.withValues(alpha: 0.4),
-              ),
-            ),
+          child: AppSurfaceCard(
             child: Column(
               children: [
                 TextField(
                   controller: usernameController,
                   textInputAction: TextInputAction.next,
-                  decoration: _decoration(
+                  decoration: AppFormDecoration.input(
                     context: context,
                     label: 'Nombre',
                     icon: Icons.person_outline_rounded,
@@ -130,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  decoration: _decoration(
+                  decoration: AppFormDecoration.input(
                     context: context,
                     label: 'Correo',
                     icon: Icons.email_outlined,
@@ -141,7 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: passwordController,
                   obscureText: !_showPassword,
                   textInputAction: TextInputAction.done,
-                  decoration: _decoration(
+                  decoration: AppFormDecoration.input(
                     context: context,
                     label: 'Contraseña',
                     icon: Icons.lock_outline_rounded,
@@ -159,20 +127,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onSubmitted: (_) => handleRegister(),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: handleRegister,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00C853),
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text('Registrarse'),
-                  ),
+                AppPrimaryButton(
+                  label: 'Registrarse',
+                  onPressed: handleRegister,
                 ),
               ],
             ),

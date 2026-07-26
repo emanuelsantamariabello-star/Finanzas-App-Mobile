@@ -9,6 +9,7 @@ import 'package:finanzas_app_mobile/data/models/category_suggestion_model.dart';
 import 'package:finanzas_app_mobile/data/services/category_suggestion_service.dart';
 import 'package:finanzas_app_mobile/data/services/income_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
 class IncomeCreateScreen extends StatefulWidget {
@@ -234,10 +235,6 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final fillColor = theme.inputDecorationTheme.fillColor ?? theme.cardColor;
-    final borderColor =
-        theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
-        theme.dividerColor;
 
     return Scaffold(
       appBar: AppBar(
@@ -255,9 +252,10 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  labelText: "Monto",
-                  prefixIcon: Icon(Icons.attach_money),
+                decoration: AppFormDecoration.input(
+                  context: context,
+                  label: 'Monto',
+                  icon: Icons.attach_money,
                 ),
                 validator: (value) {
                   final v = value?.trim() ?? '';
@@ -286,9 +284,10 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
                   if (value == null) return;
                   setState(() => type = value);
                 },
-                decoration: const InputDecoration(
-                  labelText: "Tipo",
-                  prefixIcon: Icon(Icons.category),
+                decoration: AppFormDecoration.input(
+                  context: context,
+                  label: 'Tipo',
+                  icon: Icons.category,
                 ),
               ),
 
@@ -298,9 +297,10 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
               TextFormField(
                 controller: noteController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: "Nota",
-                  prefixIcon: Icon(Icons.note_alt_outlined),
+                decoration: AppFormDecoration.input(
+                  context: context,
+                  label: 'Nota',
+                  icon: Icons.note_alt_outlined,
                 ),
               ),
 
@@ -312,31 +312,11 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(14),
                 child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Fecha',
-                    prefixIcon: const Icon(Icons.calendar_today_outlined),
+                  decoration: AppFormDecoration.input(
+                    context: context,
+                    label: 'Fecha',
+                    icon: Icons.calendar_today_outlined,
                     suffixIcon: const Icon(Icons.expand_more_rounded),
-                    filled: true,
-                    fillColor: fillColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: borderColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(
-                        color: theme.colorScheme.primary,
-                        width: 1.4,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
                   ),
                   child: Text(
                     DateFormat('dd/MM/yyyy').format(selectedDate),
@@ -348,31 +328,16 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
               const SizedBox(height: 20),
 
               // 🚀 BOTÓN
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton.icon(
-                  onPressed: isLoading ? null : saveIncome,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00C853),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  icon: isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.save_outlined),
-                  label: Text(
-                    widget.income == null
-                        ? "Guardar ingreso"
-                        : "Actualizar ingreso",
-                  ),
-                ),
+              AppPrimaryButton(
+                label: widget.income == null
+                    ? 'Guardar ingreso'
+                    : 'Actualizar ingreso',
+                loadingLabel: widget.income == null
+                    ? 'Guardando…'
+                    : 'Actualizando…',
+                icon: Icons.save_outlined,
+                isLoading: isLoading,
+                onPressed: saveIncome,
               ),
             ],
           ),

@@ -270,8 +270,21 @@ debe considerarse listo para producción.
 La rama `codex/stability-hardening` parte de una línea base limpia. La
 codificación residual, el aislamiento de datos locales por usuario, el ciclo
 de sesión, la configuración del cliente API y Android para desarrollo ya
-fueron estabilizados. El trabajo continuará con la evaluación controlada de
-dependencias.
+fueron estabilizados. La evaluación controlada de dependencias también quedó
+completada sin aplicar migraciones mayores.
+
+Dependencias actualizadas de forma compatible:
+
+- `flutter_local_notifications` 22.2.0;
+- `flutter_local_notifications_platform_interface` 12.1.0;
+- `equatable` 2.1.0;
+- `path_provider_linux` 2.2.2;
+- `path_provider_platform_interface` 2.1.3;
+- `vm_service` 15.2.0.
+
+Las migraciones mayores de `fl_chart` y `share_plus` quedan aplazadas para
+ramas independientes con validación visual de gráficas y validación funcional
+de exportación.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

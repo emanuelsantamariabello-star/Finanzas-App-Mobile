@@ -1,5 +1,6 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/financial_goal_model.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
@@ -497,119 +498,108 @@ class _GoalFormSheetState extends State<_GoalFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, bottomInset + 20),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.goal == null ? 'Nueva meta financiera' : 'Editar meta',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+    return AppFormScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      includeKeyboardInset: true,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.goal == null ? 'Nueva meta financiera' : 'Editar meta',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _titleController,
+              textInputAction: TextInputAction.next,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Título',
+                prefixIcon: Icon(Icons.flag_outlined),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _titleController,
+              validator: (value) {
+                if ((value ?? '').trim().isEmpty) {
+                  return 'Ingresa un título';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _targetController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Monto objetivo',
+                prefixIcon: Icon(Icons.track_changes_outlined),
+              ),
+              validator: (value) {
+                final amount = double.tryParse((value ?? '').trim());
+                if (amount == null || amount <= 0) {
+                  return 'Ingresa un monto objetivo válido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _currentController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Monto actual',
+                prefixIcon: Icon(Icons.savings_outlined),
+              ),
+              validator: (value) {
+                final amount = double.tryParse((value ?? '').trim());
+                if (amount == null || amount < 0) {
+                  return 'Ingresa un monto actual válido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _noteController,
+              maxLines: 3,
+              textInputAction: TextInputAction.done,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Nota',
+                prefixIcon: Icon(Icons.note_alt_outlined),
+              ),
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: _pickDate,
+              borderRadius: BorderRadius.circular(14),
+              child: InputDecorator(
                 decoration: const InputDecoration(
-                  labelText: 'Título',
-                  prefixIcon: Icon(Icons.flag_outlined),
+                  labelText: 'Fecha objetivo',
+                  prefixIcon: Icon(Icons.calendar_today_outlined),
+                  suffixIcon: Icon(Icons.expand_more_rounded),
                 ),
-                validator: (value) {
-                  if ((value ?? '').trim().isEmpty) {
-                    return 'Ingresa un título';
-                  }
-                  return null;
-                },
+                child: Text(DateFormat('dd/MM/yyyy').format(_targetDate)),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _targetController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: const InputDecoration(
-                  labelText: 'Monto objetivo',
-                  prefixIcon: Icon(Icons.track_changes_outlined),
-                ),
-                validator: (value) {
-                  final amount = double.tryParse((value ?? '').trim());
-                  if (amount == null || amount <= 0) {
-                    return 'Ingresa un monto objetivo válido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _currentController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: const InputDecoration(
-                  labelText: 'Monto actual',
-                  prefixIcon: Icon(Icons.savings_outlined),
-                ),
-                validator: (value) {
-                  final amount = double.tryParse((value ?? '').trim());
-                  if (amount == null || amount < 0) {
-                    return 'Ingresa un monto actual válido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _noteController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Nota',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
-                ),
-              ),
-              const SizedBox(height: 12),
-              InkWell(
-                onTap: _pickDate,
-                borderRadius: BorderRadius.circular(14),
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Fecha objetivo',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
-                    suffixIcon: Icon(Icons.expand_more_rounded),
-                  ),
-                  child: Text(DateFormat('dd/MM/yyyy').format(_targetDate)),
-                ),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton.icon(
-                  onPressed: _isSaving ? null : _save,
-                  icon: _isSaving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.save_outlined),
-                  label: Text(
-                    _isSaving
-                        ? 'Guardando...'
-                        : widget.goal == null
-                        ? 'Guardar meta'
-                        : 'Actualizar meta',
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 18),
+            AppPrimaryButton(
+              label: widget.goal == null ? 'Guardar meta' : 'Actualizar meta',
+              loadingLabel: 'Guardando…',
+              icon: Icons.save_outlined,
+              isLoading: _isSaving,
+              onPressed: _save,
+            ),
+          ],
         ),
       ),
     );

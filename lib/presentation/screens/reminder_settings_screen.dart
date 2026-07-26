@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/reminder_model.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
@@ -390,156 +391,144 @@ class _ReminderFormSheetState extends State<_ReminderFormSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     final formatter = DateFormat('dd/MM/yyyy', 'es_CO');
     final timeLabel = _timeOfDay.format(context);
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding + 20),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.reminder == null
-                    ? 'Nuevo recordatorio'
-                    : 'Editar recordatorio',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+    return AppFormScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      includeKeyboardInset: true,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.reminder == null
+                  ? 'Nuevo recordatorio'
+                  : 'Editar recordatorio',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  prefixIcon: Icon(Icons.title_rounded),
-                ),
-                validator: (value) {
-                  if ((value ?? '').trim().isEmpty) {
-                    return 'Ingresa un título';
-                  }
-                  return null;
-                },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _titleController,
+              textInputAction: TextInputAction.next,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Título',
+                prefixIcon: Icon(Icons.title_rounded),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción',
-                  prefixIcon: Icon(Icons.notes_rounded),
-                ),
+              validator: (value) {
+                if ((value ?? '').trim().isEmpty) {
+                  return 'Ingresa un título';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _descriptionController,
+              maxLines: 3,
+              textInputAction: TextInputAction.done,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Descripción',
+                prefixIcon: Icon(Icons.notes_rounded),
               ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _type,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo',
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'payment', child: Text('Pago')),
-                  DropdownMenuItem(
-                    value: 'fixed_expense',
-                    child: Text('Gasto fijo'),
-                  ),
-                  DropdownMenuItem(value: 'goal', child: Text('Meta')),
-                ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() => _type = value);
-                },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _type,
+              decoration: const InputDecoration(
+                labelText: 'Tipo',
+                prefixIcon: Icon(Icons.category_outlined),
               ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _frequency,
-                decoration: const InputDecoration(
-                  labelText: 'Frecuencia',
-                  prefixIcon: Icon(Icons.repeat_rounded),
+              items: const [
+                DropdownMenuItem(value: 'payment', child: Text('Pago')),
+                DropdownMenuItem(
+                  value: 'fixed_expense',
+                  child: Text('Gasto fijo'),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'daily', child: Text('Diario')),
-                  DropdownMenuItem(value: 'weekly', child: Text('Semanal')),
-                  DropdownMenuItem(value: 'biweekly', child: Text('Quincenal')),
-                  DropdownMenuItem(value: 'monthly', child: Text('Mensual')),
-                ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() => _frequency = value);
-                },
+                DropdownMenuItem(value: 'goal', child: Text('Meta')),
+              ],
+              onChanged: (value) {
+                if (value == null) return;
+                setState(() => _type = value);
+              },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _frequency,
+              decoration: const InputDecoration(
+                labelText: 'Frecuencia',
+                prefixIcon: Icon(Icons.repeat_rounded),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: _pickDate,
-                      borderRadius: BorderRadius.circular(14),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Fecha base',
-                          prefixIcon: Icon(Icons.calendar_today_outlined),
-                        ),
-                        child: Text(formatter.format(_scheduledAt)),
+              items: const [
+                DropdownMenuItem(value: 'daily', child: Text('Diario')),
+                DropdownMenuItem(value: 'weekly', child: Text('Semanal')),
+                DropdownMenuItem(value: 'biweekly', child: Text('Quincenal')),
+                DropdownMenuItem(value: 'monthly', child: Text('Mensual')),
+              ],
+              onChanged: (value) {
+                if (value == null) return;
+                setState(() => _frequency = value);
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: _pickDate,
+                    borderRadius: BorderRadius.circular(14),
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Fecha base',
+                        prefixIcon: Icon(Icons.calendar_today_outlined),
                       ),
+                      child: Text(formatter.format(_scheduledAt)),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: InkWell(
-                      onTap: _pickTime,
-                      borderRadius: BorderRadius.circular(14),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Hora',
-                          prefixIcon: Icon(Icons.access_time_rounded),
-                        ),
-                        child: Text(timeLabel),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InkWell(
+                    onTap: _pickTime,
+                    borderRadius: BorderRadius.circular(14),
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Hora',
+                        prefixIcon: Icon(Icons.access_time_rounded),
                       ),
+                      child: Text(timeLabel),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Activar recordatorio'),
-                subtitle: const Text(
-                  'Se programará automáticamente al guardar.',
                 ),
-                value: _isEnabled,
-                onChanged: (value) {
-                  setState(() => _isEnabled = value);
-                },
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton.icon(
-                  onPressed: _isSaving ? null : _save,
-                  icon: _isSaving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.save_outlined),
-                  label: Text(
-                    _isSaving
-                        ? 'Guardando...'
-                        : widget.reminder == null
-                        ? 'Guardar recordatorio'
-                        : 'Actualizar recordatorio',
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Activar recordatorio'),
+              subtitle: const Text('Se programará automáticamente al guardar.'),
+              value: _isEnabled,
+              onChanged: (value) {
+                setState(() => _isEnabled = value);
+              },
+            ),
+            const SizedBox(height: 16),
+            AppPrimaryButton(
+              label: widget.reminder == null
+                  ? 'Guardar recordatorio'
+                  : 'Actualizar recordatorio',
+              loadingLabel: 'Guardando…',
+              icon: Icons.save_outlined,
+              isLoading: _isSaving,
+              onPressed: _save,
+            ),
+          ],
         ),
       ),
     );

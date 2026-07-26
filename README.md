@@ -310,7 +310,11 @@ Avance actual:
 - estados reutilizables de carga, error y contenido vacío con acciones claras
   de reintento o creación;
 - estados unificados en Inicio, Movimientos, Estadísticas, Perfil,
-  Recordatorios, Presupuestos y Metas financieras.
+  Recordatorios, Presupuestos y Metas financieras;
+- formularios desplazables con cierre de teclado mediante toque exterior o
+  gesto de desplazamiento;
+- acciones de teclado, autocompletado y capitalización ajustadas según el tipo
+  de campo en autenticación, perfil y movimientos.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

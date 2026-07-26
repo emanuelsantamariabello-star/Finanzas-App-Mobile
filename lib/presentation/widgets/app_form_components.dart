@@ -49,6 +49,41 @@ class AppSurfaceCard extends StatelessWidget {
   }
 }
 
+class AppFormScrollView extends StatelessWidget {
+  const AppFormScrollView({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(20),
+    this.includeKeyboardInset = false,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final bool includeKeyboardInset;
+
+  @override
+  Widget build(BuildContext context) {
+    final keyboardInset = includeKeyboardInset
+        ? MediaQuery.viewInsetsOf(context).bottom
+        : 0.0;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: keyboardInset),
+        child: SingleChildScrollView(
+          padding: padding,
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
 class AppPrimaryButton extends StatelessWidget {
   const AppPrimaryButton({
     super.key,
@@ -73,7 +108,12 @@ class AppPrimaryButton extends StatelessWidget {
       width: double.infinity,
       height: 54,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: isLoading || onPressed == null
+            ? null
+            : () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                onPressed!();
+              },
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

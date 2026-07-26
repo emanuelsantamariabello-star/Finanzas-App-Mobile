@@ -1,5 +1,6 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/budget_model.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
@@ -427,90 +428,80 @@ class _BudgetFormSheetState extends State<_BudgetFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, bottomInset + 20),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.budget == null
-                    ? 'Nuevo presupuesto'
-                    : 'Editar presupuesto',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+    return AppFormScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      includeKeyboardInset: true,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.budget == null
+                  ? 'Nuevo presupuesto'
+                  : 'Editar presupuesto',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _categoryController,
+              textInputAction: TextInputAction.next,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Categoría',
+                prefixIcon: Icon(Icons.category_outlined),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _categoryController,
-                decoration: const InputDecoration(
-                  labelText: 'Categoría',
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
-                validator: (value) {
-                  if ((value ?? '').trim().isEmpty) {
-                    return 'Ingresa una categoría';
-                  }
-                  return null;
-                },
+              validator: (value) {
+                if ((value ?? '').trim().isEmpty) {
+                  return 'Ingresa una categoría';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _limitController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _limitController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: const InputDecoration(
-                  labelText: 'Límite mensual',
-                  prefixIcon: Icon(Icons.track_changes_outlined),
-                ),
-                validator: (value) {
-                  final amount = double.tryParse((value ?? '').trim());
-                  if (amount == null || amount <= 0) {
-                    return 'Ingresa un límite válido';
-                  }
-                  return null;
-                },
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Límite mensual',
+                prefixIcon: Icon(Icons.track_changes_outlined),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _noteController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Nota',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
-                ),
+              validator: (value) {
+                final amount = double.tryParse((value ?? '').trim());
+                if (amount == null || amount <= 0) {
+                  return 'Ingresa un límite válido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _noteController,
+              maxLines: 3,
+              textInputAction: TextInputAction.done,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Nota',
+                prefixIcon: Icon(Icons.note_alt_outlined),
               ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton.icon(
-                  onPressed: _isSaving ? null : _save,
-                  icon: _isSaving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.save_outlined),
-                  label: Text(
-                    _isSaving
-                        ? 'Guardando...'
-                        : widget.budget == null
-                        ? 'Guardar presupuesto'
-                        : 'Actualizar presupuesto',
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 18),
+            AppPrimaryButton(
+              label: widget.budget == null
+                  ? 'Guardar presupuesto'
+                  : 'Actualizar presupuesto',
+              loadingLabel: 'Guardando…',
+              icon: Icons.save_outlined,
+              isLoading: _isSaving,
+              onPressed: _save,
+            ),
+          ],
         ),
       ),
     );

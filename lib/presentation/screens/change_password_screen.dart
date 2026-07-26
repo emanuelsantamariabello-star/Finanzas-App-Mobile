@@ -125,7 +125,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ? const AppLoadingState(message: 'Preparando la configuración…')
           : _loadError != null
           ? AppErrorState(message: _loadError!, onRetry: _loadUserId)
-          : SingleChildScrollView(
+          : AppFormScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,6 +148,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _currentController,
                           obscureText: !_showCurrent,
                           textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.password],
+                          enableSuggestions: false,
+                          autocorrect: false,
                           decoration: AppFormDecoration.input(
                             context: context,
                             label: 'Contraseña actual',
@@ -176,6 +179,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _newController,
                           obscureText: !_showNew,
                           textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.newPassword],
+                          enableSuggestions: false,
+                          autocorrect: false,
                           decoration: AppFormDecoration.input(
                             context: context,
                             label: 'Nueva contraseña',
@@ -207,6 +213,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _confirmController,
                           obscureText: !_showConfirm,
                           textInputAction: TextInputAction.done,
+                          enableSuggestions: false,
+                          autocorrect: false,
                           decoration: AppFormDecoration.input(
                             context: context,
                             label: 'Confirmar nueva contraseña',

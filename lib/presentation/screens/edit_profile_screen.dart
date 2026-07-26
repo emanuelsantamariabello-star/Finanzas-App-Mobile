@@ -138,7 +138,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ? const AppLoadingState(message: 'Cargando tu perfil…')
           : _loadError != null
           ? AppErrorState(message: _loadError!, onRetry: _loadInitial)
-          : SingleChildScrollView(
+          : AppFormScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,6 +160,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         TextFormField(
                           controller: _nameController,
                           textInputAction: TextInputAction.next,
+                          textCapitalization: TextCapitalization.words,
+                          autofillHints: const [AutofillHints.name],
                           decoration: AppFormDecoration.input(
                             context: context,
                             label: 'Nombre',
@@ -178,6 +180,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.email],
                           decoration: AppFormDecoration.input(
                             context: context,
                             label: 'Email',
@@ -195,6 +198,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         TextFormField(
                           controller: _occupationController,
                           textInputAction: TextInputAction.done,
+                          textCapitalization: TextCapitalization.sentences,
                           decoration: AppFormDecoration.input(
                             context: context,
                             label: 'Ocupación',

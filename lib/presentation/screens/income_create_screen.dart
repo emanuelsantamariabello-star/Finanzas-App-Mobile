@@ -240,7 +240,7 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
       appBar: AppBar(
         title: Text(widget.income == null ? "Nuevo ingreso" : "Editar ingreso"),
       ),
-      body: SingleChildScrollView(
+      body: AppFormScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
@@ -252,6 +252,7 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
+                textInputAction: TextInputAction.next,
                 decoration: AppFormDecoration.input(
                   context: context,
                   label: 'Monto',
@@ -297,6 +298,8 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
               TextFormField(
                 controller: noteController,
                 maxLines: 3,
+                textInputAction: TextInputAction.done,
+                textCapitalization: TextCapitalization.sentences,
                 decoration: AppFormDecoration.input(
                   context: context,
                   label: 'Nota',

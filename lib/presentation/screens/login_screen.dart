@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: AppFormScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,6 +194,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.email],
                       decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Correo',
@@ -209,6 +211,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: passwordController,
                       obscureText: !_showPassword,
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.password],
+                      enableSuggestions: false,
+                      autocorrect: false,
                       decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Contraseña',
@@ -224,6 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
+                      onSubmitted: (_) => handleLogin(),
                     ),
                     const SizedBox(height: 10),
                     Row(

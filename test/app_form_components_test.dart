@@ -70,4 +70,42 @@ void main() {
     expect(find.text('Guardando…'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
+
+  testWidgets('permite cerrar el teclado al tocar fuera del campo', (
+    tester,
+  ) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: Scaffold(
+          body: AppFormScrollView(
+            child: SizedBox(
+              height: 500,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: TextField(focusNode: focusNode),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(TextField));
+    expect(focusNode.hasFocus, isTrue);
+
+    await tester.tapAt(const Offset(20, 400));
+    await tester.pump();
+
+    expect(focusNode.hasFocus, isFalse);
+    expect(
+      tester
+          .widget<SingleChildScrollView>(find.byType(SingleChildScrollView))
+          .keyboardDismissBehavior,
+      ScrollViewKeyboardDismissBehavior.onDrag,
+    );
+  });
 }

@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Crear cuenta')),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: AppFormScrollView(
           padding: const EdgeInsets.all(24),
           child: AppSurfaceCard(
             child: Column(
@@ -87,6 +87,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextField(
                   controller: usernameController,
                   textInputAction: TextInputAction.next,
+                  textCapitalization: TextCapitalization.words,
+                  autofillHints: const [AutofillHints.name],
                   decoration: AppFormDecoration.input(
                     context: context,
                     label: 'Nombre',
@@ -98,6 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.email],
                   decoration: AppFormDecoration.input(
                     context: context,
                     label: 'Correo',
@@ -109,6 +112,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: passwordController,
                   obscureText: !_showPassword,
                   textInputAction: TextInputAction.done,
+                  autofillHints: const [AutofillHints.newPassword],
+                  enableSuggestions: false,
+                  autocorrect: false,
                   decoration: AppFormDecoration.input(
                     context: context,
                     label: 'Contraseña',

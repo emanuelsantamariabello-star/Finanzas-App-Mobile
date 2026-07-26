@@ -264,7 +264,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(isEditMode ? "Editar gasto" : "Nuevo gasto")),
-      body: SingleChildScrollView(
+      body: AppFormScrollView(
         padding: const EdgeInsets.all(20),
         child: isLoadingIncomes
             ? const Center(child: CircularProgressIndicator())
@@ -275,6 +275,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                     TextFormField(
                       controller: amountController,
                       keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
                       decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Monto',
@@ -311,6 +312,8 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                     TextFormField(
                       controller: noteController,
                       maxLines: 3,
+                      textInputAction: TextInputAction.done,
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Nota',

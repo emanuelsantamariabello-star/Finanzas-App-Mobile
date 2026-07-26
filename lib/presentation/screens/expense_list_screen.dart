@@ -11,12 +11,16 @@ class ExpenseListScreen extends StatefulWidget {
   final bool embeddedMode;
   final String searchQuery;
   final String quickFilter;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const ExpenseListScreen({
     super.key,
     this.embeddedMode = false,
     this.searchQuery = '',
     this.quickFilter = 'Todos',
+    this.startDate,
+    this.endDate,
   });
 
   @override
@@ -97,6 +101,26 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         type.contains(query) ||
         amount.contains(query) ||
         formattedDate.contains(query);
+  }
+
+  List<Map<String, dynamic>> _getFilteredExpenses() {
+    return expenses
+        .where((expense) {
+          return _matchesQuickFilter(expense) && _matchesSearch(expense);
+        })
+        .cast<Map<String, dynamic>>()
+        .toList();
+  }
+
+  List<List<String>> getExportRows() {
+    return _getFilteredExpenses().map((expense) {
+      return [
+        (expense['type'] ?? 'Gasto').toString(),
+        (expense['note'] ?? 'Sin nota').toString(),
+        formatDate(expense['expense_date']),
+        formatAmount(expense['amount']),
+      ];
+    }).toList();
   }
 
   Widget _buildEmptyState({
@@ -181,7 +205,25 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   @override
   void initState() {
     super.initState();
+    startDate = widget.startDate;
+    endDate = widget.endDate;
     loadExpenses();
+  }
+
+  @override
+  void didUpdateWidget(covariant ExpenseListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final dateRangeChanged =
+        oldWidget.startDate != widget.startDate ||
+        oldWidget.endDate != widget.endDate;
+
+    if (dateRangeChanged) {
+      startDate = widget.startDate;
+      endDate = widget.endDate;
+      isLoading = true;
+      loadExpenses();
+    }
   }
 
   void loadExpenses() async {
@@ -346,9 +388,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredExpenses = expenses.where((expense) {
-      return _matchesQuickFilter(expense) && _matchesSearch(expense);
-    }).toList();
+    final filteredExpenses = _getFilteredExpenses();
 
     return Scaffold(
       appBar: widget.embeddedMode ? null : AppBar(title: const Text("Gastos")),

@@ -11,12 +11,16 @@ class IncomeListScreen extends StatefulWidget {
   final bool embeddedMode;
   final String searchQuery;
   final String quickFilter;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const IncomeListScreen({
     super.key,
     this.embeddedMode = false,
     this.searchQuery = '',
     this.quickFilter = 'Todos',
+    this.startDate,
+    this.endDate,
   });
 
   @override
@@ -101,6 +105,26 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
         formattedDate.contains(query);
   }
 
+  List<Map<String, dynamic>> _getFilteredIncomes() {
+    return incomes
+        .where((income) {
+          return _matchesQuickFilter(income) && _matchesSearch(income);
+        })
+        .cast<Map<String, dynamic>>()
+        .toList();
+  }
+
+  List<List<String>> getExportRows() {
+    return _getFilteredIncomes().map((income) {
+      return [
+        (income['type'] ?? 'Ingreso').toString(),
+        (income['note'] ?? 'Sin nota').toString(),
+        formatDate(income['income_date'] ?? income['date']),
+        formatAmount(income['amount']),
+      ];
+    }).toList();
+  }
+
   Widget _buildEmptyState({
     required IconData icon,
     required String title,
@@ -183,7 +207,25 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
   @override
   void initState() {
     super.initState();
+    startDate = widget.startDate;
+    endDate = widget.endDate;
     loadIncomes();
+  }
+
+  @override
+  void didUpdateWidget(covariant IncomeListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final dateRangeChanged =
+        oldWidget.startDate != widget.startDate ||
+        oldWidget.endDate != widget.endDate;
+
+    if (dateRangeChanged) {
+      startDate = widget.startDate;
+      endDate = widget.endDate;
+      isLoading = true;
+      loadIncomes();
+    }
   }
 
   void loadIncomes() async {
@@ -349,9 +391,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredIncomes = incomes.where((income) {
-      return _matchesQuickFilter(income) && _matchesSearch(income);
-    }).toList();
+    final filteredIncomes = _getFilteredIncomes();
 
     return Scaffold(
       appBar: widget.embeddedMode

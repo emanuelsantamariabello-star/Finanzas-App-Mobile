@@ -3,9 +3,12 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/change_password_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 
@@ -399,6 +402,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
             label: 'Tema',
             subtitle: 'Claro, oscuro o sistema',
             onTap: _openThemeSelector,
+          ),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
+          _buildActionTile(
+            context,
+            icon: Icons.notifications_none_rounded,
+            label: 'Recordatorios',
+            subtitle: 'Pagos, gastos fijos y metas',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ReminderSettingsScreen(),
+                ),
+              );
+            },
+          ),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
+          _buildActionTile(
+            context,
+            icon: Icons.flag_outlined,
+            label: 'Metas financieras',
+            subtitle: 'Ahorro, compras y objetivos',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FinancialGoalsScreen()),
+              );
+            },
+          ),
+          Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
+          _buildActionTile(
+            context,
+            icon: Icons.pie_chart_outline_rounded,
+            label: 'Presupuestos',
+            subtitle: 'Límites por categoría',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const BudgetsScreen()),
+              );
+            },
           ),
           Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
           _buildActionTile(

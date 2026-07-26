@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.da
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MovementsScreen extends StatefulWidget {
   const MovementsScreen({super.key});
@@ -352,11 +353,30 @@ class _MovementsScreenState extends State<MovementsScreen>
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: const Text('Archivo exportado'),
-          content: Text(filePath),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'El archivo CSV se generó correctamente. Puedes compartirlo '
+                'o guardarlo desde otra aplicación.',
+              ),
+              const SizedBox(height: 12),
+              SelectableText(filePath),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
               child: const Text('Cerrar'),
+            ),
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                _shareExportedFile(filePath);
+              },
+              icon: const Icon(Icons.share_outlined),
+              label: const Text('Compartir CSV'),
             ),
           ],
         ),
@@ -364,6 +384,30 @@ class _MovementsScreenState extends State<MovementsScreen>
     } catch (_) {
       if (!mounted) return;
       AppSnackbar.error(context, 'No se pudo exportar el archivo CSV');
+    }
+  }
+
+  Future<void> _shareExportedFile(String filePath) async {
+    try {
+      final result = await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(filePath)],
+          subject: 'Movimientos exportados',
+          text: 'Archivo CSV exportado desde Finanzas App',
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (result.status == ShareResultStatus.unavailable) {
+        AppSnackbar.info(
+          context,
+          'No hay aplicaciones disponibles para compartir el archivo',
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      AppSnackbar.error(context, 'No se pudo compartir el archivo CSV');
     }
   }
 

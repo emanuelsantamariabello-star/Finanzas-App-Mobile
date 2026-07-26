@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,10 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void loadUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final storedUserId = prefs.getInt('userId');
+    final storedUserId = prefs.getInt(SessionKeys.userId);
 
     setState(() {
-      name = prefs.getString('userName') ?? '';
+      name = prefs.getString(SessionKeys.userName) ?? '';
       userId = storedUserId;
     });
 

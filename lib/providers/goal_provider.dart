@@ -1,5 +1,6 @@
 import 'package:finanzas_app_mobile/data/models/financial_goal_model.dart';
 import 'package:finanzas_app_mobile/data/services/goal_storage_service.dart';
+import 'package:finanzas_app_mobile/data/services/user_scoped_storage_service.dart';
 import 'package:flutter/material.dart';
 
 class GoalProvider extends ChangeNotifier {
@@ -11,6 +12,7 @@ class GoalProvider extends ChangeNotifier {
   List<FinancialGoalModel> _goals = [];
   bool _isLoading = false;
   bool _isInitialized = false;
+  int? _initializedUserId;
   String? _error;
 
   List<FinancialGoalModel> get goals => List.unmodifiable(_goals);
@@ -22,8 +24,11 @@ class GoalProvider extends ChangeNotifier {
       _goals.where((item) => !item.isCompleted).toList();
 
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    final userId = await UserScopedStorageService.currentUserId();
+    if (_isInitialized && _initializedUserId == userId) return;
+
     await loadGoals();
+    _initializedUserId = userId;
     _isInitialized = true;
     notifyListeners();
   }

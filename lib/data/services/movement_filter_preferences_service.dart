@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:finanzas_app_mobile/data/services/user_scoped_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MovementFilterPreferencesService {
@@ -7,7 +8,11 @@ class MovementFilterPreferencesService {
 
   Future<Map<String, dynamic>> load() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_storageKey);
+    final storageKey = await UserScopedStorageService.resolveStringKey(
+      prefs,
+      _storageKey,
+    );
+    final raw = prefs.getString(storageKey);
     if (raw == null || raw.isEmpty) return {};
 
     try {
@@ -22,6 +27,10 @@ class MovementFilterPreferencesService {
 
   Future<void> save(Map<String, dynamic> filters) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_storageKey, jsonEncode(filters));
+    final storageKey = await UserScopedStorageService.resolveStringKey(
+      prefs,
+      _storageKey,
+    );
+    await prefs.setString(storageKey, jsonEncode(filters));
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
+import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
@@ -22,6 +25,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _loadError;
 
   int? _userId;
+  final SessionStorageService _sessionStorageService = SessionStorageService();
 
   @override
   void initState() {
@@ -40,15 +44,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _loadInitial() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final userId = prefs.getInt('userId');
+      final userId = prefs.getInt(SessionKeys.userId);
 
       setState(() {
         _userId = userId;
-        _nameController.text = prefs.getString('userName') ?? '';
-        _emailController.text = prefs.getString('userEmail') ?? '';
+        _nameController.text = prefs.getString(SessionKeys.userName) ?? '';
+        _emailController.text = prefs.getString(SessionKeys.userEmail) ?? '';
         _occupationController.text =
-            prefs.getString('occupation') ??
-            prefs.getString('userOccupation') ??
+            prefs.getString(SessionKeys.occupation) ??
+            prefs.getString(SessionKeys.userOccupation) ??
             '';
         _loading = false;
       });
@@ -106,11 +110,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
 
       if (response['success'] == true) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userName', name);
-        await prefs.setString('userEmail', email);
-        await prefs.setString('occupation', occupation);
-        await prefs.setString('userOccupation', occupation);
+        await _sessionStorageService.updateProfile(
+          userName: name,
+          userEmail: email,
+          occupation: occupation,
+        );
 
         if (!mounted) return;
         AppSnackbar.success(context, 'Perfil actualizado');
@@ -124,7 +128,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppSnackbar.error(context, 'Error al actualizar el perfil');
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(e, fallback: 'Error al actualizar el perfil'),
+      );
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -231,7 +238,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.save_outlined),
-                      label: Text(_saving ? 'Guardandoâ€¦' : 'Guardar cambios'),
+                      label: Text(_saving ? 'Guardando…' : 'Guardar cambios'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00C853),
                         foregroundColor: Colors.black,

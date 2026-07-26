@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -162,7 +164,7 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt(SessionKeys.userId);
 
     if (!mounted) return;
 
@@ -218,7 +220,10 @@ class _IncomeCreateScreenState extends State<IncomeCreateScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppSnackbar.error(context, 'Error al guardar el ingreso');
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(e, fallback: 'Error al guardar el ingreso'),
+      );
     } finally {
       if (mounted) {
         setState(() => isLoading = false);

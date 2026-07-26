@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
 
 class ExpenseService {
@@ -14,12 +12,7 @@ class ExpenseService {
       body['end_date'] = endDate;
     }
 
-    final response = await ApiClient.post(
-      'expenses.php',
-      body: body,
-    );
-
-    return jsonDecode(response.body);
+    return ApiClient.postJson('expenses.php', body: body);
   }
 
   static Future<Map<String, dynamic>> createExpense({
@@ -29,7 +22,7 @@ class ExpenseService {
     required String note,
     required String expenseDate,
   }) async {
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'create_expense.php',
       body: {
         'user_id': userId.toString(),
@@ -39,8 +32,6 @@ class ExpenseService {
         'expense_date': expenseDate,
       },
     );
-
-    return jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> updateExpense({
@@ -49,7 +40,7 @@ class ExpenseService {
     required String note,
     required String expenseDate,
   }) async {
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'update_expense.php',
       body: {
         'id': id.toString(),
@@ -58,19 +49,15 @@ class ExpenseService {
         'expense_date': expenseDate,
       },
     );
-
-    return jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> deleteExpense({
     required int id,
     required int userId,
   }) async {
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'delete_expense.php',
       body: {'id': id.toString(), 'user_id': userId.toString()},
     );
-
-    return jsonDecode(response.body);
   }
 }

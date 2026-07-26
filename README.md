@@ -14,6 +14,7 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 
 - Registro e inicio de sesión.
 - Persistencia de sesión con `SharedPreferences`.
+- Validación y limpieza automática de sesiones locales incompletas.
 - Recordar credenciales de acceso.
 - Dashboard financiero con resumen general.
 - Gestión de ingresos.
@@ -33,6 +34,7 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Cierre de sesión.
 - Recordatorios locales diarios, semanales, quincenales y mensuales.
 - Notificaciones locales programadas para pagos, gastos fijos y metas.
+- Restauración de recordatorios programados después de reiniciar Android.
 - Resumen financiero inteligente e insights generados localmente.
 - Sugerencias automáticas de categorías según la descripción del movimiento.
 - Recomendaciones locales de ahorro.
@@ -43,7 +45,8 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Compartir archivos CSV mediante el selector nativo del dispositivo.
 
 > Los recordatorios, metas, presupuestos y filtros se almacenan localmente en
-> el dispositivo. Actualmente no se sincronizan con el backend.
+> el dispositivo, separados por el usuario activo. Actualmente no se
+> sincronizan con el backend.
 
 ## Capturas de pantalla
 
@@ -201,11 +204,15 @@ La URL base de la API se centraliza en la configuración del proyecto:
 La aplicación soporta el uso de `--dart-define` para sobrescribir la URL base:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=http://HOST/finanzas_app/api
+flutter run --dart-define=APP_ENV=dev --dart-define=API_BASE_URL=http://HOST/finanzas_app/api
 ```
 
 Notas importantes:
 
+- `AppConfig` es la única fuente de configuración utilizada por el cliente HTTP.
+- El cliente normaliza las barras de la URL para evitar rutas duplicadas.
+- Los errores de conexión, timeout, HTTP y respuesta JSON inválida se
+  clasifican y presentan mediante mensajes seguros.
 - En el emulador Android, `localhost` de la computadora normalmente se representa como `10.0.2.2`.
 - En un dispositivo físico debe usarse una dirección accesible desde la red del dispositivo.
 - El backend debe estar iniciado y disponible antes de abrir la app.
@@ -258,13 +265,32 @@ Validación técnica realizada el 25 de julio de 2026:
 El proyecto está funcional y estable para continuar su desarrollo, pero aún no
 debe considerarse listo para producción.
 
+### Estabilización activa
+
+La rama `codex/stability-hardening` parte de una línea base limpia. La
+codificación residual, el aislamiento de datos locales por usuario, el ciclo
+de sesión, la configuración del cliente API y Android para desarrollo ya
+fueron estabilizados. La evaluación controlada de dependencias también quedó
+completada sin aplicar migraciones mayores.
+
+Dependencias actualizadas de forma compatible:
+
+- `flutter_local_notifications` 22.2.0;
+- `flutter_local_notifications_platform_interface` 12.1.0;
+- `equatable` 2.1.0;
+- `path_provider_linux` 2.2.2;
+- `path_provider_platform_interface` 2.1.3;
+- `vm_service` 15.2.0.
+
+Las migraciones mayores de `fl_chart` y `share_plus` quedan aplazadas para
+ramas independientes con validación visual de gráficas y validación funcional
+de exportación.
+
 Antes de un despliegue productivo todavía conviene reforzar:
 
 - migrar la API a HTTPS y definir entornos de desarrollo y producción;
 - reemplazar el identificador Android de ejemplo y configurar firma release;
-- reforzar el manejo de sesión y el almacenamiento de información sensible;
-- separar por usuario los recordatorios, metas, presupuestos y filtros locales;
-- corregir cadenas residuales con codificación dañada;
+- migrar la sesión a un mecanismo seguro basado en tokens antes de producción;
 - ampliar la cobertura con pruebas de integración contra un backend controlado;
 - revisar las actualizaciones mayores pendientes de dependencias de forma
   aislada y con pruebas de regresión.

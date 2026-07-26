@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
@@ -15,6 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final SessionStorageService _sessionStorageService = SessionStorageService();
 
   bool _showPassword = false;
 
@@ -54,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = passwordController.text.trim();
 
     if (username.isEmpty || email.isEmpty || password.isEmpty) {
-      showMessage('Todos los campos son obligatorios');
+      showMessage('Todos los campos son obligatorios', isError: true);
       return;
     }
 
@@ -64,21 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (response['success'] == true) {
         showMessage('Registro exitoso');
 
-        final prefs = await SharedPreferences.getInstance();
-
-        // IMPORTANT: After registering, do NOT reuse any previous session.
-        // Return to LoginScreen and keep "remember credentials" keys intact.
-        const sessionKeysToRemove = [
-          'isLoggedIn',
-          'userEmail',
-          'userName',
-          'userId',
-          'occupation',
-          'userOccupation',
-        ];
-        for (final key in sessionKeysToRemove) {
-          await prefs.remove(key);
-        }
+        await _sessionStorageService.clearSession();
 
         if (!mounted) return;
         Navigator.of(context).pushAndRemoveUntil(
@@ -86,15 +74,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
           (route) => false,
         );
       } else {
-        showMessage(response['message']?.toString() ?? 'Error al registrarse');
+        showMessage(
+          response['message']?.toString() ?? 'No se pudo completar el registro',
+          isError: true,
+        );
       }
     } catch (e) {
-      showMessage('Error: $e');
+      showMessage(
+        apiErrorMessage(e, fallback: 'No se pudo completar el registro'),
+        isError: true,
+      );
     }
   }
 
-  void showMessage(String msg) {
-    AppSnackbar.success(context, msg);
+  void showMessage(String msg, {bool isError = false}) {
+    if (isError) {
+      AppSnackbar.error(context, msg);
+    } else {
+      AppSnackbar.success(context, msg);
+    }
   }
 
   @override

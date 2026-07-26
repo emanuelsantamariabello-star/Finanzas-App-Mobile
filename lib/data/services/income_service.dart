@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
 
 class IncomeService {
@@ -8,16 +7,6 @@ class IncomeService {
 
     final now = DateTime.now();
     return "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-  }
-
-  static Map<String, dynamic> _decodeJson(String rawBody) {
-    final body = rawBody.trim();
-    try {
-      return jsonDecode(body) as Map<String, dynamic>;
-    } catch (_) {
-      final snippet = body.length > 200 ? body.substring(0, 200) : body;
-      throw FormatException('Respuesta no JSON del servidor: $snippet');
-    }
   }
 
   static Future<Map<String, dynamic>> getIncomes(
@@ -31,9 +20,7 @@ class IncomeService {
       body['end_date'] = endDate;
     }
 
-    final response = await ApiClient.post('incomes.php', body: body);
-
-    return _decodeJson(response.body);
+    return ApiClient.postJson('incomes.php', body: body);
   }
 
   static Future<Map<String, dynamic>> createIncome({
@@ -45,7 +32,7 @@ class IncomeService {
   }) async {
     final safeDate = _normalizeDate(date);
 
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'create_income.php',
       body: {
         'user_id': userId.toString(),
@@ -56,8 +43,6 @@ class IncomeService {
         'income_date': safeDate,
       },
     );
-
-    return _decodeJson(response.body);
   }
 
   static Future<Map<String, dynamic>> updateIncome({
@@ -70,7 +55,7 @@ class IncomeService {
   }) async {
     final safeDate = _normalizeDate(date);
 
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'update_income.php',
       body: {
         'id': id.toString(),
@@ -82,19 +67,15 @@ class IncomeService {
         'income_date': safeDate,
       },
     );
-
-    return _decodeJson(response.body);
   }
 
   static Future<Map<String, dynamic>> deleteIncome({
     required int id,
     required int userId,
   }) async {
-    final response = await ApiClient.post(
+    return ApiClient.postJson(
       'delete_income.php',
       body: {'id': id.toString(), 'user_id': userId.toString()},
     );
-
-    return jsonDecode(response.body);
   }
 }

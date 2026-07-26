@@ -28,6 +28,7 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Persistencia de la preferencia de tema.
 - Módulo centralizado de configuración de la aplicación.
 - Personalización del contenido visible en Inicio.
+- Persistencia de las preferencias de Inicio después de reiniciar o cerrar sesión.
 - Accesos rápidos horizontales a recordatorios, metas y presupuestos.
 - Cierre de sesión.
 - Recordatorios locales diarios, semanales, quincenales y mensuales.
@@ -103,6 +104,7 @@ El proyecto utiliza una estructura modular orientada por funcionalidades. No est
 La lógica principal se divide así:
 
 - `lib/core/`: constantes, red y tema global.
+- `lib/data/models/`: modelos de preferencias y funciones financieras locales.
 - `lib/data/services/`: consumo HTTP hacia el backend.
 - `lib/providers/`: estado compartido con `Provider`.
 - `lib/presentation/screens/`: pantallas principales de la aplicación.
@@ -243,15 +245,29 @@ La validación manual debe incluir:
 
 ## Estado actual
 
-El proyecto está en desarrollo activo y no debe considerarse listo para producción.
+Validación técnica realizada el 25 de julio de 2026:
+
+- `flutter analyze`: sin diagnósticos.
+- `flutter test`: 28 pruebas aprobadas.
+- `flutter build apk --debug`: compilación correcta.
+- Navegación, temas, configuración, accesos rápidos y persistencia local
+  cubiertos por pruebas automatizadas.
+- Ramas de implementación integradas en `main` y eliminadas después de la
+  fusión.
+
+El proyecto está funcional y estable para continuar su desarrollo, pero aún no
+debe considerarse listo para producción.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 
-- la gestión estructurada de errores,
-- la comunicación HTTP,
-- la cobertura de pruebas de integración,
-- la configuración de firma y publicación,
-- y la configuración de publicación/release.
+- migrar la API a HTTPS y definir entornos de desarrollo y producción;
+- reemplazar el identificador Android de ejemplo y configurar firma release;
+- reforzar el manejo de sesión y el almacenamiento de información sensible;
+- separar por usuario los recordatorios, metas, presupuestos y filtros locales;
+- corregir cadenas residuales con codificación dañada;
+- ampliar la cobertura con pruebas de integración contra un backend controlado;
+- revisar las actualizaciones mayores pendientes de dependencias de forma
+  aislada y con pruebas de regresión.
 
 ## Hoja de ruta
 

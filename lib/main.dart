@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
@@ -24,6 +25,7 @@ class FinanzasApp extends StatefulWidget {
 
 class _FinanzasAppState extends State<FinanzasApp> {
   bool? isLoggedIn;
+  final AppSettingsProvider _appSettingsProvider = AppSettingsProvider();
   final BudgetProvider _budgetProvider = BudgetProvider();
   final DashboardProvider _dashboardProvider = DashboardProvider();
   final GoalProvider _goalProvider = GoalProvider();
@@ -44,6 +46,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
   void initState() {
     super.initState();
     checkLogin();
+    _appSettingsProvider.initialize();
     _budgetProvider.initialize();
     _goalProvider.initialize();
     _reminderProvider.initialize();
@@ -52,6 +55,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
 
   @override
   void dispose() {
+    _appSettingsProvider.dispose();
     _budgetProvider.dispose();
     _dashboardProvider.dispose();
     _goalProvider.dispose();
@@ -71,6 +75,9 @@ class _FinanzasAppState extends State<FinanzasApp> {
   Widget _buildApp({required Widget home}) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<AppSettingsProvider>.value(
+          value: _appSettingsProvider,
+        ),
         ChangeNotifierProvider<BudgetProvider>.value(value: _budgetProvider),
         ChangeNotifierProvider<DashboardProvider>.value(
           value: _dashboardProvider,

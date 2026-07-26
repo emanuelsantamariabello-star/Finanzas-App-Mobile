@@ -1,3 +1,4 @@
+import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:flutter/material.dart';
 
 enum AppSnackbarType { success, error, info }
@@ -15,25 +16,27 @@ class AppSnackbar {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    Color background;
     Color accent;
     IconData icon;
+    final background = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : theme.colorScheme.inverseSurface;
+    final foreground = isDark
+        ? theme.colorScheme.onSurface
+        : theme.colorScheme.onInverseSurface;
 
     switch (type) {
       case AppSnackbarType.success:
-        accent = const Color(0xFF00C853);
+        accent = AppTheme.corporateGreen;
         icon = Icons.check_circle_rounded;
-        background = isDark ? const Color(0xFF0D1117) : const Color(0xFF101418);
         break;
       case AppSnackbarType.error:
-        accent = const Color(0xFFFF5252);
+        accent = AppTheme.corporateRed;
         icon = Icons.error_rounded;
-        background = isDark ? const Color(0xFF0D1117) : const Color(0xFF101418);
         break;
       case AppSnackbarType.info:
-        accent = const Color(0xFF42A5F5);
+        accent = AppTheme.corporateBlue;
         icon = Icons.info_rounded;
-        background = isDark ? const Color(0xFF0D1117) : const Color(0xFF101418);
         break;
     }
 
@@ -69,8 +72,8 @@ class AppSnackbar {
                 Expanded(
                   child: Text(
                     message,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: foreground,
                       fontWeight: FontWeight.w600,
                       height: 1.2,
                     ),

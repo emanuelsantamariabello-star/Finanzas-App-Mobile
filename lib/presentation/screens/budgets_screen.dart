@@ -85,7 +85,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openBudgetForm,
         backgroundColor: AppTheme.corporateGreen,
-        foregroundColor: Colors.black,
+        foregroundColor: theme.colorScheme.onPrimary,
         icon: const Icon(Icons.pie_chart_outline_rounded),
         label: const Text('Nuevo presupuesto'),
       ),

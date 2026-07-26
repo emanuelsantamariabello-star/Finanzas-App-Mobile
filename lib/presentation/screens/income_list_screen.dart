@@ -280,6 +280,13 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
   @override
   Widget build(BuildContext context) {
     final filteredIncomes = _getFilteredIncomes();
+    final theme = Theme.of(context);
+    final secondaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.72,
+    );
+    final tertiaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.55,
+    );
 
     return Scaffold(
       appBar: widget.embeddedMode
@@ -340,7 +347,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                       const SizedBox(height: 8),
                       Text(
                         _formatRangeLabel(),
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(color: secondaryTextColor),
                       ),
                     ],
 
@@ -397,24 +404,24 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                         const SizedBox(height: 8),
                                         Text(
                                           note,
-                                          style: const TextStyle(
-                                            color: Colors.white70,
+                                          style: TextStyle(
+                                            color: secondaryTextColor,
                                             height: 1.35,
                                           ),
                                         ),
                                         const SizedBox(height: 8),
                                         Row(
                                           children: [
-                                            const Icon(
+                                            Icon(
                                               Icons.calendar_today_outlined,
                                               size: 14,
-                                              color: Colors.white54,
+                                              color: tertiaryTextColor,
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
                                               date,
-                                              style: const TextStyle(
-                                                color: Colors.white54,
+                                              style: TextStyle(
+                                                color: tertiaryTextColor,
                                                 fontSize: 13,
                                               ),
                                             ),
@@ -429,7 +436,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                               amount,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w800,
-                                                color: Colors.green,
+                                                color: AppTheme.corporateGreen,
                                                 fontSize: 19,
                                               ),
                                             ),
@@ -439,7 +446,8 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.edit,
-                                                    color: Colors.blue,
+                                                    color:
+                                                        AppTheme.corporateBlue,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,
@@ -459,7 +467,8 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.delete,
-                                                    color: Colors.red,
+                                                    color:
+                                                        AppTheme.corporateRed,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,

@@ -98,7 +98,7 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openReminderForm,
         backgroundColor: AppTheme.corporateGreen,
-        foregroundColor: Colors.black,
+        foregroundColor: theme.colorScheme.onPrimary,
         icon: const Icon(Icons.add_alert_rounded),
         label: const Text('Nuevo'),
       ),

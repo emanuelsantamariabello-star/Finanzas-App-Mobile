@@ -114,10 +114,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Center(
               child: Text(
                 _userInitial(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colorScheme.onSecondary,
                 ),
               ),
             ),
@@ -367,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.logout_rounded,
             label: 'Cerrar sesión',
             subtitle: 'Salir de tu cuenta',
-            color: Colors.redAccent,
+            color: AppTheme.corporateRed,
             onTap: _logout,
           ),
         ],

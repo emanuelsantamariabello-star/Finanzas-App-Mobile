@@ -277,6 +277,13 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   @override
   Widget build(BuildContext context) {
     final filteredExpenses = _getFilteredExpenses();
+    final theme = Theme.of(context);
+    final secondaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.72,
+    );
+    final tertiaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.55,
+    );
 
     return Scaffold(
       appBar: widget.embeddedMode ? null : AppBar(title: const Text("Gastos")),
@@ -332,7 +339,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                       const SizedBox(height: 8),
                       Text(
                         _formatRangeLabel(),
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(color: secondaryTextColor),
                       ),
                     ],
 
@@ -382,26 +389,26 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                         Text(
                                           (expense['note'] ?? 'Sin descripción')
                                               .toString(),
-                                          style: const TextStyle(
-                                            color: Colors.white70,
+                                          style: TextStyle(
+                                            color: secondaryTextColor,
                                             height: 1.35,
                                           ),
                                         ),
                                         const SizedBox(height: 8),
                                         Row(
                                           children: [
-                                            const Icon(
+                                            Icon(
                                               Icons.calendar_today_outlined,
                                               size: 14,
-                                              color: Colors.white54,
+                                              color: tertiaryTextColor,
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
                                               formatDate(
                                                 expense['expense_date'],
                                               ),
-                                              style: const TextStyle(
-                                                color: Colors.white54,
+                                              style: TextStyle(
+                                                color: tertiaryTextColor,
                                                 fontSize: 13,
                                               ),
                                             ),
@@ -415,7 +422,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                             Text(
                                               formatAmount(expense['amount']),
                                               style: const TextStyle(
-                                                color: Colors.red,
+                                                color: AppTheme.corporateRed,
                                                 fontWeight: FontWeight.w800,
                                                 fontSize: 19,
                                               ),
@@ -426,7 +433,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.edit,
-                                                    color: Colors.blue,
+                                                    color:
+                                                        AppTheme.corporateBlue,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,
@@ -446,7 +454,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.delete,
-                                                    color: Colors.red,
+                                                    color:
+                                                        AppTheme.corporateRed,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,

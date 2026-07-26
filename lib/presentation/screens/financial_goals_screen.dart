@@ -119,7 +119,7 @@ class _FinancialGoalsScreenState extends State<FinancialGoalsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openGoalForm,
         backgroundColor: AppTheme.corporateGreen,
-        foregroundColor: Colors.black,
+        foregroundColor: theme.colorScheme.onPrimary,
         icon: const Icon(Icons.flag_outlined),
         label: const Text('Nueva meta'),
       ),

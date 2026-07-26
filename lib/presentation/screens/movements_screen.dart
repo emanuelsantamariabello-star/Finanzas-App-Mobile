@@ -138,7 +138,7 @@ class _MovementsScreenState extends State<MovementsScreen>
         backgroundColor: theme.cardColor,
         labelStyle: TextStyle(
           color: selected
-              ? Colors.black
+              ? theme.colorScheme.onPrimary
               : theme.colorScheme.onSurface.withValues(alpha: 0.75),
           fontWeight: FontWeight.w600,
         ),
@@ -578,7 +578,7 @@ class _MovementsScreenState extends State<MovementsScreen>
                       color: AppTheme.corporateGreen,
                       borderRadius: const BorderRadius.all(Radius.circular(14)),
                     ),
-                    labelColor: Colors.black,
+                    labelColor: theme.colorScheme.onPrimary,
                     unselectedLabelColor: theme.colorScheme.onSurface
                         .withValues(alpha: 0.75),
                     tabs: const [
@@ -616,7 +616,7 @@ class _MovementsScreenState extends State<MovementsScreen>
       floatingActionButton: FloatingActionButton(
         onPressed: _showMovementActionsSheet,
         backgroundColor: AppTheme.corporateGreen,
-        foregroundColor: Colors.black,
+        foregroundColor: theme.colorScheme.onPrimary,
         elevation: 6,
         child: const Icon(Icons.add_rounded),
       ),

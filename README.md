@@ -320,7 +320,10 @@ Avance actual:
 - feedback de carga y prevención de envíos repetidos en Login y Registro;
 - formularios centrados y con ancho controlado en pantallas amplias;
 - soporte reforzado para texto ampliado, lectores de pantalla y controles
-  adaptables en accesos rápidos, filtros y componentes de estado.
+  adaptables en accesos rápidos, filtros y componentes de estado;
+- superficies, textos secundarios, acciones y snackbars alineados con
+  `ThemeData` en modo claro y oscuro;
+- colores verde, azul y rojo centralizados como identidad visual corporativa.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

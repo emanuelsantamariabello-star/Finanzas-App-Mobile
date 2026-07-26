@@ -9,8 +9,8 @@ import 'package:finanzas_app_mobile/presentation/screens/change_password_screen.
 import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/settings_screen.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
-import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -54,92 +54,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_userName.isNotEmpty) return _userName[0].toUpperCase();
     if (_userEmail.isNotEmpty) return _userEmail[0].toUpperCase();
     return '?';
-  }
-
-  Future<void> _openThemeSelector() async {
-    final themeProvider = context.read<ThemeProvider>();
-    final currentMode = themeProvider.themeMode;
-
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 46,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Theme.of(sheetContext).dividerColor,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                'Tema',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(sheetContext).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Selecciona el aspecto visual de la app.',
-                style: TextStyle(
-                  color: Theme.of(
-                    sheetContext,
-                  ).colorScheme.onSurface.withValues(alpha: 0.72),
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 18),
-              _buildThemeOption(
-                context: sheetContext,
-                label: 'Claro',
-                icon: Icons.wb_sunny_outlined,
-                isSelected: currentMode == ThemeMode.light,
-                onTap: () async {
-                  await themeProvider.setThemeMode(ThemeMode.light);
-                  if (sheetContext.mounted) Navigator.pop(sheetContext);
-                },
-              ),
-              const SizedBox(height: 10),
-              _buildThemeOption(
-                context: sheetContext,
-                label: 'Oscuro',
-                icon: Icons.nightlight_round,
-                isSelected: currentMode == ThemeMode.dark,
-                onTap: () async {
-                  await themeProvider.setThemeMode(ThemeMode.dark);
-                  if (sheetContext.mounted) Navigator.pop(sheetContext);
-                },
-              ),
-              const SizedBox(height: 10),
-              _buildThemeOption(
-                context: sheetContext,
-                label: 'Sistema',
-                icon: Icons.settings_outlined,
-                isSelected: currentMode == ThemeMode.system,
-                onTap: () async {
-                  await themeProvider.setThemeMode(ThemeMode.system);
-                  if (sheetContext.mounted) Navigator.pop(sheetContext);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   void _logout() async {
@@ -398,10 +312,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
           _buildActionTile(
             context,
-            icon: Icons.palette_outlined,
-            label: 'Tema',
-            subtitle: 'Claro, oscuro o sistema',
-            onTap: _openThemeSelector,
+            icon: Icons.settings_outlined,
+            label: 'Configuración de la app',
+            subtitle: 'Tema, Inicio y notificaciones',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            },
           ),
           Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),
           _buildActionTile(
@@ -540,72 +459,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
               size: 22,
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildThemeOption({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.corporateGreen.withValues(alpha: 0.12)
-              : theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? AppTheme.corporateGreen
-                : theme.dividerColor.withValues(alpha: 0.5),
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppTheme.corporateGreen.withValues(alpha: 0.18)
-                    : theme.dividerColor.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: isSelected
-                    ? AppTheme.corporateGreen
-                    : theme.colorScheme.onSurface.withValues(alpha: 0.75),
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-            if (isSelected)
-              const Icon(
-                Icons.check_circle_rounded,
-                color: AppTheme.corporateGreen,
-                size: 20,
-              ),
           ],
         ),
       ),

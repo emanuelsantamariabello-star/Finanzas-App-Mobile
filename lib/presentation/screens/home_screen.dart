@@ -9,6 +9,9 @@ import 'package:finanzas_app_mobile/data/models/smart_insight_model.dart';
 import 'package:finanzas_app_mobile/data/services/saving_recommendation_service.dart';
 import 'package:finanzas_app_mobile/data/services/smart_insight_service.dart';
 import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
+import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 
@@ -531,6 +534,152 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildQuickAccessSection(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Accesos rápidos',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Tus herramientas financieras a un toque',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.62),
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 116,
+          child: ListView(
+            key: const ValueKey('home_quick_access_list'),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              _buildQuickAccessCard(
+                context,
+                icon: Icons.notifications_none_rounded,
+                title: 'Recordatorios',
+                subtitle: 'Pagos y avisos',
+                color: AppTheme.corporateBlue,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ReminderSettingsScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 12),
+              _buildQuickAccessCard(
+                context,
+                icon: Icons.flag_outlined,
+                title: 'Metas',
+                subtitle: 'Objetivos de ahorro',
+                color: AppTheme.corporateGreen,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FinancialGoalsScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 12),
+              _buildQuickAccessCard(
+                context,
+                icon: Icons.pie_chart_outline_rounded,
+                title: 'Presupuestos',
+                subtitle: 'Límites por categoría',
+                color: AppTheme.corporateRed,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BudgetsScreen()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickAccessCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+
+    return SizedBox(
+      width: 132,
+      child: Material(
+        color: theme.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.45)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                const Spacer(),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dashboardProvider = context.watch<DashboardProvider>();
@@ -586,6 +735,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 14,
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  _buildQuickAccessSection(context),
                   const SizedBox(height: 24),
                   _buildSmartSummaryCard(
                     context,

@@ -371,3 +371,36 @@ Emanuel Santamaría Bello
 ## Licencia
 
 Este proyecto aún no tiene una licencia definida.
+
+## Infraestructura Beta Local
+
+La beta Android usa el entorno `beta` y consume la API por HTTPS mediante:
+
+```text
+https://beta-api.finanzasappsan.com/finanzas_app/api
+```
+
+La infraestructura se compone de Apache y MariaDB en XAMPP, publicados de forma
+temporal mediante el túnel de Cloudflare `finanzas-beta`. Solo Apache se conecta
+al túnel; MySQL no se publica mediante Cloudflare Tunnel.
+
+Requisitos para una sesión de prueba:
+
+1. Iniciar Apache y MySQL en XAMPP.
+2. Ejecutar `cloudflared tunnel run finanzas-beta`.
+3. Mantener el computador y el túnel conectados.
+4. Compilar con:
+
+```powershell
+flutter build apk --release --dart-define=APP_ENV=beta
+```
+
+Para detener el túnel iniciado en terminal, usar `Ctrl+C`. La configuración y
+credenciales locales de Cloudflare se almacenan fuera del repositorio en
+`%USERPROFILE%\.cloudflared` y nunca deben versionarse.
+
+La guía de instalación, riesgos y validación se encuentra en:
+
+- `docs/BETA_LOCAL_GUIDE.md`
+- `docs/BETA_TEST_PLAN.md`
+- `docs/BETA_ISSUE_TEMPLATE.md`

@@ -4,7 +4,9 @@ import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -42,10 +44,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _loadInitial() async {
+    setState(() {
+      _loading = true;
+      _loadError = null;
+    });
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getInt(SessionKeys.userId);
 
+      if (!mounted) return;
       setState(() {
         _userId = userId;
         _nameController.text = prefs.getString(SessionKeys.userName) ?? '';
@@ -57,30 +65,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _loadError = e.toString();
         _loading = false;
       });
     }
-  }
-
-  InputDecoration _decoration({
-    required String label,
-    required IconData icon,
-    String? hint,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      prefixIcon: Icon(icon),
-      filled: true,
-      fillColor: const Color(0xFF161B22),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-    );
   }
 
   Future<void> _save() async {
@@ -145,22 +135,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Editar perfil')),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando tu perfil…')
           : _loadError != null
-          ? Center(child: Text('Error: $_loadError'))
-          : SingleChildScrollView(
+          ? AppErrorState(message: _loadError!, onRetry: _loadInitial)
+          : AppFormScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0D1117),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: Colors.white10),
-                    ),
+                  AppSurfaceCard(
                     child: Text(
                       'Actualiza tus datos personales. Esto no afecta tus movimientos ni tu dashboard.',
                       style: TextStyle(
@@ -177,7 +160,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         TextFormField(
                           controller: _nameController,
                           textInputAction: TextInputAction.next,
-                          decoration: _decoration(
+                          textCapitalization: TextCapitalization.words,
+                          autofillHints: const [AutofillHints.name],
+                          decoration: AppFormDecoration.input(
+                            context: context,
                             label: 'Nombre',
                             icon: Icons.person_outline_rounded,
                             hint: 'Tu nombre',
@@ -194,7 +180,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
-                          decoration: _decoration(
+                          autofillHints: const [AutofillHints.email],
+                          decoration: AppFormDecoration.input(
+                            context: context,
                             label: 'Email',
                             icon: Icons.email_outlined,
                             hint: 'correo@ejemplo.com',
@@ -210,7 +198,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         TextFormField(
                           controller: _occupationController,
                           textInputAction: TextInputAction.done,
-                          decoration: _decoration(
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: AppFormDecoration.input(
+                            context: context,
                             label: 'Ocupación',
                             icon: Icons.work_outline_rounded,
                             hint: 'Ej: Estudiante, Ingeniero…',
@@ -226,27 +216,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton.icon(
-                      onPressed: _saving ? null : _save,
-                      icon: _saving
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.save_outlined),
-                      label: Text(_saving ? 'Guardando…' : 'Guardar cambios'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00C853),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
+                  AppPrimaryButton(
+                    label: 'Guardar cambios',
+                    loadingLabel: 'Guardando…',
+                    icon: Icons.save_outlined,
+                    isLoading: _saving,
+                    onPressed: _save,
                   ),
                 ],
               ),

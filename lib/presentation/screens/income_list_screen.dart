@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/income_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'income_create_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
 class IncomeListScreen extends StatefulWidget {
   final bool embeddedMode;
@@ -127,57 +130,6 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
     }).toList();
   }
 
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    Color iconColor = const Color(0xFF4CAF50),
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 38,
-                color: iconColor.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.2,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white54,
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   String _formatApiDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
@@ -287,84 +239,15 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
 
     if (!mounted) return;
 
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF161B22),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-
-        title: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline,
-                color: Colors.red,
-                size: 32,
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            const Text(
-              "Eliminar ingreso",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-
-        content: const Text(
-          "Esta acci\u00f3n eliminar\u00e1 el movimiento permanentemente.",
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white70, height: 1.4),
-        ),
-
-        actionsAlignment: MainAxisAlignment.spaceEvenly,
-
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              "Cancelar",
-              style: TextStyle(
-                color: Color(0xFF00E676),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            ),
-
-            onPressed: () => Navigator.pop(context, true),
-
-            child: const Text(
-              "Eliminar",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Eliminar ingreso',
+      message: 'Esta acción eliminará el movimiento permanentemente.',
+      confirmLabel: 'Eliminar',
+      icon: Icons.delete_outline_rounded,
     );
 
-    if (confirm != true) return;
+    if (!confirm) return;
 
     try {
       final response = await IncomeService.deleteIncome(
@@ -397,6 +280,13 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
   @override
   Widget build(BuildContext context) {
     final filteredIncomes = _getFilteredIncomes();
+    final theme = Theme.of(context);
+    final secondaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.72,
+    );
+    final tertiaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.55,
+    );
 
     return Scaffold(
       appBar: widget.embeddedMode
@@ -412,15 +302,18 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
             ),
 
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando ingresos…')
           : error != null
-          ? Center(child: Text("Error: $error"))
+          ? AppErrorState(message: error!, onRetry: loadIncomes)
           : incomes.isEmpty
-          ? _buildEmptyState(
+          ? AppEmptyState(
               icon: Icons.trending_up_rounded,
               title: 'A\u00fan no tienes ingresos',
-              subtitle:
+              message:
                   'Agrega tu primer ingreso para ver aqu\u00ed tu historial y tu progreso financiero.',
+              accentColor: AppTheme.corporateGreen,
+              actionLabel: 'Agregar ingreso',
+              onAction: openCreateIncome,
             )
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -454,7 +347,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                       const SizedBox(height: 8),
                       Text(
                         _formatRangeLabel(),
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(color: secondaryTextColor),
                       ),
                     ],
 
@@ -465,12 +358,12 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 220),
                       child: filteredIncomes.isEmpty
-                          ? _buildEmptyState(
+                          ? const AppEmptyState(
                               icon: Icons.search_off_rounded,
                               title: 'Sin resultados',
-                              subtitle:
+                              message:
                                   'No se encontraron ingresos con los filtros seleccionados.',
-                              iconColor: Colors.white70,
+                              compact: true,
                             )
                           : ListView.builder(
                               key: ValueKey(
@@ -511,24 +404,24 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                         const SizedBox(height: 8),
                                         Text(
                                           note,
-                                          style: const TextStyle(
-                                            color: Colors.white70,
+                                          style: TextStyle(
+                                            color: secondaryTextColor,
                                             height: 1.35,
                                           ),
                                         ),
                                         const SizedBox(height: 8),
                                         Row(
                                           children: [
-                                            const Icon(
+                                            Icon(
                                               Icons.calendar_today_outlined,
                                               size: 14,
-                                              color: Colors.white54,
+                                              color: tertiaryTextColor,
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
                                               date,
-                                              style: const TextStyle(
-                                                color: Colors.white54,
+                                              style: TextStyle(
+                                                color: tertiaryTextColor,
                                                 fontSize: 13,
                                               ),
                                             ),
@@ -543,7 +436,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                               amount,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w800,
-                                                color: Colors.green,
+                                                color: AppTheme.corporateGreen,
                                                 fontSize: 19,
                                               ),
                                             ),
@@ -553,7 +446,8 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.edit,
-                                                    color: Colors.blue,
+                                                    color:
+                                                        AppTheme.corporateBlue,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,
@@ -573,7 +467,8 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.delete,
-                                                    color: Colors.red,
+                                                    color:
+                                                        AppTheme.corporateRed,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,

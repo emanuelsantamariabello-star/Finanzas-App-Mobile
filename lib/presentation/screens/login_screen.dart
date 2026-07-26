@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/main_navigation_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/presentation/screens/register_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
@@ -25,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _rememberCredentials = true;
   bool _showPassword = false;
+  bool _isSubmitting = false;
 
   final SessionStorageService _sessionStorageService = SessionStorageService();
 
@@ -69,28 +71,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  InputDecoration _decoration({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    Widget? suffixIcon,
-  }) {
-    final theme = Theme.of(context);
-
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: theme.inputDecorationTheme.fillColor ?? theme.cardColor,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-    );
-  }
-
   bool _isSuccessResponse(dynamic value) {
     if (value is bool) return value;
     if (value is int) return value == 1;
@@ -105,6 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void handleLogin() async {
+    if (_isSubmitting) return;
+
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
@@ -117,6 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
       showMessage('Correo inválido', isError: true);
       return;
     }
+
+    setState(() => _isSubmitting = true);
 
     try {
       final response = await AuthService.login(email, password);
@@ -167,6 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
         showMessage(message ?? 'Credenciales incorrectas', isError: true);
       }
     } catch (e) {
+      if (!mounted) return;
       showMessage(
         apiErrorMessage(
           e,
@@ -174,6 +159,8 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         isError: true,
       );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -191,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: AppFormScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,22 +196,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 22),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: theme.dividerColor.withValues(alpha: 0.4),
-                  ),
-                ),
+              AppSurfaceCard(
                 child: Column(
                   children: [
                     TextField(
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: _decoration(
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.email],
+                      decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Correo',
                         icon: Icons.email_outlined,
@@ -239,7 +219,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: passwordController,
                       obscureText: !_showPassword,
-                      decoration: _decoration(
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.password],
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      decoration: AppFormDecoration.input(
                         context: context,
                         label: 'Contraseña',
                         icon: Icons.lock_outline_rounded,
@@ -254,6 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
+                      onSubmitted: (_) => handleLogin(),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -287,20 +272,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00C853),
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: const Text('Iniciar sesión'),
-                      ),
+                    AppPrimaryButton(
+                      label: 'Iniciar sesión',
+                      loadingLabel: 'Iniciando sesión…',
+                      isLoading: _isSubmitting,
+                      onPressed: handleLogin,
                     ),
                   ],
                 ),

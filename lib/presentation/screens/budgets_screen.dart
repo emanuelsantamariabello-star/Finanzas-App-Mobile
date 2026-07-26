@@ -1,6 +1,9 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/budget_model.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
@@ -57,30 +60,18 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   }
 
   Future<void> _deleteBudget(BudgetModel budget) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Eliminar presupuesto'),
-          content: Text('Se eliminará el presupuesto de ${budget.category}.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Eliminar'),
-            ),
-          ],
-        );
-      },
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Eliminar presupuesto',
+      message: 'Se eliminará el presupuesto de ${budget.category}.',
+      confirmLabel: 'Eliminar',
+      icon: Icons.pie_chart_outline_rounded,
     );
 
-    if (confirm != true || !mounted) return;
+    if (!confirm || !mounted) return;
     await context.read<BudgetProvider>().deleteBudget(budget.id);
     if (!mounted) return;
-    AppSnackbar.info(context, 'Presupuesto eliminado');
+    AppSnackbar.success(context, 'Presupuesto eliminado');
   }
 
   @override
@@ -94,12 +85,17 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openBudgetForm,
         backgroundColor: AppTheme.corporateGreen,
-        foregroundColor: Colors.black,
+        foregroundColor: theme.colorScheme.onPrimary,
         icon: const Icon(Icons.pie_chart_outline_rounded),
         label: const Text('Nuevo presupuesto'),
       ),
       body: budgetProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando presupuestos…')
+          : budgetProvider.error != null && budgets.isEmpty
+          ? AppErrorState(
+              message: budgetProvider.error!,
+              onRetry: budgetProvider.loadBudgets,
+            )
           : Column(
               children: [
                 Container(
@@ -160,46 +156,14 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 ),
                 Expanded(
                   child: budgets.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 84,
-                                  height: 84,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.corporateGreen.withValues(
-                                      alpha: 0.12,
-                                    ),
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: const Icon(
-                                    Icons.pie_chart_outline_rounded,
-                                    size: 40,
-                                    color: AppTheme.corporateGreen,
-                                  ),
-                                ),
-                                const SizedBox(height: 18),
-                                Text(
-                                  'Aún no tienes presupuestos',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Define límites por categoría para controlar cuánto gastas cada mes.',
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.72),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                      ? AppEmptyState(
+                          icon: Icons.pie_chart_outline_rounded,
+                          title: 'Aún no tienes presupuestos',
+                          message:
+                              'Define límites por categoría para controlar cuánto gastas cada mes.',
+                          accentColor: AppTheme.corporateGreen,
+                          actionLabel: 'Crear presupuesto',
+                          onAction: () => _openBudgetForm(),
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -453,90 +417,80 @@ class _BudgetFormSheetState extends State<_BudgetFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, bottomInset + 20),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.budget == null
-                    ? 'Nuevo presupuesto'
-                    : 'Editar presupuesto',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+    return AppFormScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      includeKeyboardInset: true,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.budget == null
+                  ? 'Nuevo presupuesto'
+                  : 'Editar presupuesto',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _categoryController,
+              textInputAction: TextInputAction.next,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Categoría',
+                prefixIcon: Icon(Icons.category_outlined),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _categoryController,
-                decoration: const InputDecoration(
-                  labelText: 'Categoría',
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
-                validator: (value) {
-                  if ((value ?? '').trim().isEmpty) {
-                    return 'Ingresa una categoría';
-                  }
-                  return null;
-                },
+              validator: (value) {
+                if ((value ?? '').trim().isEmpty) {
+                  return 'Ingresa una categoría';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _limitController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _limitController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: const InputDecoration(
-                  labelText: 'Límite mensual',
-                  prefixIcon: Icon(Icons.track_changes_outlined),
-                ),
-                validator: (value) {
-                  final amount = double.tryParse((value ?? '').trim());
-                  if (amount == null || amount <= 0) {
-                    return 'Ingresa un límite válido';
-                  }
-                  return null;
-                },
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Límite mensual',
+                prefixIcon: Icon(Icons.track_changes_outlined),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _noteController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Nota',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
-                ),
+              validator: (value) {
+                final amount = double.tryParse((value ?? '').trim());
+                if (amount == null || amount <= 0) {
+                  return 'Ingresa un límite válido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _noteController,
+              maxLines: 3,
+              textInputAction: TextInputAction.done,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Nota',
+                prefixIcon: Icon(Icons.note_alt_outlined),
               ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton.icon(
-                  onPressed: _isSaving ? null : _save,
-                  icon: _isSaving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.save_outlined),
-                  label: Text(
-                    _isSaving
-                        ? 'Guardando...'
-                        : widget.budget == null
-                        ? 'Guardar presupuesto'
-                        : 'Actualizar presupuesto',
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 18),
+            AppPrimaryButton(
+              label: widget.budget == null
+                  ? 'Guardar presupuesto'
+                  : 'Actualizar presupuesto',
+              loadingLabel: 'Guardando…',
+              icon: Icons.save_outlined,
+              isLoading: _isSaving,
+              onPressed: _save,
+            ),
+          ],
         ),
       ),
     );

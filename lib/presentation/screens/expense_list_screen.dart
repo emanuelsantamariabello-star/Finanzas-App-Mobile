@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
+import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/expense_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'expense_create_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
 class ExpenseListScreen extends StatefulWidget {
   final bool embeddedMode;
@@ -125,57 +128,6 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
     }).toList();
   }
 
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    Color iconColor = const Color(0xFFEF5350),
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 38,
-                color: iconColor.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.2,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white54,
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   String _formatApiDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
@@ -285,84 +237,15 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
     if (!mounted) return;
 
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF161B22),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-
-        title: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline,
-                color: Colors.red,
-                size: 32,
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            const Text(
-              "Eliminar gasto",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-
-        content: const Text(
-          "Esta acci\u00f3n eliminar\u00e1 el movimiento permanentemente.",
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white70, height: 1.4),
-        ),
-
-        actionsAlignment: MainAxisAlignment.spaceEvenly,
-
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              "Cancelar",
-              style: TextStyle(
-                color: Color(0xFF00E676),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            ),
-
-            onPressed: () => Navigator.pop(context, true),
-
-            child: const Text(
-              "Eliminar",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Eliminar gasto',
+      message: 'Esta acción eliminará el movimiento permanentemente.',
+      confirmLabel: 'Eliminar',
+      icon: Icons.delete_outline_rounded,
     );
 
-    if (confirm != true) return;
+    if (!confirm) return;
 
     try {
       final response = await ExpenseService.deleteExpense(
@@ -394,6 +277,13 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   @override
   Widget build(BuildContext context) {
     final filteredExpenses = _getFilteredExpenses();
+    final theme = Theme.of(context);
+    final secondaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.72,
+    );
+    final tertiaryTextColor = theme.colorScheme.onSurface.withValues(
+      alpha: 0.55,
+    );
 
     return Scaffold(
       appBar: widget.embeddedMode ? null : AppBar(title: const Text("Gastos")),
@@ -406,15 +296,18 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
             ),
 
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Cargando gastos…')
           : error != null
-          ? Center(child: Text("Error: $error"))
+          ? AppErrorState(message: error!, onRetry: loadExpenses)
           : expenses.isEmpty
-          ? _buildEmptyState(
+          ? AppEmptyState(
               icon: Icons.trending_down_rounded,
               title: 'A\u00fan no tienes gastos',
-              subtitle:
+              message:
                   'Registra tu primer gasto para entender\nmejor en qu\u00e9 se va tu dinero.',
+              accentColor: AppTheme.corporateRed,
+              actionLabel: 'Agregar gasto',
+              onAction: openCreateExpense,
             )
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -446,7 +339,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                       const SizedBox(height: 8),
                       Text(
                         _formatRangeLabel(),
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(color: secondaryTextColor),
                       ),
                     ],
 
@@ -457,12 +350,12 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 220),
                       child: filteredExpenses.isEmpty
-                          ? _buildEmptyState(
+                          ? const AppEmptyState(
                               icon: Icons.search_off_rounded,
                               title: 'Sin resultados',
-                              subtitle:
+                              message:
                                   'No se encontraron gastos\ncon los filtros seleccionados.',
-                              iconColor: Colors.white70,
+                              compact: true,
                             )
                           : ListView.builder(
                               key: ValueKey(
@@ -496,26 +389,26 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                         Text(
                                           (expense['note'] ?? 'Sin descripción')
                                               .toString(),
-                                          style: const TextStyle(
-                                            color: Colors.white70,
+                                          style: TextStyle(
+                                            color: secondaryTextColor,
                                             height: 1.35,
                                           ),
                                         ),
                                         const SizedBox(height: 8),
                                         Row(
                                           children: [
-                                            const Icon(
+                                            Icon(
                                               Icons.calendar_today_outlined,
                                               size: 14,
-                                              color: Colors.white54,
+                                              color: tertiaryTextColor,
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
                                               formatDate(
                                                 expense['expense_date'],
                                               ),
-                                              style: const TextStyle(
-                                                color: Colors.white54,
+                                              style: TextStyle(
+                                                color: tertiaryTextColor,
                                                 fontSize: 13,
                                               ),
                                             ),
@@ -529,7 +422,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                             Text(
                                               formatAmount(expense['amount']),
                                               style: const TextStyle(
-                                                color: Colors.red,
+                                                color: AppTheme.corporateRed,
                                                 fontWeight: FontWeight.w800,
                                                 fontSize: 19,
                                               ),
@@ -540,7 +433,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.edit,
-                                                    color: Colors.blue,
+                                                    color:
+                                                        AppTheme.corporateBlue,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,
@@ -560,7 +454,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                                 IconButton(
                                                   icon: const Icon(
                                                     Icons.delete,
-                                                    color: Colors.red,
+                                                    color:
+                                                        AppTheme.corporateRed,
                                                   ),
                                                   iconSize: 20,
                                                   padding: EdgeInsets.zero,

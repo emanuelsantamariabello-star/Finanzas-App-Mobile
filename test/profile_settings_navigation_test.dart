@@ -80,7 +80,7 @@ void main() {
     await tester.scrollUntilVisible(logoutAccess, 250);
     await tester.tap(logoutAccess);
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(TextButton, 'Cerrar sesión'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Cerrar sesión'));
     await tester.pumpAndSettle();
 
     final prefs = await SharedPreferences.getInstance();

@@ -13,6 +13,14 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(
       primary: corporateGreen,
       secondary: corporateBlue,
+      error: corporateRed,
+    ),
+
+    cardTheme: CardThemeData(
+      color: const Color(0xFF161B22),
+      elevation: 1.5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: EdgeInsets.zero,
     ),
 
     inputDecorationTheme: InputDecorationTheme(
@@ -50,9 +58,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: Colors.white,
       elevation: 1.5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: EdgeInsets.zero,
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -77,9 +83,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: corporateGreen,
         foregroundColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
   );

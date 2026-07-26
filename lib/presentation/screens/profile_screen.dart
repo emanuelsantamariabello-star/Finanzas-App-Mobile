@@ -12,6 +12,7 @@ import 'package:finanzas_app_mobile/presentation/screens/edit_profile_screen.dar
 import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/settings_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -60,36 +61,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _logout() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Theme.of(ctx).cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          'Cerrar sesión',
-          style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
-        ),
-        content: Text(
-          '¿Estás seguro de que deseas cerrar sesión?',
-          style: TextStyle(
-            color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: 0.72),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-            child: const Text('Cerrar sesión'),
-          ),
-        ],
-      ),
+    final confirm = await showAppConfirmationDialog(
+      context,
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas cerrar sesión?',
+      confirmLabel: 'Cerrar sesión',
+      icon: Icons.logout_rounded,
     );
 
-    if (confirm != true || !mounted) return;
+    if (!confirm || !mounted) return;
 
     await _sessionStorageService.clearSession();
 
@@ -134,10 +114,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Center(
               child: Text(
                 _userInitial(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colorScheme.onSecondary,
                 ),
               ),
             ),
@@ -249,12 +229,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ),
-        Text(
-          _formatAmount(value),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
+        Flexible(
+          child: Text(
+            _formatAmount(value),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
         ),
       ],
@@ -382,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.logout_rounded,
             label: 'Cerrar sesión',
             subtitle: 'Salir de tu cuenta',
-            color: Colors.redAccent,
+            color: AppTheme.corporateRed,
             onTap: _logout,
           ),
         ],
@@ -400,56 +385,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     final theme = Theme.of(context);
     final tileColor = color ?? theme.colorScheme.onSurface;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: tileColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(11),
+    return Semantics(
+      button: true,
+      label: '$label. $subtitle',
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: tileColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Icon(
+                  icon,
+                  color: tileColor.withValues(alpha: 0.8),
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: tileColor.withValues(alpha: 0.8),
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: tileColor,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: tileColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: tileColor.withValues(alpha: 0.5),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: tileColor.withValues(alpha: 0.5),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
-              size: 22,
-            ),
-          ],
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+                size: 22,
+              ),
+            ],
+          ),
         ),
       ),
     );

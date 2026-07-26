@@ -13,6 +13,7 @@ import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
@@ -538,6 +539,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildQuickAccessSection(BuildContext context) {
     final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1).clamp(1.0, 1.6).toDouble();
+    final quickAccessHeight = 116 + ((textScale - 1) * 44);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 116,
+          height: quickAccessHeight,
           child: ListView(
             key: const ValueKey('home_quick_access_list'),
             scrollDirection: Axis.horizontal,
@@ -627,54 +632,65 @@ class _HomeScreenState extends State<HomeScreen> {
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1).clamp(1.0, 1.6).toDouble();
+    final cardWidth = 132 + ((textScale - 1) * 36);
 
     return SizedBox(
-      width: 132,
-      child: Material(
-        color: theme.cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.45)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(12),
+      width: cardWidth,
+      child: Semantics(
+        button: true,
+        label: '$title, $subtitle',
+        excludeSemantics: true,
+        child: Material(
+          color: theme.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.45)),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: color, size: 20),
                   ),
-                  child: Icon(icon, color: color, size: 20),
-                ),
-                const Spacer(),
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                  const Spacer(),
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
-                    fontSize: 10,
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.58,
+                      ),
+                      fontSize: 10,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -719,9 +735,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Finanzas App')),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Preparando tu resumen financiero…')
           : dashboardProvider.error != null && dashboardData.isEmpty
-          ? Center(child: Text('Error: ${dashboardProvider.error}'))
+          ? AppErrorState(message: dashboardProvider.error!, onRetry: loadUser)
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -767,21 +783,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     title: 'Total ingresos',
                     amount: dashboardData['total_income'],
-                    color: Colors.green,
+                    color: AppTheme.corporateGreen,
                     icon: Icons.arrow_downward_rounded,
                   ),
                   _buildSummaryCard(
                     context,
                     title: 'Total gastos',
                     amount: dashboardData['total_expense'],
-                    color: Colors.red,
+                    color: AppTheme.corporateRed,
                     icon: Icons.arrow_upward_rounded,
                   ),
                   _buildSummaryCard(
                     context,
                     title: 'Balance',
                     amount: dashboardData['balance'],
-                    color: Colors.blue,
+                    color: AppTheme.corporateBlue,
                     icon: Icons.account_balance_wallet_rounded,
                   ),
                   const SizedBox(height: 10),
@@ -795,10 +811,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.08),
+                                color: AppTheme.corporateGreen.withValues(
+                                  alpha: 0.08,
+                                ),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.green.withValues(alpha: 0.22),
+                                  color: AppTheme.corporateGreen.withValues(
+                                    alpha: 0.22,
+                                  ),
                                 ),
                               ),
                               child: Column(
@@ -810,16 +830,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: 34,
                                         height: 34,
                                         decoration: BoxDecoration(
-                                          color: Colors.green.withValues(
-                                            alpha: 0.16,
-                                          ),
+                                          color: AppTheme.corporateGreen
+                                              .withValues(alpha: 0.16),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
                                         ),
                                         child: const Icon(
                                           Icons.arrow_downward_rounded,
-                                          color: Colors.green,
+                                          color: AppTheme.corporateGreen,
                                           size: 18,
                                         ),
                                       ),
@@ -841,7 +860,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     formatAmount(dashboardData['month_income']),
                                     style: const TextStyle(
-                                      color: Colors.green,
+                                      color: AppTheme.corporateGreen,
                                       fontSize: 22,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: 0.2,
@@ -856,10 +875,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.red.withValues(alpha: 0.08),
+                                color: AppTheme.corporateRed.withValues(
+                                  alpha: 0.08,
+                                ),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.red.withValues(alpha: 0.22),
+                                  color: AppTheme.corporateRed.withValues(
+                                    alpha: 0.22,
+                                  ),
                                 ),
                               ),
                               child: Column(
@@ -871,16 +894,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: 34,
                                         height: 34,
                                         decoration: BoxDecoration(
-                                          color: Colors.red.withValues(
-                                            alpha: 0.16,
-                                          ),
+                                          color: AppTheme.corporateRed
+                                              .withValues(alpha: 0.16),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
                                         ),
                                         child: const Icon(
                                           Icons.arrow_upward_rounded,
-                                          color: Colors.red,
+                                          color: AppTheme.corporateRed,
                                           size: 18,
                                         ),
                                       ),
@@ -904,7 +926,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       dashboardData['month_expense'],
                                     ),
                                     style: const TextStyle(
-                                      color: Colors.red,
+                                      color: AppTheme.corporateRed,
                                       fontSize: 22,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: 0.2,
@@ -934,7 +956,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: 'Cantidad de ingresos',
                         value: dashboardData['income_count'] ?? 0,
                         icon: Icons.trending_up_rounded,
-                        accentColor: Colors.green,
+                        accentColor: AppTheme.corporateGreen,
                         description: 'Ingresos registrados',
                       ),
                       const SizedBox(width: 12),
@@ -943,7 +965,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: 'Cantidad de gastos',
                         value: dashboardData['expense_count'] ?? 0,
                         icon: Icons.trending_down_rounded,
-                        accentColor: Colors.red,
+                        accentColor: AppTheme.corporateRed,
                         description: 'Gastos registrados',
                       ),
                     ],

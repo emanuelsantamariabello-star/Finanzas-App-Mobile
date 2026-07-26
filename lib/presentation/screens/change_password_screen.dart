@@ -3,7 +3,9 @@ import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -46,37 +48,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<void> _loadUserId() async {
+    setState(() {
+      _loading = true;
+      _loadError = null;
+    });
+
     try {
       final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
       setState(() {
         _userId = prefs.getInt(SessionKeys.userId);
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _loadError = e.toString();
         _loading = false;
       });
     }
-  }
-
-  InputDecoration _decoration({
-    required String label,
-    required IconData icon,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: const Color(0xFF161B22),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-    );
   }
 
   Future<void> _save() async {
@@ -132,22 +122,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Cambiar contraseña')),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Preparando la configuración…')
           : _loadError != null
-          ? Center(child: Text('Error: $_loadError'))
-          : SingleChildScrollView(
+          ? AppErrorState(message: _loadError!, onRetry: _loadUserId)
+          : AppFormScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0D1117),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: Colors.white10),
-                    ),
+                  AppSurfaceCard(
                     child: Text(
                       'Por seguridad, ingresa tu contraseña actual y define una nueva.',
                       style: TextStyle(
@@ -165,7 +148,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _currentController,
                           obscureText: !_showCurrent,
                           textInputAction: TextInputAction.next,
-                          decoration: _decoration(
+                          autofillHints: const [AutofillHints.password],
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          decoration: AppFormDecoration.input(
+                            context: context,
                             label: 'Contraseña actual',
                             icon: Icons.lock_outline_rounded,
                             suffixIcon: IconButton(
@@ -192,7 +179,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _newController,
                           obscureText: !_showNew,
                           textInputAction: TextInputAction.next,
-                          decoration: _decoration(
+                          autofillHints: const [AutofillHints.newPassword],
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          decoration: AppFormDecoration.input(
+                            context: context,
                             label: 'Nueva contraseña',
                             icon: Icons.password_rounded,
                             suffixIcon: IconButton(
@@ -222,7 +213,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _confirmController,
                           obscureText: !_showConfirm,
                           textInputAction: TextInputAction.done,
-                          decoration: _decoration(
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          decoration: AppFormDecoration.input(
+                            context: context,
                             label: 'Confirmar nueva contraseña',
                             icon: Icons.password_rounded,
                             suffixIcon: IconButton(
@@ -252,29 +246,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton.icon(
-                      onPressed: _saving ? null : _save,
-                      icon: _saving
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.save_outlined),
-                      label: Text(
-                        _saving ? 'Guardando…' : 'Cambiar contraseña',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00C853),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
+                  AppPrimaryButton(
+                    label: 'Cambiar contraseña',
+                    loadingLabel: 'Guardando…',
+                    icon: Icons.save_outlined,
+                    isLoading: _saving,
+                    onPressed: _save,
                   ),
                 ],
               ),

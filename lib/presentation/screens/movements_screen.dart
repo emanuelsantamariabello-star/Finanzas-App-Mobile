@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.da
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MovementsScreen extends StatefulWidget {
@@ -137,7 +138,7 @@ class _MovementsScreenState extends State<MovementsScreen>
         backgroundColor: theme.cardColor,
         labelStyle: TextStyle(
           color: selected
-              ? Colors.black
+              ? theme.colorScheme.onPrimary
               : theme.colorScheme.onSurface.withValues(alpha: 0.75),
           fontWeight: FontWeight.w600,
         ),
@@ -417,10 +418,18 @@ class _MovementsScreenState extends State<MovementsScreen>
     final tabController = _tabController;
     final theme = Theme.of(context);
     final activeRange = _currentRange();
-    final appBarBottomHeight = _hasActiveRange ? 234.0 : 188.0;
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1).clamp(1.0, 1.5).toDouble();
+    final responsiveHeight = (textScale - 1) * 36;
+    final appBarBottomHeight =
+        (_hasActiveRange ? 234.0 : 188.0) + responsiveHeight;
+    final quickFilterHeight = 38 + ((textScale - 1) * 18);
 
     if (tabController == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: AppLoadingState(message: 'Preparando tus movimientos…'),
+      );
     }
 
     return Scaffold(
@@ -454,6 +463,7 @@ class _MovementsScreenState extends State<MovementsScreen>
                           suffixIcon: searchQuery.isEmpty
                               ? null
                               : IconButton(
+                                  tooltip: 'Limpiar búsqueda',
                                   onPressed: () {
                                     searchController.clear();
                                     setState(() => searchQuery = '');
@@ -494,7 +504,7 @@ class _MovementsScreenState extends State<MovementsScreen>
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
-                  height: 38,
+                  height: quickFilterHeight,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
@@ -568,7 +578,7 @@ class _MovementsScreenState extends State<MovementsScreen>
                       color: AppTheme.corporateGreen,
                       borderRadius: const BorderRadius.all(Radius.circular(14)),
                     ),
-                    labelColor: Colors.black,
+                    labelColor: theme.colorScheme.onPrimary,
                     unselectedLabelColor: theme.colorScheme.onSurface
                         .withValues(alpha: 0.75),
                     tabs: const [
@@ -606,7 +616,7 @@ class _MovementsScreenState extends State<MovementsScreen>
       floatingActionButton: FloatingActionButton(
         onPressed: _showMovementActionsSheet,
         backgroundColor: AppTheme.corporateGreen,
-        foregroundColor: Colors.black,
+        foregroundColor: theme.colorScheme.onPrimary,
         elevation: 6,
         child: const Icon(Icons.add_rounded),
       ),

@@ -26,6 +26,9 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Cambio de contraseña.
 - Selector de tema claro, oscuro y del sistema.
 - Persistencia de la preferencia de tema.
+- Módulo centralizado de configuración de la aplicación.
+- Personalización del contenido visible en Inicio.
+- Accesos rápidos horizontales a recordatorios, metas y presupuestos.
 - Cierre de sesión.
 - Recordatorios locales diarios, semanales, quincenales y mensuales.
 - Notificaciones locales programadas para pagos, gastos fijos y metas.
@@ -234,6 +237,8 @@ La validación manual debe incluir:
 - creación de metas y presupuestos;
 - restauración de filtros al volver a Movimientos;
 - exportación y uso de la acción `Compartir CSV`;
+- persistencia del contenido configurado al cerrar y volver a abrir la app;
+- conservación de Tema y preferencias de Inicio después de cerrar sesión;
 - cambio entre los temas claro, oscuro y del sistema.
 
 ## Estado actual

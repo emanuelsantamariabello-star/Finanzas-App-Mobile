@@ -325,6 +325,15 @@ Avance actual:
   `ThemeData` en modo claro y oscuro;
 - colores verde, azul y rojo centralizados como identidad visual corporativa.
 
+Estado de cierre de la etapa:
+
+- siete fases de refinamiento UX completadas en la rama
+  `codex/global-ux-refinement`;
+- análisis estático sin diagnósticos;
+- 55 pruebas automatizadas aprobadas;
+- compilación APK debug completada correctamente;
+- pendiente únicamente la validación manual antes de fusionar con `main`.
+
 Antes de un despliegue productivo todavía conviene reforzar:
 
 - migrar la API a HTTPS y definir entornos de desarrollo y producción;

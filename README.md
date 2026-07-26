@@ -265,13 +265,12 @@ Validación técnica realizada el 25 de julio de 2026:
 El proyecto está funcional y estable para continuar su desarrollo, pero aún no
 debe considerarse listo para producción.
 
-### Estabilización activa
+### Estabilización completada
 
-La rama `codex/stability-hardening` parte de una línea base limpia. La
-codificación residual, el aislamiento de datos locales por usuario, el ciclo
-de sesión, la configuración del cliente API y Android para desarrollo ya
-fueron estabilizados. La evaluación controlada de dependencias también quedó
-completada sin aplicar migraciones mayores.
+La codificación residual, el aislamiento de datos locales por usuario, el
+ciclo de sesión, la configuración del cliente API y Android para desarrollo
+ya fueron estabilizados. La evaluación controlada de dependencias también
+quedó completada sin aplicar migraciones mayores.
 
 Dependencias actualizadas de forma compatible:
 
@@ -285,6 +284,21 @@ Dependencias actualizadas de forma compatible:
 Las migraciones mayores de `fl_chart` y `share_plus` quedan aplazadas para
 ramas independientes con validación visual de gráficas y validación funcional
 de exportación.
+
+### Refinamiento UX global
+
+La etapa de UX global inició el 26 de julio de 2026 desde una línea base con
+análisis estático limpio, 40 pruebas aprobadas y compilación APK debug
+correcta.
+
+La auditoría inicial identificó estos frentes de trabajo:
+
+- unificar inputs, botones, tarjetas y contenedores repetidos;
+- estandarizar estados de carga, error y contenido vacío;
+- mejorar formularios, teclado y prevención de acciones duplicadas;
+- reforzar feedback, accesibilidad y adaptación a pantallas pequeñas;
+- eliminar inconsistencias residuales entre los temas claro y oscuro;
+- cerrar con regresión visual y funcional de todos los módulos.
 
 Antes de un despliegue productivo todavía conviene reforzar:
 

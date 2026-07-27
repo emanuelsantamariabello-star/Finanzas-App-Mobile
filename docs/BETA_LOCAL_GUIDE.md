@@ -186,9 +186,9 @@ normalmente impide instalar un build con número inferior sin desinstalar.
 - [x] Permisos Android revisados.
 - [ ] Login y cierre de sesión probados en dispositivo físico.
 - [ ] CRUD de ingresos y gastos probado.
-- [ ] Clasificación necesario/gusto probada al crear y editar gastos.
-- [ ] Reporte PDF generado, abierto y compartido en dispositivo físico.
-- [ ] Panel, badge, actualización y lectura de notificaciones probados.
+- [x] Clasificación necesario/gusto probada al crear y editar gastos.
+- [x] Reporte PDF generado, abierto y compartido en dispositivo físico.
+- [x] Panel, badge, actualización y lectura de notificaciones probados.
 - [ ] Dashboard, movimientos, estadísticas y perfil probados.
 - [ ] Errores de red probados.
 - [x] APK confirmado como no versionado.

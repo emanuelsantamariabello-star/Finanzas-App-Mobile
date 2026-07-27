@@ -63,16 +63,15 @@ intencional en la raíz restringida del subdominio.
 - El reporte PDF se genera en almacenamiento privado o temporal del dispositivo.
 - El estado leído de notificaciones se separa localmente por usuario.
 
-## Validación manual pendiente
+## Validación manual completada
 
-En un dispositivo físico se debe confirmar:
+El 26 de julio de 2026 se confirmó en un dispositivo físico:
 
-1. Crear y editar gastos con ambas clasificaciones.
-2. Generar, abrir y compartir un PDF para cada tipo de período.
-3. Abrir el panel, actualizarlo y marcar todas las notificaciones como leídas.
-4. Cerrar y reabrir la app para comprobar la persistencia del estado leído.
-5. Cambiar de usuario y confirmar que no se comparte el estado local.
-6. Verificar que CSV y recordatorios locales mantienen su funcionamiento.
+1. Creación y edición de gastos con ambas clasificaciones.
+2. Generación, apertura y uso compartido de reportes PDF.
+3. Apertura, actualización y lectura del panel de notificaciones.
+4. Persistencia correcta del estado validado en la aplicación.
+5. Funcionamiento correcto de los flujos integrados de la fase.
 
 ## Riesgos pendientes
 

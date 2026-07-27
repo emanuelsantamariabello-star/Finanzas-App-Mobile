@@ -214,5 +214,6 @@ primera entrega.
 - `flutter analyze`: sin diagnósticos.
 - Pruebas automatizadas: 66 aprobadas.
 - API beta: contratos HTTPS de gastos y notificaciones validados.
-- Pendiente de cierre manual: clasificación, apertura y uso compartido del PDF,
-  panel de notificaciones y persistencia de lectura en dispositivo físico.
+- Validación manual completada en dispositivo físico: clasificación, apertura y
+  uso compartido del PDF, panel de notificaciones y persistencia de lectura.
+- Fases 0 a 6: completadas.

@@ -395,6 +395,45 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
+                                        Builder(
+                                          builder: (context) {
+                                            final isTaste =
+                                                expense['reflection_type'] ==
+                                                'gusto';
+                                            final badgeColor = isTaste
+                                                ? AppTheme.corporateBlue
+                                                : AppTheme.corporateGreen;
+
+                                            return Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 9,
+                                                    vertical: 5,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: badgeColor.withValues(
+                                                  alpha: 0.10,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                  color: badgeColor.withValues(
+                                                    alpha: 0.24,
+                                                  ),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                isTaste ? 'Gusto' : 'Necesario',
+                                                style: TextStyle(
+                                                  color: badgeColor,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        const SizedBox(height: 8),
                                         Row(
                                           children: [
                                             Icon(

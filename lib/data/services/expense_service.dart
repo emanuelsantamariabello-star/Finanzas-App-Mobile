@@ -21,6 +21,7 @@ class ExpenseService {
     required String amount,
     required String note,
     required String expenseDate,
+    required String reflectionType,
   }) async {
     return ApiClient.postJson(
       'create_expense.php',
@@ -30,6 +31,7 @@ class ExpenseService {
         'amount': amount,
         'note': note,
         'expense_date': expenseDate,
+        'reflection_type': reflectionType,
       },
     );
   }
@@ -39,6 +41,7 @@ class ExpenseService {
     required String amount,
     required String note,
     required String expenseDate,
+    required String reflectionType,
   }) async {
     return ApiClient.postJson(
       'update_expense.php',
@@ -47,6 +50,7 @@ class ExpenseService {
         'amount': amount,
         'note': note,
         'expense_date': expenseDate,
+        'reflection_type': reflectionType,
       },
     );
   }

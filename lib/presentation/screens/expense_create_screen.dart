@@ -31,6 +31,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
   List incomes = [];
   int? selectedIncomeId;
   DateTime selectedDate = DateTime.now();
+  String reflectionType = 'necesario';
 
   bool isLoading = false;
   bool isLoadingIncomes = true;
@@ -46,6 +47,12 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       noteController.text = widget.expense!['note'] ?? '';
       selectedIncomeId = widget.expense!['income_id'];
       selectedDate = _parseDate(widget.expense!['expense_date']);
+      final savedReflectionType = widget.expense!['reflection_type']
+          ?.toString();
+      if (savedReflectionType == 'gusto' ||
+          savedReflectionType == 'necesario') {
+        reflectionType = savedReflectionType!;
+      }
     }
 
     noteController.addListener(_updateSuggestion);
@@ -142,6 +149,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
           amount: amount,
           note: note,
           expenseDate: formattedDate,
+          reflectionType: reflectionType,
         );
       } else {
         response = await ExpenseService.createExpense(
@@ -150,6 +158,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
           amount: amount,
           note: note,
           expenseDate: formattedDate,
+          reflectionType: reflectionType,
         );
       }
 
@@ -258,6 +267,90 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     );
   }
 
+  Widget _buildReflectionOption({
+    required BuildContext context,
+    required String value,
+    required String label,
+    required String description,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
+    final isSelected = reflectionType == value;
+    final selectedColor = value == 'necesario'
+        ? AppTheme.corporateGreen
+        : AppTheme.corporateBlue;
+
+    return Expanded(
+      child: Semantics(
+        selected: isSelected,
+        button: true,
+        label: '$label. $description',
+        child: InkWell(
+          onTap: () => setState(() => reflectionType = value),
+          borderRadius: BorderRadius.circular(14),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? selectedColor.withValues(alpha: 0.10)
+                  : theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isSelected
+                    ? selectedColor
+                    : theme.colorScheme.outline.withValues(alpha: 0.35),
+                width: isSelected ? 1.5 : 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      icon,
+                      size: 20,
+                      color: isSelected
+                          ? selectedColor
+                          : theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const Spacer(),
+                    Icon(
+                      isSelected
+                          ? Icons.check_circle_rounded
+                          : Icons.circle_outlined,
+                      size: 19,
+                      color: isSelected
+                          ? selectedColor
+                          : theme.colorScheme.outline,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  label,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  description,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.25,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -324,6 +417,40 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                     const SizedBox(height: 12),
                     _buildSuggestionCard(context),
                     if (expenseSuggestion != null) const SizedBox(height: 12),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '¿Este gasto fue?',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildReflectionOption(
+                            context: context,
+                            value: 'necesario',
+                            label: 'Necesario',
+                            description: 'Compra o pago esencial',
+                            icon: Icons.verified_outlined,
+                          ),
+                          const SizedBox(width: 10),
+                          _buildReflectionOption(
+                            context: context,
+                            value: 'gusto',
+                            label: 'Gusto',
+                            description: 'Compra discrecional',
+                            icon: Icons.favorite_border_rounded,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
 
                     InkWell(
                       onTap: _pickDate,

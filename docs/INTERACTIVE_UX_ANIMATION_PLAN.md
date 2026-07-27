@@ -120,3 +120,11 @@ Las APIs implícitas de Flutter son suficientes y reducen el riesgo.
 - La app reduce el movimiento cuando Android lo solicita.
 - No se agregan dependencias sin una necesidad técnica demostrada.
 - `flutter analyze` y las pruebas permanecen limpios.
+
+## Estado de ejecución
+
+- Fase 0: auditoría y contrato visual completados.
+- Fase 1: base global de duraciones, curvas y movimiento reducido completada.
+- La base usa únicamente APIs nativas de Flutter.
+- Pruebas específicas de movimiento: 4 aprobadas.
+- Análisis estático: sin diagnósticos.

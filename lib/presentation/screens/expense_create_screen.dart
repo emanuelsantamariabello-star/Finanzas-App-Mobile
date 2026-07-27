@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ import 'package:finanzas_app_mobile/data/services/expense_service.dart';
 import 'package:finanzas_app_mobile/data/services/income_service.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_pressable.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
 class ExpenseCreateScreen extends StatefulWidget {
@@ -289,7 +291,8 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
           onTap: () => setState(() => reflectionType = value),
           borderRadius: BorderRadius.circular(14),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
+            duration: AppMotion.duration(context, AppMotion.fast),
+            curve: AppMotion.enter,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isSelected
@@ -347,7 +350,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             ),
           ),
         ),
-      ),
+      ).withPressFeedback(),
     );
   }
 

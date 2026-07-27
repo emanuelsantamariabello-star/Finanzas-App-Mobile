@@ -12,6 +12,7 @@ import 'package:finanzas_app_mobile/data/services/movement_filter_preferences_se
 import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_pressable.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:share_plus/share_plus.dart';
@@ -155,7 +156,7 @@ class _MovementsScreenState extends State<MovementsScreen>
         ),
         side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.5)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+      ).withPressFeedback(),
     );
   }
 

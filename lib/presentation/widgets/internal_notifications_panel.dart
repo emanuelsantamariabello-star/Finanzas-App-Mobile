@@ -225,7 +225,8 @@ class _NotificationCard extends StatelessWidget {
       label:
           '${isRead ? "Leída" : "Sin leer"}. ${notification.title}. ${notification.message}',
       child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 180),
+        duration: AppMotion.duration(context, AppMotion.fast),
+        curve: AppMotion.standardCurve,
         opacity: isRead ? 0.72 : 1,
         child: Container(
           padding: const EdgeInsets.all(14),

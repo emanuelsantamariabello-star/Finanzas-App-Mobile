@@ -130,8 +130,12 @@ Las APIs implícitas de Flutter son suficientes y reducen el riesgo.
 - Fase 4: microinteracciones táctiles y estados de guardado completados.
 - Fase 5: métricas financieras y gráficas animadas completadas.
 - Fase 6: rutas, modales, diálogos y paneles estandarizados.
+- Fase 7: accesibilidad y estabilización automatizada completadas.
 - La base usa únicamente APIs nativas de Flutter.
 - Los módulos inactivos bloquean interacción, foco, semántica y animaciones.
 - Los refresh de contenido no reinician la transición visual.
-- Pruebas automatizadas: 83 aprobadas.
+- Las transiciones respetan la preferencia del sistema para reducir movimiento.
+- Se cubren cambios rápidos de módulo, texto ampliado y pantallas pequeñas.
+- La validación final en dispositivo físico queda sujeta a aprobación manual.
+- Pruebas automatizadas: 86 aprobadas.
 - Análisis estático: sin diagnósticos.

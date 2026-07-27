@@ -97,6 +97,76 @@ void main() {
     );
     expect(AppMotion.reduceMotion(tester.element(find.byType(Stack))), isTrue);
   });
+
+  testWidgets('resuelve cambios rápidos mostrando únicamente el módulo final', (
+    tester,
+  ) async {
+    final index = ValueNotifier(0);
+    addTearDown(index.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ValueListenableBuilder<int>(
+          valueListenable: index,
+          builder: (context, currentIndex, _) {
+            return AppAnimatedIndexedStack(
+              index: currentIndex,
+              children: const [
+                Text('Inicio'),
+                Text('Movimientos'),
+                Text('Estadísticas'),
+                Text('Perfil'),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    index.value = 1;
+    await tester.pump(const Duration(milliseconds: 40));
+    index.value = 2;
+    await tester.pump(const Duration(milliseconds: 40));
+    index.value = 3;
+    await tester.pumpAndSettle();
+
+    final transitions = tester.widgetList<AnimatedOpacity>(
+      find.byType(AnimatedOpacity),
+    );
+    expect(transitions.map((transition) => transition.opacity), [0, 0, 0, 1]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('no desborda en pantalla pequeña con texto ampliado', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 480);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(
+          size: Size(320, 480),
+          textScaler: TextScaler.linear(2),
+        ),
+        child: const Directionality(
+          textDirection: TextDirection.ltr,
+          child: AppAnimatedIndexedStack(
+            index: 0,
+            children: [
+              Center(child: Text('Resumen financiero ampliado')),
+              Center(child: Text('Movimientos registrados')),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Resumen financiero ampliado'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 class _CounterScreen extends StatefulWidget {

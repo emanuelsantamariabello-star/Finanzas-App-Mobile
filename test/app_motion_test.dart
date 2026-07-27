@@ -54,6 +54,28 @@ void main() {
     expect(resolvedDuration, Duration.zero);
   });
 
+  testWidgets(
+    'elimina también la animación de modales con movimiento reducido',
+    (tester) async {
+      late AnimationStyle style;
+
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: Builder(
+            builder: (context) {
+              style = AppMotion.modalStyle(context);
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+
+      expect(style.duration, Duration.zero);
+      expect(style.reverseDuration, Duration.zero);
+    },
+  );
+
   testWidgets('usa movimiento normal si no existe MediaQuery', (tester) async {
     late bool reduceMotion;
 

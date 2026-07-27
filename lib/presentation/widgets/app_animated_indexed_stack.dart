@@ -21,23 +21,23 @@ class AppAnimatedIndexedStack extends StatelessWidget {
       children: List.generate(children.length, (childIndex) {
         final isActive = childIndex == index;
 
-        return TickerMode(
-          enabled: isActive,
-          child: FocusScope(
-            canRequestFocus: isActive,
-            skipTraversal: !isActive,
-            child: IgnorePointer(
-              ignoring: !isActive,
-              child: ExcludeSemantics(
-                excluding: !isActive,
-                child: AnimatedOpacity(
-                  opacity: isActive ? 1 : 0,
-                  duration: duration,
-                  curve: isActive ? AppMotion.enter : AppMotion.exit,
-                  child: AnimatedScale(
-                    scale: isActive ? 1 : 0.985,
-                    duration: duration,
-                    curve: AppMotion.enter,
+        return IgnorePointer(
+          ignoring: !isActive,
+          child: ExcludeSemantics(
+            excluding: !isActive,
+            child: AnimatedOpacity(
+              opacity: isActive ? 1 : 0,
+              duration: duration,
+              curve: isActive ? AppMotion.enter : AppMotion.exit,
+              child: AnimatedScale(
+                scale: isActive ? 1 : 0.985,
+                duration: duration,
+                curve: AppMotion.enter,
+                child: TickerMode(
+                  enabled: isActive,
+                  child: FocusScope(
+                    canRequestFocus: isActive,
+                    skipTraversal: !isActive,
                     child: children[childIndex],
                   ),
                 ),

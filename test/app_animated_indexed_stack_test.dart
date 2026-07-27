@@ -38,6 +38,15 @@ void main() {
     index.value = 0;
     await tester.pumpAndSettle();
     expect(find.text('Inicio: 1'), findsOneWidget);
+
+    final inactiveTransition = find.descendant(
+      of: find.ancestor(
+        of: find.text('Movimientos: 0'),
+        matching: find.byType(AnimatedOpacity),
+      ),
+      matching: find.byType(FadeTransition),
+    );
+    expect(tester.widget<FadeTransition>(inactiveTransition).opacity.value, 0);
   });
 
   testWidgets('bloquea interacción y semántica del módulo inactivo', (

@@ -779,9 +779,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Estadísticas')),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
-          ? const AppLoadingState(message: 'Preparando tus estadísticas…')
+          ? const AppLoadingState(
+              message: 'Preparando tus estadísticas…',
+            ).withStateTransition('loading')
           : dashboardProvider.error != null && dashboardData.isEmpty
-          ? AppErrorState(message: dashboardProvider.error!)
+          ? AppErrorState(
+              message: dashboardProvider.error!,
+            ).withStateTransition('error')
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -812,7 +816,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   _buildMonthlyEvolutionChart(context),
                 ],
               ),
-            ),
+            ).withStateTransition('content'),
     );
   }
 }

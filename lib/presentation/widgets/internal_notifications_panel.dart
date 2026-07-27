@@ -162,7 +162,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
       return const AppLoadingState(
         message: 'Buscando notificaciones…',
         compact: true,
-      );
+      ).withStateTransition('loading');
     }
 
     if (provider.error != null && provider.notifications.isEmpty) {
@@ -171,7 +171,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
         message: provider.error!,
         onRetry: provider.refresh,
         compact: true,
-      );
+      ).withStateTransition('error');
     }
 
     if (provider.notifications.isEmpty) {
@@ -181,7 +181,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
         message: 'No tienes notificaciones activas por ahora.',
         accentColor: AppTheme.corporateBlue,
         compact: true,
-      );
+      ).withStateTransition('empty');
     }
 
     return RefreshIndicator(
@@ -204,7 +204,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
           );
         },
       ),
-    );
+    ).withStateTransition('content');
   }
 }
 

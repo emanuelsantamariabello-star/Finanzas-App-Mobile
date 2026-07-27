@@ -126,7 +126,9 @@ Las APIs implícitas de Flutter son suficientes y reducen el riesgo.
 - Fase 0: auditoría y contrato visual completados.
 - Fase 1: base global de duraciones, curvas y movimiento reducido completada.
 - Fase 2: navegación principal animada con conservación de estado completada.
+- Fase 3: transiciones entre carga, error, vacío y contenido completadas.
 - La base usa únicamente APIs nativas de Flutter.
 - Los módulos inactivos bloquean interacción, foco, semántica y animaciones.
-- Pruebas automatizadas: 73 aprobadas.
+- Los refresh de contenido no reinician la transición visual.
+- Pruebas automatizadas: 75 aprobadas.
 - Análisis estático: sin diagnósticos.

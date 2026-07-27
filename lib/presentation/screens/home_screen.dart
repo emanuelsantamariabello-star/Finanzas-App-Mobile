@@ -739,9 +739,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: const [InternalNotificationAction()],
       ),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
-          ? const AppLoadingState(message: 'Preparando tu resumen financiero…')
+          ? const AppLoadingState(
+              message: 'Preparando tu resumen financiero…',
+            ).withStateTransition('loading')
           : dashboardProvider.error != null && dashboardData.isEmpty
-          ? AppErrorState(message: dashboardProvider.error!, onRetry: loadUser)
+          ? AppErrorState(
+              message: dashboardProvider.error!,
+              onRetry: loadUser,
+            ).withStateTransition('error')
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -984,7 +989,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ),
+            ).withStateTransition('content'),
     );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/presentation/screens/home_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/movements_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/profile_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/statistics_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_animated_indexed_stack.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -27,7 +29,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: IndexedStack(index: currentIndex, children: screens),
+      body: AppAnimatedIndexedStack(index: currentIndex, children: screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
@@ -37,24 +39,60 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onTap: (index) {
           setState(() => currentIndex = index);
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
+            icon: _AnimatedNavigationIcon(
+              icon: Icons.home_rounded,
+              selected: currentIndex == 0,
+            ),
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.swap_horiz_rounded),
+            icon: _AnimatedNavigationIcon(
+              icon: Icons.swap_horiz_rounded,
+              selected: currentIndex == 1,
+            ),
             label: 'Movimientos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_rounded),
+            icon: _AnimatedNavigationIcon(
+              icon: Icons.bar_chart_rounded,
+              selected: currentIndex == 2,
+            ),
             label: 'Estadísticas',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
+            icon: _AnimatedNavigationIcon(
+              icon: Icons.person_rounded,
+              selected: currentIndex == 3,
+            ),
             label: 'Perfil',
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AnimatedNavigationIcon extends StatelessWidget {
+  final IconData icon;
+  final bool selected;
+
+  const _AnimatedNavigationIcon({required this.icon, required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    final duration = AppMotion.duration(context, AppMotion.fast);
+
+    return AnimatedSlide(
+      offset: selected ? const Offset(0, -0.06) : Offset.zero,
+      duration: duration,
+      curve: AppMotion.enter,
+      child: AnimatedScale(
+        scale: selected ? 1.08 : 1,
+        duration: duration,
+        curve: AppMotion.enter,
+        child: Icon(icon),
       ),
     );
   }

@@ -1,5 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/models/financial_report_period.dart';
+import 'package:finanzas_app_mobile/data/services/financial_report_data_service.dart';
+import 'package:finanzas_app_mobile/data/services/financial_report_pdf_service.dart';
 import 'package:finanzas_app_mobile/data/services/movement_export_service.dart';
 import 'package:finanzas_app_mobile/data/services/movement_filter_preferences_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.dart';
@@ -8,6 +15,7 @@ import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MovementsScreen extends StatefulWidget {
   const MovementsScreen({super.key});
@@ -20,6 +28,8 @@ class _MovementsScreenState extends State<MovementsScreen>
     with SingleTickerProviderStateMixin {
   final _preferencesService = MovementFilterPreferencesService();
   final _exportService = MovementExportService();
+  final _reportDataService = FinancialReportDataService();
+  final _pdfReportService = FinancialReportPdfService();
   final searchController = TextEditingController();
   String searchQuery = '';
   String quickFilter = 'Todos';
@@ -28,6 +38,7 @@ class _MovementsScreenState extends State<MovementsScreen>
   DateTime? incomeEndDate;
   DateTime? expenseStartDate;
   DateTime? expenseEndDate;
+  bool _isExportingPdf = false;
 
   final GlobalKey _incomeListKey = GlobalKey();
   final GlobalKey _expenseListKey = GlobalKey();
@@ -322,6 +333,257 @@ class _MovementsScreenState extends State<MovementsScreen>
     await _saveFilters();
   }
 
+  Future<void> _showExportOptions() async {
+    final theme = Theme.of(context);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      backgroundColor: theme.cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (sheetContext) => SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+          16,
+          6,
+          16,
+          16 + MediaQuery.viewPaddingOf(sheetContext).bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Exportar movimientos',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListTile(
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await _exportCurrentMovements();
+              },
+              leading: const Icon(
+                Icons.table_view_outlined,
+                color: AppTheme.corporateGreen,
+              ),
+              title: const Text('Archivo CSV'),
+              subtitle: const Text('Exporta la pestaña y filtros visibles'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+            ),
+            ListTile(
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await _showPdfPeriodOptions();
+              },
+              leading: const Icon(
+                Icons.picture_as_pdf_outlined,
+                color: AppTheme.corporateRed,
+              ),
+              title: const Text('Reporte financiero PDF'),
+              subtitle: const Text('Incluye resumen, análisis y movimientos'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showPdfPeriodOptions() async {
+    final now = DateTime.now();
+    final theme = Theme.of(context);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      backgroundColor: theme.cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (sheetContext) {
+        Widget periodTile({
+          required String title,
+          required String subtitle,
+          required IconData icon,
+          required Future<void> Function() onSelected,
+        }) {
+          return ListTile(
+            leading: Icon(icon, color: AppTheme.corporateBlue),
+            title: Text(title),
+            subtitle: Text(subtitle),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () async {
+              Navigator.pop(sheetContext);
+              await onSelected();
+            },
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            6,
+            16,
+            16 + MediaQuery.viewPaddingOf(sheetContext).bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Período del reporte',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 10),
+              periodTile(
+                title: 'Mes actual',
+                subtitle: 'Desde el primer día del mes hasta hoy',
+                icon: Icons.calendar_view_month_outlined,
+                onSelected: () =>
+                    _generatePdfReport(FinancialReportPeriod.currentMonth(now)),
+              ),
+              periodTile(
+                title: 'Mes anterior',
+                subtitle: 'Todo el mes calendario anterior',
+                icon: Icons.history_rounded,
+                onSelected: () => _generatePdfReport(
+                  FinancialReportPeriod.previousMonth(now),
+                ),
+              ),
+              periodTile(
+                title: 'Personalizado',
+                subtitle: 'Selecciona una fecha inicial y final',
+                icon: Icons.date_range_outlined,
+                onSelected: _selectCustomReportPeriod,
+              ),
+              periodTile(
+                title: 'Historial completo',
+                subtitle: 'Incluye todos los movimientos registrados',
+                icon: Icons.all_inclusive_rounded,
+                onSelected: () =>
+                    _generatePdfReport(const FinancialReportPeriod.history()),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _selectCustomReportPeriod() async {
+    if (!mounted) return;
+
+    final now = DateTime.now();
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      currentDate: now,
+      initialDateRange: DateTimeRange(
+        start: DateTime(now.year, now.month),
+        end: DateTime(now.year, now.month, now.day),
+      ),
+      helpText: 'Período personalizado del reporte',
+    );
+
+    if (!mounted || range == null) return;
+    await _generatePdfReport(
+      FinancialReportPeriod.custom(range.start, range.end),
+    );
+  }
+
+  Future<void> _generatePdfReport(FinancialReportPeriod period) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt(SessionKeys.userId);
+
+    if (!mounted) return;
+    if (userId == null) {
+      AppSnackbar.error(context, 'Usuario no identificado');
+      return;
+    }
+
+    setState(() => _isExportingPdf = true);
+
+    try {
+      final report = await _reportDataService.loadReport(
+        userId: userId,
+        userName: prefs.getString(SessionKeys.userName) ?? 'Usuario',
+        period: period,
+      );
+      final file = await _pdfReportService.createPdfFile(report: report);
+
+      if (!mounted) return;
+      AppSnackbar.success(context, 'Reporte PDF generado correctamente');
+
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Reporte generado'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                report.movements.isEmpty
+                    ? 'El reporte no contiene movimientos para el período seleccionado.'
+                    : 'El reporte incluye ${report.movements.length} movimientos.',
+              ),
+              const SizedBox(height: 12),
+              SelectableText(file.path),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cerrar'),
+            ),
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                _sharePdfReport(file);
+              },
+              icon: const Icon(Icons.share_outlined),
+              label: const Text('Compartir PDF'),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(error, fallback: 'No se pudo generar el reporte PDF'),
+      );
+    } finally {
+      if (mounted) setState(() => _isExportingPdf = false);
+    }
+  }
+
+  Future<void> _sharePdfReport(File file) async {
+    try {
+      final result = await _pdfReportService.sharePdf(file);
+
+      if (!mounted) return;
+      if (result.status == ShareResultStatus.unavailable) {
+        AppSnackbar.info(
+          context,
+          'No hay aplicaciones disponibles para compartir el reporte',
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      AppSnackbar.error(context, 'No se pudo compartir el reporte PDF');
+    }
+  }
+
   Future<void> _exportCurrentMovements() async {
     try {
       final isIncomeTab = currentTabIndex == 0;
@@ -441,11 +703,20 @@ class _MovementsScreenState extends State<MovementsScreen>
       appBar: AppBar(
         title: const Text('Movimientos'),
         actions: [
-          IconButton(
-            onPressed: _exportCurrentMovements,
-            tooltip: 'Exportar CSV',
-            icon: const Icon(Icons.file_download_outlined),
-          ),
+          if (_isExportingPdf)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox.square(
+                dimension: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            IconButton(
+              onPressed: _showExportOptions,
+              tooltip: 'Exportar movimientos',
+              icon: const Icon(Icons.file_download_outlined),
+            ),
         ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(appBarBottomHeight),

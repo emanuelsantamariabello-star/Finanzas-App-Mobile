@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/services/statistics_service.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
@@ -439,6 +440,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       ),
                     ],
                   ),
+                  swapAnimationDuration: AppMotion.duration(
+                    context,
+                    AppMotion.emphasized,
+                  ),
+                  swapAnimationCurve: AppMotion.enter,
                 ),
               ),
       ],
@@ -737,6 +743,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
               ],
             ),
+            duration: AppMotion.duration(context, AppMotion.emphasized),
+            curve: AppMotion.enter,
           ),
         ),
       ],

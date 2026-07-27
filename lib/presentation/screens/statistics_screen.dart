@@ -400,6 +400,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       enabled: true,
                       touchTooltipData: BarTouchTooltipData(
                         getTooltipColor: (_) => theme.cardColor,
+                        fitInsideHorizontally: true,
+                        fitInsideVertically: true,
                         getTooltipItem: (group, groupIndex, rod, rodIndex) {
                           final label = group.x == 0 ? 'Ingresos' : 'Gastos';
                           return BarTooltipItem(
@@ -633,6 +635,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 enabled: true,
                 touchTooltipData: LineTouchTooltipData(
                   getTooltipColor: (_) => theme.cardColor,
+                  fitInsideHorizontally: true,
+                  fitInsideVertically: true,
                   getTooltipItems: (touchedSpots) {
                     return touchedSpots.map((spot) {
                       String label;

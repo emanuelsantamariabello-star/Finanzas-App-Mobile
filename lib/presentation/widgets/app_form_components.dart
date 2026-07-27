@@ -55,12 +55,14 @@ class AppFormScrollView extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(20),
     this.includeKeyboardInset = false,
+    this.includeBottomSafeInset = false,
     this.maxContentWidth = 640,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
   final bool includeKeyboardInset;
+  final bool includeBottomSafeInset;
   final double maxContentWidth;
 
   @override
@@ -68,6 +70,12 @@ class AppFormScrollView extends StatelessWidget {
     final keyboardInset = includeKeyboardInset
         ? MediaQuery.viewInsetsOf(context).bottom
         : 0.0;
+    final bottomSafeInset = includeBottomSafeInset
+        ? MediaQuery.viewPaddingOf(context).bottom
+        : 0.0;
+    final effectivePadding = padding.add(
+      EdgeInsets.only(bottom: bottomSafeInset),
+    );
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -77,7 +85,7 @@ class AppFormScrollView extends StatelessWidget {
         curve: Curves.easeOut,
         padding: EdgeInsets.only(bottom: keyboardInset),
         child: SingleChildScrollView(
-          padding: padding,
+          padding: effectivePadding,
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Align(
             alignment: Alignment.topCenter,

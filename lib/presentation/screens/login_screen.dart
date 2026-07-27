@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
@@ -10,6 +12,7 @@ import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dar
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
+import 'package:finanzas_app_mobile/providers/internal_notification_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -141,6 +144,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ]);
 
         if (!mounted) return;
+        unawaited(
+          context.read<InternalNotificationProvider>().initialize(
+            forceRefresh: true,
+          ),
+        );
         showMessage('Bienvenido nuevamente');
 
         Navigator.pushReplacement(

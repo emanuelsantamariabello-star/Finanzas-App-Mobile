@@ -19,6 +19,7 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Dashboard financiero con resumen general.
 - Gestión de ingresos.
 - Gestión de gastos.
+- Clasificación de gastos entre necesarios y gustos.
 - Creación, edición y eliminación de movimientos.
 - Búsqueda y filtros rápidos en movimientos.
 - Estadísticas con gráficas mensuales.
@@ -43,6 +44,9 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Búsqueda avanzada y filtros persistentes de movimientos.
 - Exportación de ingresos y gastos filtrados a CSV.
 - Compartir archivos CSV mediante el selector nativo del dispositivo.
+- Generación y uso compartido de reportes financieros PDF por período.
+- Panel de notificaciones internas con indicador de elementos no leídos.
+- Persistencia local por usuario del estado leído de las notificaciones internas.
 
 > Los recordatorios, metas, presupuestos y filtros se almacenan localmente en
 > el dispositivo, separados por el usuario activo. Actualmente no se
@@ -92,6 +96,7 @@ Las imágenes se agregarán más adelante cuando se consolide la documentación 
 - `intl`
 - `cupertino_icons`
 - `share_plus`
+- `pdf`
 
 ### Backend externo
 
@@ -371,3 +376,37 @@ Emanuel Santamaría Bello
 ## Licencia
 
 Este proyecto aún no tiene una licencia definida.
+
+## Infraestructura Beta Local
+
+La beta Android usa el entorno `beta` y consume la API por HTTPS mediante:
+
+```text
+https://beta-api.finanzasappsan.com/finanzas_app/api
+```
+
+La infraestructura se compone de Apache y MariaDB en XAMPP, publicados de forma
+temporal mediante el túnel de Cloudflare `finanzas-beta`. Solo Apache se conecta
+al túnel; MySQL no se publica mediante Cloudflare Tunnel.
+
+Requisitos para una sesión de prueba:
+
+1. Iniciar Apache y MySQL en XAMPP.
+2. Ejecutar `cloudflared tunnel run finanzas-beta`.
+3. Mantener el computador y el túnel conectados.
+4. Compilar con:
+
+```powershell
+flutter build apk --release --dart-define=APP_ENV=beta
+```
+
+Para detener el túnel iniciado en terminal, usar `Ctrl+C`. La configuración y
+credenciales locales de Cloudflare se almacenan fuera del repositorio en
+`%USERPROFILE%\.cloudflared` y nunca deben versionarse.
+
+La guía de instalación, riesgos y validación se encuentra en:
+
+- `docs/BETA_LOCAL_GUIDE.md`
+- `docs/BETA_TEST_PLAN.md`
+- `docs/BETA_ISSUE_TEMPLATE.md`
+- `docs/BETA_INTEGRATION_REPORT.md`

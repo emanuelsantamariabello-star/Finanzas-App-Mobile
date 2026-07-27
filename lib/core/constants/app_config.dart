@@ -6,8 +6,27 @@ class AppConfig {
     defaultValue: 'dev',
   );
 
-  static const String apiBaseUrl = String.fromEnvironment(
+  static const String _apiBaseUrlOverride = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: ApiConstants.baseUrlEmulator,
+    defaultValue: '',
   );
+
+  static String get apiBaseUrl {
+    if (_apiBaseUrlOverride.isNotEmpty) {
+      return _apiBaseUrlOverride;
+    }
+
+    switch (env) {
+      case 'beta':
+        return ApiConstants.baseUrlBeta;
+      case 'production':
+        throw StateError(
+          'API_BASE_URL es obligatorio para el entorno de producción',
+        );
+      case 'development':
+      case 'dev':
+      default:
+        return ApiConstants.baseUrlDevelopment;
+    }
+  }
 }

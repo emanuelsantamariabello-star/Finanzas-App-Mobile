@@ -52,6 +52,8 @@ android/key.properties
 *.keystore
 *.p12
 *.pem
+/.cloudflared/
+cloudflared*.log
 
 # iOS / macOS / platform-local artifacts
 DerivedData/

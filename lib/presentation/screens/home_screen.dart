@@ -14,6 +14,7 @@ import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/internal_notifications_panel.dart';
 import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
@@ -733,7 +734,10 @@ class _HomeScreenState extends State<HomeScreen> {
         : const <SavingRecommendationModel>[];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Finanzas App')),
+      appBar: AppBar(
+        title: const Text('Finanzas App'),
+        actions: const [InternalNotificationAction()],
+      ),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
           ? const AppLoadingState(message: 'Preparando tu resumen financiero…')
           : dashboardProvider.error != null && dashboardData.isEmpty
@@ -805,138 +809,143 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     title: 'Resumen del mes',
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: AppTheme.corporateGreen.withValues(
-                                  alpha: 0.08,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
+                      IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
                                   color: AppTheme.corporateGreen.withValues(
-                                    alpha: 0.22,
+                                    alpha: 0.08,
                                   ),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 34,
-                                        height: 34,
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.corporateGreen
-                                              .withValues(alpha: 0.16),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          Icons.arrow_downward_rounded,
-                                          color: AppTheme.corporateGreen,
-                                          size: 18,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          'Ingresos del mes',
-                                          style: TextStyle(
-                                            color: theme.colorScheme.onSurface
-                                                .withValues(alpha: 0.75),
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 14),
-                                  Text(
-                                    formatAmount(dashboardData['month_income']),
-                                    style: const TextStyle(
-                                      color: AppTheme.corporateGreen,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 0.2,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: AppTheme.corporateGreen.withValues(
+                                      alpha: 0.22,
                                     ),
                                   ),
-                                ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 34,
+                                          height: 34,
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.corporateGreen
+                                                .withValues(alpha: 0.16),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.arrow_downward_rounded,
+                                            color: AppTheme.corporateGreen,
+                                            size: 18,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            'Ingresos del mes',
+                                            style: TextStyle(
+                                              color: theme.colorScheme.onSurface
+                                                  .withValues(alpha: 0.75),
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 14),
+                                    Text(
+                                      formatAmount(
+                                        dashboardData['month_income'],
+                                      ),
+                                      style: const TextStyle(
+                                        color: AppTheme.corporateGreen,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: AppTheme.corporateRed.withValues(
-                                  alpha: 0.08,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
                                   color: AppTheme.corporateRed.withValues(
-                                    alpha: 0.22,
+                                    alpha: 0.08,
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: AppTheme.corporateRed.withValues(
+                                      alpha: 0.22,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 34,
-                                        height: 34,
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.corporateRed
-                                              .withValues(alpha: 0.16),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 34,
+                                          height: 34,
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.corporateRed
+                                                .withValues(alpha: 0.16),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.arrow_upward_rounded,
+                                            color: AppTheme.corporateRed,
+                                            size: 18,
                                           ),
                                         ),
-                                        child: const Icon(
-                                          Icons.arrow_upward_rounded,
-                                          color: AppTheme.corporateRed,
-                                          size: 18,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          'Gastos del mes',
-                                          style: TextStyle(
-                                            color: theme.colorScheme.onSurface
-                                                .withValues(alpha: 0.75),
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            'Gastos del mes',
+                                            style: TextStyle(
+                                              color: theme.colorScheme.onSurface
+                                                  .withValues(alpha: 0.75),
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 14),
+                                    Text(
+                                      formatAmount(
+                                        dashboardData['month_expense'],
                                       ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 14),
-                                  Text(
-                                    formatAmount(
-                                      dashboardData['month_expense'],
+                                      style: const TextStyle(
+                                        color: AppTheme.corporateRed,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.2,
+                                      ),
                                     ),
-                                    style: const TextStyle(
-                                      color: AppTheme.corporateRed,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -949,26 +958,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildRecommendationsSection(context, recommendations),
                   ],
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      _buildMiniStat(
-                        context,
-                        label: 'Cantidad de ingresos',
-                        value: dashboardData['income_count'] ?? 0,
-                        icon: Icons.trending_up_rounded,
-                        accentColor: AppTheme.corporateGreen,
-                        description: 'Ingresos registrados',
-                      ),
-                      const SizedBox(width: 12),
-                      _buildMiniStat(
-                        context,
-                        label: 'Cantidad de gastos',
-                        value: dashboardData['expense_count'] ?? 0,
-                        icon: Icons.trending_down_rounded,
-                        accentColor: AppTheme.corporateRed,
-                        description: 'Gastos registrados',
-                      ),
-                    ],
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildMiniStat(
+                          context,
+                          label: 'Cantidad de ingresos',
+                          value: dashboardData['income_count'] ?? 0,
+                          icon: Icons.trending_up_rounded,
+                          accentColor: AppTheme.corporateGreen,
+                          description: 'Ingresos registrados',
+                        ),
+                        const SizedBox(width: 12),
+                        _buildMiniStat(
+                          context,
+                          label: 'Cantidad de gastos',
+                          value: dashboardData['expense_count'] ?? 0,
+                          icon: Icons.trending_down_rounded,
+                          accentColor: AppTheme.corporateRed,
+                          description: 'Gastos registrados',
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

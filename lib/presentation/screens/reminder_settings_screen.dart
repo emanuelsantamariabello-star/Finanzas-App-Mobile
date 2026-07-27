@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
@@ -48,6 +49,7 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
   Future<void> _openReminderForm([ReminderModel? reminder]) async {
     final saved = await showModalBottomSheet<Object?>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).cardColor,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -222,7 +223,10 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   Future<void> openCreateExpense({Map<String, dynamic>? expense}) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => ExpenseCreateScreen(expense: expense)),
+      AppPageRoute.build(
+        context,
+        builder: (_) => ExpenseCreateScreen(expense: expense),
+      ),
     );
 
     if (result == true) {

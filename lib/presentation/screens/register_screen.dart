@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
@@ -54,7 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         if (!mounted) return;
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          AppPageRoute.build(context, builder: (_) => const LoginScreen()),
           (route) => false,
         );
       } else {

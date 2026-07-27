@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/data/models/internal_notification_model.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/internal_notification_provider.dart';
@@ -75,6 +76,7 @@ class InternalNotificationAction extends StatelessWidget {
 Future<void> _showInternalNotificationsPanel(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
+    sheetAnimationStyle: AppMotion.modalStyle(context),
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,

@@ -16,4 +16,11 @@ abstract final class AppMotion {
   static Duration duration(BuildContext context, Duration preferred) {
     return reduceMotion(context) ? Duration.zero : preferred;
   }
+
+  static AnimationStyle modalStyle(BuildContext context) {
+    return AnimationStyle(
+      duration: duration(context, emphasized),
+      reverseDuration: duration(context, standard),
+    );
+  }
 }

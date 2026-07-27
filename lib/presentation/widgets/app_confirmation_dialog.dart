@@ -1,3 +1,4 @@
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> showAppConfirmationDialog(
@@ -10,6 +11,7 @@ Future<bool> showAppConfirmationDialog(
 }) async {
   final result = await showDialog<bool>(
     context: context,
+    animationStyle: AppMotion.modalStyle(context),
     builder: (dialogContext) => AppConfirmationDialog(
       title: title,
       message: message,

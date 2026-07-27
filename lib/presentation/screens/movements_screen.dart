@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/financial_report_period.dart';
@@ -163,7 +165,7 @@ class _MovementsScreenState extends State<MovementsScreen>
   Future<void> _openCreateIncome() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const IncomeCreateScreen()),
+      AppPageRoute.build(context, builder: (_) => const IncomeCreateScreen()),
     );
 
     if (result == true) {
@@ -186,6 +188,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
     await showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       showDragHandle: true,
       useSafeArea: true,
       backgroundColor: theme.cardColor,
@@ -339,6 +342,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
     await showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       showDragHandle: true,
       useSafeArea: true,
       backgroundColor: theme.cardColor,
@@ -401,6 +405,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
     await showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       showDragHandle: true,
       useSafeArea: true,
       backgroundColor: theme.cardColor,
@@ -526,6 +531,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
       await showDialog<void>(
         context: context,
+        animationStyle: AppMotion.modalStyle(context),
         builder: (dialogContext) => AlertDialog(
           title: const Text('Reporte generado'),
           content: Column(
@@ -620,6 +626,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
       await showDialog<void>(
         context: context,
+        animationStyle: AppMotion.modalStyle(context),
         builder: (dialogContext) => AlertDialog(
           title: const Text('Archivo exportado'),
           content: Column(

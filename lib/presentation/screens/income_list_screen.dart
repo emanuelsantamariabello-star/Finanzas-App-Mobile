@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -224,7 +225,10 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
   Future<void> openCreateIncome({Map<String, dynamic>? income}) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => IncomeCreateScreen(income: income)),
+      AppPageRoute.build(
+        context,
+        builder: (_) => IncomeCreateScreen(income: income),
+      ),
     );
 
     if (result == true) {

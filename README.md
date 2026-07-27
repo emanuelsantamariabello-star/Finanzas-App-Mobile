@@ -19,6 +19,7 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Dashboard financiero con resumen general.
 - Gestión de ingresos.
 - Gestión de gastos.
+- Clasificación de gastos entre necesarios y gustos.
 - Creación, edición y eliminación de movimientos.
 - Búsqueda y filtros rápidos en movimientos.
 - Estadísticas con gráficas mensuales.
@@ -43,6 +44,9 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Búsqueda avanzada y filtros persistentes de movimientos.
 - Exportación de ingresos y gastos filtrados a CSV.
 - Compartir archivos CSV mediante el selector nativo del dispositivo.
+- Generación y uso compartido de reportes financieros PDF por período.
+- Panel de notificaciones internas con indicador de elementos no leídos.
+- Persistencia local por usuario del estado leído de las notificaciones internas.
 
 > Los recordatorios, metas, presupuestos y filtros se almacenan localmente en
 > el dispositivo, separados por el usuario activo. Actualmente no se
@@ -92,6 +96,7 @@ Las imágenes se agregarán más adelante cuando se consolide la documentación 
 - `intl`
 - `cupertino_icons`
 - `share_plus`
+- `pdf`
 
 ### Backend externo
 
@@ -404,3 +409,4 @@ La guía de instalación, riesgos y validación se encuentra en:
 - `docs/BETA_LOCAL_GUIDE.md`
 - `docs/BETA_TEST_PLAN.md`
 - `docs/BETA_ISSUE_TEMPLATE.md`
+- `docs/BETA_INTEGRATION_REPORT.md`

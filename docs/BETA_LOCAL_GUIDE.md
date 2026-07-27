@@ -8,8 +8,8 @@ una publicación en Google Play ni a una infraestructura de producción.
 
 ## Identificación de la beta
 
-- Versión: `1.0.0-beta.3`
-- Build: `3`
+- Versión: `1.0.0-beta.4`
+- Build: `4`
 - Application ID: `com.finanzas_app_san.emanuelsantamariabello`
 - Entorno: `beta`
 - API: `https://beta-api.finanzasappsan.com/finanzas_app/api`
@@ -122,6 +122,15 @@ El APK se genera en:
 build\app\outputs\flutter-apk\app-release.apk
 ```
 
+La compilación `1.0.0-beta.4+4` validada tiene el SHA-256:
+
+```text
+A048D8C708C806F7324ECB25ABD2796D37409D1ACA40E38804C65A412FA67CA0
+```
+
+El informe técnico de esta compilación está disponible en
+`docs/BETA_INTEGRATION_REPORT.md`.
+
 ## Instalar y actualizar
 
 Con un dispositivo autorizado por ADB:
@@ -167,6 +176,9 @@ normalmente impide instalar un build con número inferior sin desinstalar.
 - [x] Pruebas automatizadas aprobadas.
 - [x] APK release generado.
 - [x] API HTTPS accesible.
+- [x] Contrato HTTPS de clasificación de gastos validado.
+- [x] Endpoint HTTPS de notificaciones internas validado.
+- [x] Generación estructural del reporte PDF validada automáticamente.
 - [x] XAMPP y túnel iniciados.
 - [x] No hay secretos ni credenciales en Git.
 - [x] Versión y build verificados.
@@ -174,6 +186,9 @@ normalmente impide instalar un build con número inferior sin desinstalar.
 - [x] Permisos Android revisados.
 - [ ] Login y cierre de sesión probados en dispositivo físico.
 - [ ] CRUD de ingresos y gastos probado.
+- [ ] Clasificación necesario/gusto probada al crear y editar gastos.
+- [ ] Reporte PDF generado, abierto y compartido en dispositivo físico.
+- [ ] Panel, badge, actualización y lectura de notificaciones probados.
 - [ ] Dashboard, movimientos, estadísticas y perfil probados.
 - [ ] Errores de red probados.
 - [x] APK confirmado como no versionado.

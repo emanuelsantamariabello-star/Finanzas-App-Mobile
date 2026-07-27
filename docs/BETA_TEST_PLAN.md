@@ -4,8 +4,8 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versión | `1.0.0-beta.3` |
-| Build | `3` |
+| Versión | `1.0.0-beta.4` |
+| Build | `4` |
 | Commit | Completar después del commit de preparación |
 | Dispositivo |  |
 | Android |  |
@@ -28,13 +28,20 @@ severidad (`Crítica`, `Alta`, `Media` o `Baja`).
 | HOME-01 | Dashboard | Abrir Inicio con movimientos existentes. | Muestra balance, resúmenes y accesos sin errores. |
 | INC-01 | Ingresos | Crear, editar y eliminar un ingreso de prueba. | Cada operación se refleja en listas y dashboard. |
 | EXP-01 | Gastos | Crear, editar y eliminar un gasto de prueba. | Cada operación se refleja en listas y dashboard. |
+| EXP-02 | Clasificación | Crear y editar gastos como necesario y gusto. | La clasificación seleccionada se conserva y aparece en la lista. |
 | MOV-01 | Movimientos | Alternar entre Ingresos y Gastos. | Las pestañas conservan datos y acciones correctas. |
 | MOV-02 | Búsqueda | Buscar por nota, tipo o monto. | Solo aparecen coincidencias válidas. |
 | MOV-03 | Filtros | Aplicar filtros de fecha y limpiarlos. | El rango y la lista se actualizan correctamente. |
 | MOV-04 | Exportación | Exportar y compartir CSV. | Se genera un archivo que puede abrirse o compartirse. |
+| MOV-05 | Reporte PDF | Generar períodos actual, anterior, personalizado e historial. | El PDF abre, contiene el período correcto y puede compartirse. |
+| MOV-06 | Contenido PDF | Revisar resumen, movimientos y clasificación. | Los montos, tildes, necesarios y gustos se muestran correctamente. |
 | STAT-01 | Estadísticas | Abrir Estadísticas después de crear movimientos. | Las gráficas reflejan ingresos, gastos y evolución mensual. |
 | PROF-01 | Perfil | Editar nombre, email y ocupación. | Los cambios se guardan y se actualizan en Perfil. |
 | PROF-02 | Contraseña | Cambiar contraseña y volver a iniciar sesión. | La nueva contraseña funciona y la anterior deja de hacerlo. |
+| NOTIF-01 | Panel interno | Abrir la campana desde Inicio. | Muestra solo notificaciones internas activas sin afectar recordatorios locales. |
+| NOTIF-02 | Badge | Recibir notificaciones pendientes. | El badge coincide con la cantidad de elementos no leídos. |
+| NOTIF-03 | Estado leído | Marcar todas como leídas y reabrir la app. | El estado permanece para el mismo usuario y no se comparte con otros. |
+| NOTIF-04 | Actualización | Actualizar manualmente el panel. | Consulta nuevamente la API y conserva un estado visual válido. |
 | NET-01 | Wi-Fi/datos | Cambiar de Wi-Fi a datos móviles con la app abierta. | Las operaciones posteriores continúan por HTTPS. |
 | NET-02 | Internet lento | Limitar la red e intentar cargar datos. | Muestra carga y un error comprensible si vence el timeout. |
 | NET-03 | Sin conexión | Activar modo avión durante una carga. | No se bloquea y permite reintentar al recuperar red. |

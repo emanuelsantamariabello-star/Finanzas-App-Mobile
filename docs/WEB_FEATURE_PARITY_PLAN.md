@@ -205,3 +205,14 @@ primera entrega.
 - No se rompe el sistema de recordatorios locales.
 - No se modifica Finanzas App Web.
 - No se mezclan secretos ni cambios históricos del backend en los commits.
+
+## Estado de ejecución
+
+- Fases 0 a 5: completadas en commits separados.
+- Fase 6: validación automatizada y empaquetado beta completados para
+  `1.0.0-beta.4+4`.
+- `flutter analyze`: sin diagnósticos.
+- Pruebas automatizadas: 66 aprobadas.
+- API beta: contratos HTTPS de gastos y notificaciones validados.
+- Pendiente de cierre manual: clasificación, apertura y uso compartido del PDF,
+  panel de notificaciones y persistencia de lectura en dispositivo físico.

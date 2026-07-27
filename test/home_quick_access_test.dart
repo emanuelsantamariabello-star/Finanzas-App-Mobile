@@ -7,6 +7,7 @@ import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
+import 'package:finanzas_app_mobile/providers/internal_notification_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -38,6 +39,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => BudgetProvider()),
           ChangeNotifierProvider(create: (_) => DashboardProvider()),
           ChangeNotifierProvider(create: (_) => GoalProvider()),
+          ChangeNotifierProvider(create: (_) => InternalNotificationProvider()),
           ChangeNotifierProvider(create: (_) => ReminderProvider()),
         ],
         child: MaterialApp(

@@ -11,6 +11,7 @@ import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
+import 'package:finanzas_app_mobile/providers/internal_notification_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
 import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 
@@ -31,6 +32,8 @@ class _FinanzasAppState extends State<FinanzasApp> {
   final BudgetProvider _budgetProvider = BudgetProvider();
   final DashboardProvider _dashboardProvider = DashboardProvider();
   final GoalProvider _goalProvider = GoalProvider();
+  final InternalNotificationProvider _internalNotificationProvider =
+      InternalNotificationProvider();
   final ReminderProvider _reminderProvider = ReminderProvider();
   final SessionStorageService _sessionStorageService = SessionStorageService();
   final ThemeProvider _themeProvider = ThemeProvider();
@@ -59,6 +62,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
     _budgetProvider.dispose();
     _dashboardProvider.dispose();
     _goalProvider.dispose();
+    _internalNotificationProvider.dispose();
     _reminderProvider.dispose();
     _themeProvider.dispose();
     super.dispose();
@@ -76,6 +80,7 @@ class _FinanzasAppState extends State<FinanzasApp> {
         Future.wait([
           _budgetProvider.initialize(),
           _goalProvider.initialize(),
+          _internalNotificationProvider.initialize(),
           _reminderProvider.initialize(),
         ]),
       );
@@ -93,6 +98,9 @@ class _FinanzasAppState extends State<FinanzasApp> {
           value: _dashboardProvider,
         ),
         ChangeNotifierProvider<GoalProvider>.value(value: _goalProvider),
+        ChangeNotifierProvider<InternalNotificationProvider>.value(
+          value: _internalNotificationProvider,
+        ),
         ChangeNotifierProvider<ReminderProvider>.value(
           value: _reminderProvider,
         ),

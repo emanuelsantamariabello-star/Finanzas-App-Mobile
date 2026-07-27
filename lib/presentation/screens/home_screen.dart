@@ -14,6 +14,7 @@ import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/internal_notifications_panel.dart';
 import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/reminder_provider.dart';
@@ -733,7 +734,10 @@ class _HomeScreenState extends State<HomeScreen> {
         : const <SavingRecommendationModel>[];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Finanzas App')),
+      appBar: AppBar(
+        title: const Text('Finanzas App'),
+        actions: const [InternalNotificationAction()],
+      ),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
           ? const AppLoadingState(message: 'Preparando tu resumen financiero…')
           : dashboardProvider.error != null && dashboardData.isEmpty

@@ -1,4 +1,54 @@
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:flutter/material.dart';
+
+class AppStateTransition extends StatelessWidget {
+  const AppStateTransition({
+    super.key,
+    required this.stateKey,
+    required this.child,
+  });
+
+  final Object stateKey;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final duration = AppMotion.duration(context, AppMotion.standard);
+
+    return AnimatedSwitcher(
+      duration: duration,
+      reverseDuration: duration,
+      switchInCurve: AppMotion.enter,
+      switchOutCurve: AppMotion.exit,
+      layoutBuilder: (currentChild, previousChildren) {
+        return Stack(
+          fit: StackFit.expand,
+          alignment: Alignment.topCenter,
+          children: [...previousChildren, ?currentChild],
+        );
+      },
+      transitionBuilder: (transitionChild, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.015),
+              end: Offset.zero,
+            ).animate(animation),
+            child: transitionChild,
+          ),
+        );
+      },
+      child: KeyedSubtree(key: ValueKey(stateKey), child: child),
+    );
+  }
+}
+
+extension AppStateTransitionExtension on Widget {
+  Widget withStateTransition(Object stateKey) {
+    return AppStateTransition(stateKey: stateKey, child: this);
+  }
+}
 
 class AppLoadingState extends StatelessWidget {
   const AppLoadingState({

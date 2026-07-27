@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      AppPageRoute.build(context, builder: (_) => const LoginScreen()),
     );
   }
 
@@ -276,7 +277,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () async {
               final updated = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                AppPageRoute.build(
+                  context,
+                  builder: (_) => const EditProfileScreen(),
+                ),
               );
 
               if (updated == true) {
@@ -293,7 +297,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                AppPageRoute.build(
+                  context,
+                  builder: (_) => const SettingsScreen(),
+                ),
               );
             },
           ),
@@ -306,7 +313,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                AppPageRoute.build(
+                  context,
                   builder: (_) => const ReminderSettingsScreen(),
                 ),
               );
@@ -321,7 +329,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const FinancialGoalsScreen()),
+                AppPageRoute.build(
+                  context,
+                  builder: (_) => const FinancialGoalsScreen(),
+                ),
               );
             },
           ),
@@ -334,7 +345,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const BudgetsScreen()),
+                AppPageRoute.build(
+                  context,
+                  builder: (_) => const BudgetsScreen(),
+                ),
               );
             },
           ),
@@ -347,7 +361,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () async {
               final updated = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
+                AppPageRoute.build(
+                  context,
+                  builder: (_) => const ChangePasswordScreen(),
+                ),
               );
 
               if (!context.mounted) return;

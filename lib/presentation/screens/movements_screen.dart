@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/models/financial_report_period.dart';
@@ -12,6 +14,7 @@ import 'package:finanzas_app_mobile/data/services/movement_filter_preferences_se
 import 'package:finanzas_app_mobile/presentation/screens/income_create_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/expense_list_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/income_list_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_pressable.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:share_plus/share_plus.dart';
@@ -155,14 +158,14 @@ class _MovementsScreenState extends State<MovementsScreen>
         ),
         side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.5)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+      ).withPressFeedback(),
     );
   }
 
   Future<void> _openCreateIncome() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const IncomeCreateScreen()),
+      AppPageRoute.build(context, builder: (_) => const IncomeCreateScreen()),
     );
 
     if (result == true) {
@@ -185,6 +188,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
     await showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       showDragHandle: true,
       useSafeArea: true,
       backgroundColor: theme.cardColor,
@@ -338,6 +342,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
     await showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       showDragHandle: true,
       useSafeArea: true,
       backgroundColor: theme.cardColor,
@@ -400,6 +405,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
     await showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       showDragHandle: true,
       useSafeArea: true,
       backgroundColor: theme.cardColor,
@@ -525,6 +531,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
       await showDialog<void>(
         context: context,
+        animationStyle: AppMotion.modalStyle(context),
         builder: (dialogContext) => AlertDialog(
           title: const Text('Reporte generado'),
           content: Column(
@@ -619,6 +626,7 @@ class _MovementsScreenState extends State<MovementsScreen>
 
       await showDialog<void>(
         context: context,
+        animationStyle: AppMotion.modalStyle(context),
         builder: (dialogContext) => AlertDialog(
           title: const Text('Archivo exportado'),
           content: Column(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -223,7 +225,10 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
   Future<void> openCreateIncome({Map<String, dynamic>? income}) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => IncomeCreateScreen(income: income)),
+      AppPageRoute.build(
+        context,
+        builder: (_) => IncomeCreateScreen(income: income),
+      ),
     );
 
     if (result == true) {
@@ -302,9 +307,14 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
             ),
 
       body: isLoading
-          ? const AppLoadingState(message: 'Cargando ingresos…')
+          ? const AppLoadingState(
+              message: 'Cargando ingresos…',
+            ).withStateTransition('loading')
           : error != null
-          ? AppErrorState(message: error!, onRetry: loadIncomes)
+          ? AppErrorState(
+              message: error!,
+              onRetry: loadIncomes,
+            ).withStateTransition('error')
           : incomes.isEmpty
           ? AppEmptyState(
               icon: Icons.trending_up_rounded,
@@ -314,7 +324,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
               accentColor: AppTheme.corporateGreen,
               actionLabel: 'Agregar ingreso',
               onAction: openCreateIncome,
-            )
+            ).withStateTransition('empty')
           : Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -356,7 +366,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
 
                   Expanded(
                     child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 220),
+                      duration: AppMotion.duration(context, AppMotion.standard),
                       child: filteredIncomes.isEmpty
                           ? const AppEmptyState(
                               icon: Icons.search_off_rounded,
@@ -497,7 +507,7 @@ class _IncomeListScreenState extends State<IncomeListScreen> {
                   ),
                 ],
               ),
-            ),
+            ).withStateTransition('content'),
     );
   }
 }

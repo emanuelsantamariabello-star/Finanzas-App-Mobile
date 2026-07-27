@@ -83,4 +83,70 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('No pudimos cargar la información'), findsOneWidget);
   });
+
+  testWidgets('transiciona suavemente entre estados diferentes', (
+    tester,
+  ) async {
+    var stateKey = 'loading';
+    var label = 'Cargando';
+    late StateSetter updateHost;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              updateHost = setState;
+              return AppStateTransition(
+                stateKey: stateKey,
+                child: Center(child: Text(label)),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    updateHost(() {
+      stateKey = 'content';
+      label = 'Contenido';
+    });
+    await tester.pump();
+
+    expect(find.text('Cargando'), findsOneWidget);
+    expect(find.text('Contenido'), findsOneWidget);
+
+    await tester.pumpAndSettle();
+    expect(find.text('Cargando'), findsNothing);
+    expect(find.text('Contenido'), findsOneWidget);
+  });
+
+  testWidgets('no reinicia la transición si el estado no cambia', (
+    tester,
+  ) async {
+    var label = 'Balance inicial';
+    late StateSetter updateHost;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              updateHost = setState;
+              return AppStateTransition(
+                stateKey: 'content',
+                child: Center(child: Text(label)),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    updateHost(() => label = 'Balance actualizado');
+    await tester.pump();
+
+    expect(find.text('Balance inicial'), findsNothing);
+    expect(find.text('Balance actualizado'), findsOneWidget);
+  });
 }

@@ -4,6 +4,8 @@ import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -26,6 +28,7 @@ class SettingsScreen extends StatelessWidget {
 
     await showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       useSafeArea: true,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).cardColor,
@@ -424,7 +427,8 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
+                      AppPageRoute.build(
+                        context,
                         builder: (_) => const ReminderSettingsScreen(),
                       ),
                     );

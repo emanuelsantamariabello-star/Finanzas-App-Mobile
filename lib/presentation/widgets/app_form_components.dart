@@ -1,3 +1,5 @@
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_pressable.dart';
 import 'package:flutter/material.dart';
 
 class AppFormDecoration {
@@ -81,8 +83,8 @@ class AppFormScrollView extends StatelessWidget {
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: AnimatedPadding(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
+        duration: AppMotion.duration(context, AppMotion.fast),
+        curve: AppMotion.enter,
         padding: EdgeInsets.only(bottom: keyboardInset),
         child: SingleChildScrollView(
           padding: effectivePadding,
@@ -142,29 +144,35 @@ class AppPrimaryButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isLoading)
-                SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                )
-              else if (icon != null)
-                Icon(icon),
-              if (isLoading || icon != null) const SizedBox(width: 8),
-              Flexible(
-                child: Text(effectiveLabel, overflow: TextOverflow.ellipsis),
-              ),
-            ],
+          child: AnimatedSwitcher(
+            duration: AppMotion.duration(context, AppMotion.fast),
+            switchInCurve: AppMotion.enter,
+            switchOutCurve: AppMotion.exit,
+            child: Row(
+              key: ValueKey(isLoading),
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isLoading)
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  )
+                else if (icon != null)
+                  Icon(icon),
+                if (isLoading || icon != null) const SizedBox(width: 8),
+                Flexible(
+                  child: Text(effectiveLabel, overflow: TextOverflow.ellipsis),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+      ).withPressFeedback(enabled: isEnabled),
     );
   }
 }

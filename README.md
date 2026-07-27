@@ -410,3 +410,4 @@ La guía de instalación, riesgos y validación se encuentra en:
 - `docs/BETA_TEST_PLAN.md`
 - `docs/BETA_ISSUE_TEMPLATE.md`
 - `docs/BETA_INTEGRATION_REPORT.md`
+- `docs/INTERACTIVE_UX_ANIMATION_PLAN.md`

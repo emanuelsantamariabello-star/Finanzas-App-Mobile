@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,8 @@ import 'package:finanzas_app_mobile/data/services/smart_summary_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_animated_number_text.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_pressable.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/internal_notifications_panel.dart';
 import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
@@ -61,9 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String formatAmount(dynamic amount) {
-    final value = double.tryParse(amount.toString()) ?? 0;
+    final value = _numericValue(amount);
     final formatted = currency.format(value).replaceAll('\$', '').trim();
     return '\$ $formatted';
+  }
+
+  double _numericValue(dynamic value) {
+    return double.tryParse(value.toString()) ?? 0;
   }
 
   Widget _buildSummaryCard(
@@ -114,8 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  formatAmount(amount),
+                AppAnimatedNumberText(
+                  value: _numericValue(amount),
+                  formatter: formatAmount,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -168,8 +176,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Icon(icon, color: accentColor, size: 22),
             ),
             const SizedBox(height: 12),
-            Text(
-              value.toString(),
+            AppAnimatedNumberText(
+              value: _numericValue(value),
+              formatter: (animatedValue) => animatedValue.round().toString(),
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -581,7 +590,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    AppPageRoute.build(
+                      context,
                       builder: (_) => const ReminderSettingsScreen(),
                     ),
                   );
@@ -597,7 +607,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    AppPageRoute.build(
+                      context,
                       builder: (_) => const FinancialGoalsScreen(),
                     ),
                   );
@@ -613,7 +624,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const BudgetsScreen()),
+                    AppPageRoute.build(
+                      context,
+                      builder: (_) => const BudgetsScreen(),
+                    ),
                   );
                 },
               ),
@@ -696,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-    );
+    ).withPressFeedback();
   }
 
   @override
@@ -739,9 +753,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: const [InternalNotificationAction()],
       ),
       body: dashboardProvider.isLoading && dashboardData.isEmpty
-          ? const AppLoadingState(message: 'Preparando tu resumen financiero…')
+          ? const AppLoadingState(
+              message: 'Preparando tu resumen financiero…',
+            ).withStateTransition('loading')
           : dashboardProvider.error != null && dashboardData.isEmpty
-          ? AppErrorState(message: dashboardProvider.error!, onRetry: loadUser)
+          ? AppErrorState(
+              message: dashboardProvider.error!,
+              onRetry: loadUser,
+            ).withStateTransition('error')
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -863,10 +882,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 14),
-                                    Text(
-                                      formatAmount(
+                                    AppAnimatedNumberText(
+                                      value: _numericValue(
                                         dashboardData['month_income'],
                                       ),
+                                      formatter: formatAmount,
                                       style: const TextStyle(
                                         color: AppTheme.corporateGreen,
                                         fontSize: 22,
@@ -929,10 +949,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 14),
-                                    Text(
-                                      formatAmount(
+                                    AppAnimatedNumberText(
+                                      value: _numericValue(
                                         dashboardData['month_expense'],
                                       ),
+                                      formatter: formatAmount,
                                       style: const TextStyle(
                                         color: AppTheme.corporateRed,
                                         fontSize: 22,
@@ -984,7 +1005,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ),
+            ).withStateTransition('content'),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart'
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +33,7 @@ class _FinancialGoalsScreenState extends State<FinancialGoalsScreen> {
   Future<void> _openGoalForm([FinancialGoalModel? goal]) async {
     final saved = await showModalBottomSheet<bool>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).cardColor,
@@ -52,6 +54,7 @@ class _FinancialGoalsScreenState extends State<FinancialGoalsScreen> {
 
     final updated = await showDialog<bool>(
       context: context,
+      animationStyle: AppMotion.modalStyle(context),
       builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Actualizar avance'),

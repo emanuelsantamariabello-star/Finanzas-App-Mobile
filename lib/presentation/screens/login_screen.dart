@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/services/auth_service.dart';
@@ -153,7 +154,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+          AppPageRoute.build(
+            context,
+            builder: (context) => const MainNavigationScreen(),
+          ),
         );
       } else {
         showMessage(message ?? 'Credenciales incorrectas', isError: true);
@@ -295,7 +299,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                      AppPageRoute.build(
+                        context,
+                        builder: (_) => const RegisterScreen(),
+                      ),
                     );
                   },
                   child: const Text('¿No tienes cuenta? Regístrate'),

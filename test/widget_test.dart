@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +26,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Inicio'), findsOneWidget);
-    expect(find.text('Movimientos'), findsOneWidget);
-    expect(find.text('Perfil'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Movimientos'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Perfil'),
+      ),
+      findsOneWidget,
+    );
   });
 }

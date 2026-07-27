@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/data/models/internal_notification_model.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/internal_notification_provider.dart';
@@ -75,6 +76,7 @@ class InternalNotificationAction extends StatelessWidget {
 Future<void> _showInternalNotificationsPanel(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
+    sheetAnimationStyle: AppMotion.modalStyle(context),
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,
@@ -162,7 +164,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
       return const AppLoadingState(
         message: 'Buscando notificaciones…',
         compact: true,
-      );
+      ).withStateTransition('loading');
     }
 
     if (provider.error != null && provider.notifications.isEmpty) {
@@ -171,7 +173,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
         message: provider.error!,
         onRetry: provider.refresh,
         compact: true,
-      );
+      ).withStateTransition('error');
     }
 
     if (provider.notifications.isEmpty) {
@@ -181,7 +183,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
         message: 'No tienes notificaciones activas por ahora.',
         accentColor: AppTheme.corporateBlue,
         compact: true,
-      );
+      ).withStateTransition('empty');
     }
 
     return RefreshIndicator(
@@ -204,7 +206,7 @@ class _InternalNotificationsPanel extends StatelessWidget {
           );
         },
       ),
-    );
+    ).withStateTransition('content');
   }
 }
 
@@ -223,7 +225,8 @@ class _NotificationCard extends StatelessWidget {
       label:
           '${isRead ? "Leída" : "Sin leer"}. ${notification.title}. ${notification.message}',
       child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 180),
+        duration: AppMotion.duration(context, AppMotion.fast),
+        curve: AppMotion.standardCurve,
         opacity: isRead ? 0.72 : 1,
         child: Container(
           padding: const EdgeInsets.all(14),

@@ -6,6 +6,7 @@ import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
 import 'package:finanzas_app_mobile/providers/budget_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +47,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   Future<void> _openBudgetForm([BudgetModel? budget]) async {
     final saved = await showModalBottomSheet<bool>(
       context: context,
+      sheetAnimationStyle: AppMotion.modalStyle(context),
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).cardColor,

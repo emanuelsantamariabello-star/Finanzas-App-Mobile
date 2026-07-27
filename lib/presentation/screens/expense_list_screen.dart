@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -221,7 +223,10 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   Future<void> openCreateExpense({Map<String, dynamic>? expense}) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => ExpenseCreateScreen(expense: expense)),
+      AppPageRoute.build(
+        context,
+        builder: (_) => ExpenseCreateScreen(expense: expense),
+      ),
     );
 
     if (result == true) {
@@ -296,9 +301,14 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
             ),
 
       body: isLoading
-          ? const AppLoadingState(message: 'Cargando gastos…')
+          ? const AppLoadingState(
+              message: 'Cargando gastos…',
+            ).withStateTransition('loading')
           : error != null
-          ? AppErrorState(message: error!, onRetry: loadExpenses)
+          ? AppErrorState(
+              message: error!,
+              onRetry: loadExpenses,
+            ).withStateTransition('error')
           : expenses.isEmpty
           ? AppEmptyState(
               icon: Icons.trending_down_rounded,
@@ -308,7 +318,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
               accentColor: AppTheme.corporateRed,
               actionLabel: 'Agregar gasto',
               onAction: openCreateExpense,
-            )
+            ).withStateTransition('empty')
           : Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -348,7 +358,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
                   Expanded(
                     child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 220),
+                      duration: AppMotion.duration(context, AppMotion.standard),
                       child: filteredExpenses.isEmpty
                           ? const AppEmptyState(
                               icon: Icons.search_off_rounded,
@@ -524,7 +534,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                   ),
                 ],
               ),
-            ),
+            ).withStateTransition('content'),
     );
   }
 }

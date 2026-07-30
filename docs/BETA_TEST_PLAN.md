@@ -4,8 +4,8 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versión | `1.0.0-beta.4` |
-| Build | `4` |
+| Versión | `1.0.0-beta.5` |
+| Build | `5` |
 | Commit | Completar después del commit de preparación |
 | Dispositivo |  |
 | Android |  |

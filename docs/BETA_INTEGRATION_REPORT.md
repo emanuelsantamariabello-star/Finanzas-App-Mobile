@@ -1,4 +1,4 @@
-# Informe de Integración Beta 1.0.0-beta.4
+# Informe de Integración Beta 1.0.0-beta.5
 
 ## Alcance
 
@@ -12,11 +12,11 @@ acoplar ambos proyectos:
 ## Validación automatizada
 
 - `flutter analyze --no-pub`: sin diagnósticos.
-- `flutter test --no-pub`: 66 pruebas aprobadas.
+- `flutter test --no-pub`: 86 pruebas aprobadas.
 - `flutter build apk --release --dart-define=APP_ENV=beta`: completado.
 - Application ID inspeccionado: `com.finanzas_app_san.emanuelsantamariabello`.
-- Versión inspeccionada: `1.0.0-beta.4`.
-- Build inspeccionado: `4`.
+- Versión inspeccionada: `1.0.0-beta.5`.
+- Build inspeccionado: `5`.
 - SDK mínimo: Android 7.0, API 24.
 - Target SDK: API 36.
 - Firma del APK: esquema v2 válido para distribución beta privada.
@@ -27,11 +27,28 @@ acoplar ambos proyectos:
 build\app\outputs\flutter-apk\app-release.apk
 ```
 
-- Tamaño: `64.307.975` bytes.
+- Tamaño: `64.340.747` bytes.
 - SHA-256:
-  `A048D8C708C806F7324ECB25ABD2796D37409D1ACA40E38804C65A412FA67CA0`.
+  `A63618734E4E93FD74C6D6DA9FD24AB436E8018EC0EC4E6340AAB4B02E29BE1A`.
 
 El APK es un artefacto generado y permanece excluido del repositorio.
+
+## Validación de actualización y arranque
+
+- Se incrementó la identificación desde `1.0.0-beta.4+4` hasta
+  `1.0.0-beta.5+5` para que Android reconozca el instalador como una
+  actualización posterior.
+- La instalación con `adb install -r` finalizó correctamente.
+- La actividad `MainActivity` permaneció activa después del arranque.
+- El registro de Android no presentó excepciones fatales de la aplicación.
+- La API HTTPS respondió `HTTP 200` después de iniciar el túnel
+  `finanzas-beta`.
+
+El APK que permanecía en `build` correspondía a la Beta 4 generada el 26 de
+julio y no incluía las mejoras integradas posteriormente. Además, Cloudflare
+devolvía el código `1033` mientras el túnel local estaba detenido. El primer
+hallazgo impedía distribuir una actualización real; el segundo impedía usar
+login y servicios remotos, pero no era un fallo de arranque de Flutter.
 
 ## Integración HTTPS
 

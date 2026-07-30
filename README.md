@@ -25,6 +25,8 @@ La aplicación permite administrar ingresos, gastos, estadísticas, perfil de us
 - Estadísticas con gráficas mensuales.
 - Perfil de usuario.
 - Edición de perfil.
+- Foto de perfil protegida con carga desde cámara o galería.
+- Reemplazo y eliminación segura de la fotografía de perfil.
 - Cambio de contraseña.
 - Selector de tema claro, oscuro y del sistema.
 - Persistencia de la preferencia de tema.
@@ -75,7 +77,12 @@ Las imágenes se agregarán más adelante cuando se consolide la documentación 
 ### Persistencia local
 
 - `shared_preferences`
+- `flutter_secure_storage`
 - `path_provider`
+
+### Multimedia
+
+- `image_picker`
 
 ### Notificaciones y programación
 

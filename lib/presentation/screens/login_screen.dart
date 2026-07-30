@@ -122,6 +122,18 @@ class _LoginScreenState extends State<LoginScreen> {
         final occupation = user is Map
             ? (user['occupation'] ?? user['user_occupation'])?.toString()
             : null;
+        final profilePhotoAvailable = user is Map
+            ? _isSuccessResponse(user['profile_photo_available'])
+            : false;
+        final profilePhotoUpdatedAt = user is Map
+            ? DateTime.tryParse(
+                user['profile_photo_updated_at']?.toString() ?? '',
+              )
+            : null;
+        final profileMediaToken = response['profile_media_token']?.toString();
+        final profileMediaTokenExpiresAt = DateTime.tryParse(
+          response['profile_media_token_expires_at']?.toString() ?? '',
+        );
 
         if (userId == null || userName.isEmpty) {
           showMessage('Respuesta de sesión inválida', isError: true);
@@ -133,6 +145,10 @@ class _LoginScreenState extends State<LoginScreen> {
           userName: userName,
           userEmail: email,
           occupation: occupation,
+          profileMediaToken: profileMediaToken,
+          profileMediaTokenExpiresAt: profileMediaTokenExpiresAt,
+          profilePhotoAvailable: profilePhotoAvailable,
+          profilePhotoUpdatedAt: profilePhotoUpdatedAt,
         );
 
         await _persistRememberedCredentials();

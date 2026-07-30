@@ -5,6 +5,8 @@ class SessionKeys {
   static const String userEmail = 'userEmail';
   static const String occupation = 'occupation';
   static const String userOccupation = 'userOccupation';
+  static const String profilePhotoAvailable = 'profilePhotoAvailable';
+  static const String profilePhotoUpdatedAt = 'profilePhotoUpdatedAt';
   static const String rememberCredentials = 'rememberCredentials';
   static const String rememberedEmail = 'rememberedEmail';
 
@@ -15,5 +17,7 @@ class SessionKeys {
     userEmail,
     occupation,
     userOccupation,
+    profilePhotoAvailable,
+    profilePhotoUpdatedAt,
   ];
 }

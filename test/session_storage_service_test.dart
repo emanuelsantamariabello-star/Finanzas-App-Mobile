@@ -1,21 +1,29 @@
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/data/services/profile_media_session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
   });
 
   test('guarda y restaura una sesión válida', () async {
     final service = SessionStorageService();
+    final token = List.filled(64, 'a').join();
 
     await service.saveAuthenticatedUser(
       userId: 7,
       userName: 'Usuario de prueba',
       userEmail: 'usuario@prueba.com',
       occupation: 'Desarrollador',
+      profileMediaToken: token,
+      profileMediaTokenExpiresAt: DateTime.now().add(const Duration(days: 30)),
+      profilePhotoAvailable: true,
+      profilePhotoUpdatedAt: DateTime.utc(2026, 7, 29),
     );
 
     final prefs = await SharedPreferences.getInstance();
@@ -27,6 +35,13 @@ void main() {
     expect(prefs.getString(SessionKeys.userEmail), 'usuario@prueba.com');
     expect(prefs.getString(SessionKeys.occupation), 'Desarrollador');
     expect(prefs.getString(SessionKeys.userOccupation), 'Desarrollador');
+    expect(prefs.getBool(SessionKeys.profilePhotoAvailable), isTrue);
+    expect(
+      prefs.getString(SessionKeys.profilePhotoUpdatedAt),
+      DateTime.utc(2026, 7, 29).toIso8601String(),
+    );
+    expect(prefs.getString('profile_media_token'), isNull);
+    expect(await ProfileMediaSessionStorageService().readToken(), token);
     expect(prefs.getString('password'), isNull);
   });
 
@@ -56,6 +71,14 @@ void main() {
   });
 
   test('limpia solo los datos de sesión', () async {
+    final token = List.filled(64, 'b').join();
+    FlutterSecureStorage.setMockInitialValues({
+      'profile_media_token': token,
+      'profile_media_token_expires_at': DateTime.now()
+          .add(const Duration(days: 30))
+          .toUtc()
+          .toIso8601String(),
+    });
     SharedPreferences.setMockInitialValues({
       SessionKeys.isLoggedIn: true,
       SessionKeys.userId: 7,
@@ -80,6 +103,31 @@ void main() {
     expect(prefs.getString('themeMode'), 'light');
     expect(prefs.getBool('show_home_insights'), isFalse);
     expect(prefs.getBool('show_home_saving_recommendations'), isFalse);
+    expect(await ProfileMediaSessionStorageService().readToken(), isNull);
+  });
+
+  test('actualiza los metadatos de la foto sin guardar rutas', () async {
+    final service = SessionStorageService();
+    final updatedAt = DateTime.utc(2026, 7, 29, 18, 30);
+
+    await service.updateProfilePhotoMetadata(
+      available: true,
+      updatedAt: updatedAt,
+    );
+
+    var prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool(SessionKeys.profilePhotoAvailable), isTrue);
+    expect(
+      prefs.getString(SessionKeys.profilePhotoUpdatedAt),
+      updatedAt.toIso8601String(),
+    );
+    expect(prefs.getString('profile_photo_filename'), isNull);
+
+    await service.updateProfilePhotoMetadata(available: false);
+
+    prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool(SessionKeys.profilePhotoAvailable), isFalse);
+    expect(prefs.getString(SessionKeys.profilePhotoUpdatedAt), isNull);
   });
 
   test('descarta una sesión incompleta', () async {

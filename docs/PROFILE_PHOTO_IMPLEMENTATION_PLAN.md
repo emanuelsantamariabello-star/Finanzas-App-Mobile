@@ -188,12 +188,17 @@ No se devolverá una ruta física ni el nombre interno del archivo.
 
 ### Fase 2 — Cliente y sesión
 
-- Agregar `image_picker`.
-- Agregar almacenamiento seguro para el token multimedia.
-- Extender `ApiClient` para multipart y bytes autenticados.
-- Integrar métodos en `UserService`.
-- Persistir token y metadatos de fotografía dentro de la sesión.
-- Mantener compatibilidad con sesiones y usuarios sin fotografía.
+- Completada el 29 de julio de 2026.
+- Se agregaron `image_picker` y `flutter_secure_storage`.
+- El token y su vencimiento se guardan exclusivamente en almacenamiento
+  seguro; SharedPreferences conserva solo disponibilidad y fecha de la foto.
+- `ApiClient` soporta cabeceras autenticadas, respuestas binarias y cargas
+  multipart sin cambiar los contratos existentes.
+- `UserService` integra carga, consulta, eliminación y revocación.
+- El login procesa los nuevos campos manteniendo compatibilidad con respuestas
+  y sesiones sin fotografía.
+- Android deshabilita Auto Backup para evitar restaurar material cifrado sin
+  su clave y Apple incluye permisos de cámara, galería y Keychain.
 
 ### Fase 3 — Interfaz de perfil
 

@@ -225,12 +225,18 @@ No se devolverá una ruta física ni el nombre interno del archivo.
 
 ### Fase 5 — Seguridad y pruebas
 
-- Probar MIME falso, archivos grandes y archivos corruptos.
-- Probar tokens ausentes, vencidos o correspondientes a otro usuario.
-- Probar carga, reemplazo, consulta y eliminación.
-- Ejecutar pruebas unitarias, de widgets y contratos HTTPS.
-- Confirmar que ningún secreto, token o fotografía aparezca en logs.
-- Confirmar que el token no se almacene en SharedPreferences.
+- Completada el 29 de julio de 2026.
+- Se validaron mediante HTTPS MIME falso, JPEG corrupto y archivos mayores a
+  3 MB; todos fueron rechazados con HTTP 422 y mensajes seguros.
+- Se comprobaron tokens ausentes, malformados, vencidos y revocados, además
+  del aislamiento entre dos usuarios temporales.
+- Carga, consulta, reemplazo y eliminación respondieron correctamente y no
+  dejaron usuarios, tokens ni fotografías temporales.
+- Las 100 pruebas Flutter, el análisis de `lib` y `test`, y la sintaxis de los
+  seis archivos PHP relacionados finalizaron sin errores.
+- El token multimedia no aparece en SharedPreferences ni en logs y permanece
+  dentro de Flutter Secure Storage.
+- La evidencia detallada está en `docs/PROFILE_PHOTO_SECURITY_REPORT.md`.
 
 ### Fase 6 — Beta y cierre
 

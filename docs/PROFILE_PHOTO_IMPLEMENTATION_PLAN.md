@@ -17,11 +17,12 @@ SharedPreferences ni exponer archivos directamente desde Apache.
 - `UserService` solo consume endpoints JSON o formularios simples.
 - `SessionStorageService` no administra referencias de imágenes ni tokens
   multimedia.
-- La tabla `users` no contiene columnas relacionadas con fotografías.
-- La API no dispone de endpoints de carga, lectura o eliminación de imágenes.
+- La tabla `users` ya contiene la referencia interna y fecha de actualización
+  de la fotografía.
+- La API ya dispone de endpoints protegidos de carga, lectura, eliminación y
+  revocación del token multimedia.
 - La versión Web tampoco implementa fotografía de perfil reutilizable.
-- PHP permite uploads de hasta 40 MB y tiene `fileinfo`, pero `GD` está
-  desactivado.
+- PHP mantiene `fileinfo` y `GD` habilitados para validar y normalizar imágenes.
 - Cloudflare Tunnel publica únicamente `/finanzas_app/api`.
 - Android usa `minSdk 24` y `MainActivity` tiene `launchMode="singleTop"`,
   configuración compatible con el selector oficial de imágenes.
@@ -64,7 +65,8 @@ Se utilizará un token multimedia:
 - devuelto por HTTPS solo al usuario autenticado;
 - guardado mediante almacenamiento seguro de la plataforma;
 - enviado mediante `Authorization: Bearer`;
-- invalidado o rotado al iniciar una nueva sesión;
+- independiente para cada inicio de sesión y dispositivo;
+- válido durante 90 días y revocable explícitamente;
 - eliminado del almacenamiento seguro al cerrar sesión.
 
 Esta autorización quedará limitada inicialmente a los endpoints de fotografía
@@ -72,16 +74,17 @@ y no reemplazará en esta fase todo el sistema de autenticación existente.
 
 ### Base de datos
 
-La migración propuesta agregará a `users`:
+La migración agrega a `users`:
 
 ```sql
 profile_photo_filename VARCHAR(255) NULL
 profile_photo_updated_at DATETIME NULL
-profile_media_token_hash CHAR(64) NULL
-profile_media_token_expires_at DATETIME NULL
 ```
 
-La migración debe ser reversible y ejecutarse después de respaldar la tabla.
+Los hashes de tokens se almacenan por separado en
+`profile_media_tokens`, permitiendo varias sesiones/dispositivos sin exponer el
+token original. La migración es reversible y se ejecutó después de respaldar la
+tabla `users`.
 
 ### Contrato API
 
@@ -125,6 +128,13 @@ No se devolverá una ruta física ni el nombre interno del archivo.
 - Header: `Authorization: Bearer <token>`.
 - Elimina el archivo y limpia sus columnas en una operación controlada.
 
+#### Revocar sesión multimedia
+
+`POST revoke_profile_media_token.php`
+
+- Header: `Authorization: Bearer <token>`.
+- Revoca únicamente el token utilizado en la solicitud.
+
 ## Experiencia móvil
 
 - Mantener el avatar con iniciales como fallback permanente.
@@ -164,13 +174,17 @@ No se devolverá una ruta física ni el nombre interno del archivo.
 
 ### Fase 1 — Backend y persistencia
 
-- Respaldar y migrar la tabla `users`.
-- Habilitar y validar `GD`.
-- Crear almacenamiento protegido.
-- Implementar token multimedia.
-- Crear endpoints de carga, lectura y eliminación.
-- Validar contratos localmente y mediante HTTPS.
-- Mantener un commit aislado del backend.
+- Completada el 29 de julio de 2026.
+- Se respaldó `users` antes de aplicar la migración reversible.
+- Se habilitó y validó `GD` en PHP CLI y Apache.
+- Se creó almacenamiento protegido fuera del árbol público de la API.
+- Se implementaron tokens multimedia con hash, expiración y soporte
+  multidispositivo.
+- Se implementaron carga, lectura, eliminación y revocación.
+- Se validó por Apache local y por
+  `https://beta-api.finanzasappsan.com/finanzas_app/api`.
+- Las pruebas cubrieron login, autorización, archivo inválido, normalización,
+  redimensionado, borrado y revocación sin dejar imágenes de prueba.
 
 ### Fase 2 — Cliente y sesión
 

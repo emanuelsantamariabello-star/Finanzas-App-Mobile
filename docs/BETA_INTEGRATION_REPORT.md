@@ -1,4 +1,4 @@
-# Informe de Integración Beta 1.0.0-beta.5
+# Informe de Integración Beta 1.0.0-beta.6
 
 ## Alcance
 
@@ -12,11 +12,11 @@ acoplar ambos proyectos:
 ## Validación automatizada
 
 - `flutter analyze --no-pub`: sin diagnósticos.
-- `flutter test --no-pub`: 86 pruebas aprobadas.
+- `flutter test --no-pub`: 88 pruebas aprobadas.
 - `flutter build apk --release --dart-define=APP_ENV=beta`: completado.
 - Application ID inspeccionado: `com.finanzas_app_san.emanuelsantamariabello`.
-- Versión inspeccionada: `1.0.0-beta.5`.
-- Build inspeccionado: `5`.
+- Versión inspeccionada: `1.0.0-beta.6`.
+- Build inspeccionado: `6`.
 - SDK mínimo: Android 7.0, API 24.
 - Target SDK: API 36.
 - Firma del APK: esquema v2 válido para distribución beta privada.
@@ -27,9 +27,9 @@ acoplar ambos proyectos:
 build\app\outputs\flutter-apk\app-release.apk
 ```
 
-- Tamaño: `64.340.747` bytes.
+- Tamaño: `64.340.743` bytes.
 - SHA-256:
-  `A63618734E4E93FD74C6D6DA9FD24AB436E8018EC0EC4E6340AAB4B02E29BE1A`.
+  `6A11D573849FA8E3903600620837722170B15AE7DB2B290057900E8A331B55D8`.
 
 El APK es un artefacto generado y permanece excluido del repositorio.
 
@@ -49,6 +49,16 @@ julio y no incluía las mejoras integradas posteriormente. Además, Cloudflare
 devolvía el código `1033` mientras el túnel local estaba detenido. El primer
 hallazgo impedía distribuir una actualización real; el segundo impedía usar
 login y servicios remotos, pero no era un fallo de arranque de Flutter.
+
+## Persistencia de la ocupación
+
+- `update_profile.php` conserva la ocupación correctamente en MySQL.
+- `login.php` devuelve ahora el campo `occupation` dentro del usuario.
+- Flutter restaura ese valor en SharedPreferences al iniciar sesión.
+- La actualización local mantiene las claves compatibles `occupation` y
+  `userOccupation`.
+- El contrato se validó mediante HTTP local y HTTPS Beta usando un usuario con
+  ocupación registrada, sin registrar sus datos en logs.
 
 ## Integración HTTPS
 

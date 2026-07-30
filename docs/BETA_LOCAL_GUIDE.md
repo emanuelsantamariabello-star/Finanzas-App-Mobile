@@ -8,13 +8,13 @@ una publicación en Google Play ni a una infraestructura de producción.
 
 ## Identificación de la beta
 
-- Versión: `1.0.0-beta.5`
-- Build: `5`
+- Versión: `1.0.0-beta.6`
+- Build: `6`
 - Application ID: `com.finanzas_app_san.emanuelsantamariabello`
 - Entorno: `beta`
 - API: `https://beta-api.finanzasappsan.com/finanzas_app/api`
 - Fecha de preparación: `2026-07-29`
-- Commit estable de origen: `5083b80`
+- Commit estable de origen: `a43c682`
 
 ## Requisitos
 
@@ -122,10 +122,10 @@ El APK se genera en:
 build\app\outputs\flutter-apk\app-release.apk
 ```
 
-La compilación `1.0.0-beta.5+5` validada tiene el SHA-256:
+La compilación `1.0.0-beta.6+6` validada tiene el SHA-256:
 
 ```text
-A63618734E4E93FD74C6D6DA9FD24AB436E8018EC0EC4E6340AAB4B02E29BE1A
+6A11D573849FA8E3903600620837722170B15AE7DB2B290057900E8A331B55D8
 ```
 
 El informe técnico de esta compilación está disponible en

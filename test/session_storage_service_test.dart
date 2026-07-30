@@ -26,7 +26,33 @@ void main() {
     expect(prefs.getString(SessionKeys.userName), 'Usuario de prueba');
     expect(prefs.getString(SessionKeys.userEmail), 'usuario@prueba.com');
     expect(prefs.getString(SessionKeys.occupation), 'Desarrollador');
+    expect(prefs.getString(SessionKeys.userOccupation), 'Desarrollador');
     expect(prefs.getString('password'), isNull);
+  });
+
+  test('mantiene la ocupación actualizada en las claves compatibles', () async {
+    SharedPreferences.setMockInitialValues({
+      SessionKeys.userName: 'Usuario anterior',
+      SessionKeys.userEmail: 'anterior@prueba.com',
+      SessionKeys.occupation: 'Ocupación anterior',
+      SessionKeys.userOccupation: 'Ocupación anterior',
+    });
+    final service = SessionStorageService();
+
+    await service.updateProfile(
+      userName: 'Usuario actualizado',
+      userEmail: 'actualizado@prueba.com',
+      occupation: 'Ingeniero de software',
+    );
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(SessionKeys.userName), 'Usuario actualizado');
+    expect(prefs.getString(SessionKeys.userEmail), 'actualizado@prueba.com');
+    expect(prefs.getString(SessionKeys.occupation), 'Ingeniero de software');
+    expect(
+      prefs.getString(SessionKeys.userOccupation),
+      'Ingeniero de software',
+    );
   });
 
   test('limpia solo los datos de sesión', () async {
@@ -92,4 +118,29 @@ void main() {
     expect(prefs.getString(SessionKeys.userEmail), 'nuevo@prueba.com');
     expect(prefs.getString(SessionKeys.occupation), isNull);
   });
+
+  test(
+    'conserva la ocupación si el mismo usuario recibe una sesión parcial',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        SessionKeys.isLoggedIn: true,
+        SessionKeys.userId: 7,
+        SessionKeys.userName: 'Usuario',
+        SessionKeys.userEmail: 'usuario@prueba.com',
+        SessionKeys.occupation: 'Contador',
+        SessionKeys.userOccupation: 'Contador',
+      });
+      final service = SessionStorageService();
+
+      await service.saveAuthenticatedUser(
+        userId: 7,
+        userName: 'Usuario',
+        userEmail: 'usuario@prueba.com',
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(SessionKeys.occupation), 'Contador');
+      expect(prefs.getString(SessionKeys.userOccupation), 'Contador');
+    },
+  );
 }

@@ -19,6 +19,11 @@ class SessionStorageService {
     String? occupation,
   }) async {
     final prefs = await SharedPreferences.getInstance();
+    final previousUserId = prefs.getInt(SessionKeys.userId);
+    final previousOccupation = previousUserId == userId
+        ? prefs.getString(SessionKeys.occupation) ??
+              prefs.getString(SessionKeys.userOccupation)
+        : null;
     await _clearSessionFrom(prefs);
 
     await prefs.setInt(SessionKeys.userId, userId);
@@ -26,9 +31,12 @@ class SessionStorageService {
     await prefs.setString(SessionKeys.userEmail, userEmail);
 
     final normalizedOccupation = occupation?.trim() ?? '';
-    if (normalizedOccupation.isNotEmpty) {
-      await prefs.setString(SessionKeys.occupation, normalizedOccupation);
-      await prefs.setString(SessionKeys.userOccupation, normalizedOccupation);
+    final effectiveOccupation = normalizedOccupation.isNotEmpty
+        ? normalizedOccupation
+        : previousOccupation?.trim() ?? '';
+    if (effectiveOccupation.isNotEmpty) {
+      await prefs.setString(SessionKeys.occupation, effectiveOccupation);
+      await prefs.setString(SessionKeys.userOccupation, effectiveOccupation);
     }
 
     await prefs.setBool(SessionKeys.isLoggedIn, true);

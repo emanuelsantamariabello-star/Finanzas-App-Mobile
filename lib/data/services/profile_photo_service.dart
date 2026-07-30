@@ -1,11 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/data/models/profile_photo_snapshot.dart';
 import 'package:finanzas_app_mobile/data/services/profile_media_session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,19 +44,54 @@ class ProfilePhotoService {
 
   Future<Uint8List?> selectAndUpload(ImageSource source) async {
     final token = await _requireToken();
-    final selectedImage = await _imagePicker.pickImage(
-      source: source,
-      maxWidth: 2048,
-      maxHeight: 2048,
-      imageQuality: 90,
-      requestFullMetadata: false,
-    );
+    late final XFile? selectedImage;
+    try {
+      selectedImage = await _imagePicker.pickImage(
+        source: source,
+        maxWidth: 2048,
+        maxHeight: 2048,
+        imageQuality: 90,
+        requestFullMetadata: false,
+      );
+    } on PlatformException catch (error) {
+      throw profilePhotoPickerException(error);
+    }
     if (selectedImage == null) return null;
 
-    final selectedBytes = await selectedImage.readAsBytes();
+    return _uploadImage(selectedImage, token);
+  }
+
+  Future<Uint8List?> recoverLostUpload() async {
+    late final LostDataResponse response;
+    try {
+      response = await _imagePicker.retrieveLostData();
+    } on MissingPluginException {
+      return null;
+    } on PlatformException catch (error) {
+      throw profilePhotoPickerException(error);
+    }
+
+    if (response.isEmpty) return null;
+    final pickerError = response.exception;
+    if (pickerError != null) {
+      throw profilePhotoPickerException(pickerError);
+    }
+
+    final recoveredFiles = response.files;
+    final recoveredImage = recoveredFiles != null && recoveredFiles.isNotEmpty
+        ? recoveredFiles.last
+        : response.file;
+    if (recoveredImage == null) return null;
+
+    final token = await _requireToken();
+    return _uploadImage(recoveredImage, token);
+  }
+
+  Future<Uint8List> _uploadImage(XFile image, String token) async {
+    final selectedBytes = await image.readAsBytes();
     final response = await UserService.uploadProfilePhoto(
       bytes: selectedBytes,
-      filename: selectedImage.name.isEmpty ? 'profile.jpg' : selectedImage.name,
+      filename: image.name.isEmpty ? 'profile.jpg' : image.name,
       token: token,
     );
 
@@ -110,4 +144,19 @@ class ProfilePhotoService {
       message: 'Tu sesión de perfil venció. Inicia sesión nuevamente.',
     );
   }
+}
+
+ApiException profilePhotoPickerException(PlatformException error) {
+  final message = switch (error.code) {
+    'camera_access_denied' =>
+      'Permite el acceso a la cámara para tomar tu foto de perfil.',
+    'photo_access_denied' =>
+      'Permite el acceso a tus fotos para elegir una imagen.',
+    'no_available_camera' =>
+      'No hay una cámara disponible en este dispositivo.',
+    'already_active' => 'El selector de imágenes ya está abierto.',
+    _ => 'No se pudo abrir el selector de imágenes.',
+  };
+
+  return ApiException(type: ApiErrorType.http, message: message);
 }

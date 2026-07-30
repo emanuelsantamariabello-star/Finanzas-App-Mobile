@@ -23,14 +23,16 @@ class ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final badgeSize = size * 0.34;
+    const editTapTargetSize = 48.0;
+    const overflowSpace = 12.0;
     final fallback = _fallback(theme);
 
     return Semantics(
       image: true,
       label: imageBytes == null ? 'Avatar de usuario' : 'Foto de perfil',
       child: SizedBox(
-        width: size + badgeSize * 0.18,
-        height: size + badgeSize * 0.18,
+        width: size + overflowSpace,
+        height: size + overflowSpace,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -64,9 +66,11 @@ class ProfileAvatar extends StatelessWidget {
               ),
             ),
             if (isLoading)
-              Positioned.fill(
-                right: badgeSize * 0.18,
-                bottom: badgeSize * 0.18,
+              Positioned(
+                top: 0,
+                left: 0,
+                width: size,
+                height: size,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -89,22 +93,41 @@ class ProfileAvatar extends StatelessWidget {
                 right: 0,
                 bottom: 0,
                 child: Semantics(
+                  container: true,
                   button: true,
+                  enabled: !isLoading,
                   label: 'Cambiar foto de perfil',
                   child: Material(
-                    color: AppTheme.corporateGreen,
-                    shape: const CircleBorder(),
-                    elevation: 3,
+                    color: Colors.transparent,
                     child: InkWell(
                       onTap: isLoading ? null : onEdit,
                       customBorder: const CircleBorder(),
                       child: SizedBox(
-                        width: badgeSize,
-                        height: badgeSize,
-                        child: Icon(
-                          Icons.photo_camera_rounded,
-                          size: badgeSize * 0.52,
-                          color: Colors.black,
+                        width: editTapTargetSize,
+                        height: editTapTargetSize,
+                        child: Center(
+                          child: Container(
+                            width: badgeSize,
+                            height: badgeSize,
+                            decoration: BoxDecoration(
+                              color: AppTheme.corporateGreen,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.photo_camera_rounded,
+                                size: badgeSize * 0.52,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),

@@ -10,7 +10,9 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({});
 
-    await tester.pumpWidget(const FinanzasApp());
+    await tester.pumpWidget(
+      const FinanzasApp(recoverInterruptedSelection: false),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Bienvenido'), findsOneWidget);
@@ -22,7 +24,9 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({'isLoggedIn': true, 'userId': 7});
 
-    await tester.pumpWidget(const FinanzasApp());
+    await tester.pumpWidget(
+      const FinanzasApp(recoverInterruptedSelection: false),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Inicio'), findsOneWidget);

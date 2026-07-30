@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/motion/app_motion.dart';
+import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/services/profile_photo_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/home_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/movements_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/profile_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/statistics_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_animated_indexed_stack.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  const MainNavigationScreen({
+    super.key,
+    this.recoverInterruptedSelection = true,
+  });
+
+  final bool recoverInterruptedSelection;
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -16,6 +24,7 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int currentIndex = 0;
+  final ProfilePhotoService _profilePhotoService = ProfilePhotoService();
 
   late final List<Widget> screens = [
     const HomeScreen(),
@@ -23,6 +32,33 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const StatisticsScreen(),
     const ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.recoverInterruptedSelection) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _recoverInterruptedProfilePhoto();
+      });
+    }
+  }
+
+  Future<void> _recoverInterruptedProfilePhoto() async {
+    try {
+      final recoveredBytes = await _profilePhotoService.recoverLostUpload();
+      if (!mounted || recoveredBytes == null) return;
+      AppSnackbar.success(context, 'Foto de perfil recuperada');
+    } catch (error) {
+      if (!mounted) return;
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(
+          error,
+          fallback: 'No se pudo recuperar la foto seleccionada',
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

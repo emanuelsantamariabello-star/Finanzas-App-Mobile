@@ -213,10 +213,15 @@ No se devolverá una ruta física ni el nombre interno del archivo.
 
 ### Fase 4 — Ciclo de vida y accesibilidad
 
-- Recuperar datos perdidos del selector en Android.
-- Validar cancelación, permisos denegados y proceso interrumpido.
-- Revisar texto ampliado, pantallas pequeñas y temas.
-- Controlar caché y reemplazo inmediato de fotografía.
+- Completada el 29 de julio de 2026.
+- La navegación principal y Editar perfil recuperan mediante `retrieveLostData`
+  la selección pendiente si Android destruye y restaura la actividad.
+- La cancelación no genera errores y los permisos denegados, cámara ausente o
+  selector ya activo muestran mensajes específicos.
+- El avatar conserva la imagen anterior durante la operación y reemplaza sus
+  bytes inmediatamente al confirmar la nueva fotografía.
+- El botón de cámara ofrece un área táctil mínima de 48 px y el flujo fue
+  validado con tema claro/oscuro, pantalla de 320 px y texto al 200 %.
 
 ### Fase 5 — Seguridad y pruebas
 

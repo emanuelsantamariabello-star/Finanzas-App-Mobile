@@ -18,6 +18,7 @@ void main() {
       tester,
     ) async {
       var edited = false;
+      final semanticsHandle = tester.ensureSemantics();
 
       await tester.pumpWidget(
         MaterialApp(
@@ -40,9 +41,14 @@ void main() {
 
       expect(find.byType(Image), findsOneWidget);
       expect(find.byIcon(Icons.photo_camera_rounded), findsOneWidget);
+      final editTarget = find.bySemanticsLabel('Cambiar foto de perfil');
+      expect(editTarget, findsOneWidget);
+      expect(tester.getSize(editTarget).width, greaterThanOrEqualTo(48));
+      expect(tester.getSize(editTarget).height, greaterThanOrEqualTo(48));
 
       await tester.tap(find.byIcon(Icons.photo_camera_rounded));
       expect(edited, isTrue);
+      semanticsHandle.dispose();
     });
   }
 
@@ -59,7 +65,10 @@ void main() {
     FlutterSecureStorage.setMockInitialValues({});
 
     await tester.pumpWidget(
-      MaterialApp(theme: AppTheme.lightTheme, home: const EditProfileScreen()),
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: const EditProfileScreen(recoverInterruptedSelection: false),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -90,7 +99,7 @@ void main() {
       MaterialApp(
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.dark,
-        home: const EditProfileScreen(),
+        home: const EditProfileScreen(recoverInterruptedSelection: false),
       ),
     );
     await tester.pumpAndSettle();
@@ -99,5 +108,41 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Eliminar foto'), findsOneWidget);
+  });
+
+  testWidgets('adapta las acciones a pantalla pequeña y texto ampliado', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    SharedPreferences.setMockInitialValues({
+      'userId': 7,
+      'userName': 'Usuario',
+      'userEmail': 'usuario@prueba.com',
+      'occupation': 'Profesional',
+      'profilePhotoAvailable': false,
+    });
+    FlutterSecureStorage.setMockInitialValues({});
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: const EditProfileScreen(recoverInterruptedSelection: false),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.photo_camera_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tomar una foto'), findsOneWidget);
+    expect(find.text('Elegir de la galería'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

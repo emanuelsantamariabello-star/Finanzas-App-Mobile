@@ -20,7 +20,9 @@ void main() {
 }
 
 class FinanzasApp extends StatefulWidget {
-  const FinanzasApp({super.key});
+  const FinanzasApp({super.key, this.recoverInterruptedSelection = true});
+
+  final bool recoverInterruptedSelection;
 
   @override
   State<FinanzasApp> createState() => _FinanzasAppState();
@@ -133,7 +135,11 @@ class _FinanzasAppState extends State<FinanzasApp> {
     }
 
     return _buildApp(
-      home: isLoggedIn! ? const MainNavigationScreen() : const LoginScreen(),
+      home: isLoggedIn!
+          ? MainNavigationScreen(
+              recoverInterruptedSelection: widget.recoverInterruptedSelection,
+            )
+          : const LoginScreen(),
     );
   }
 }

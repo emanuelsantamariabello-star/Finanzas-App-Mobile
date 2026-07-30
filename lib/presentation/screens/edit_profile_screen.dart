@@ -19,7 +19,9 @@ import 'package:finanzas_app_mobile/presentation/widgets/profile_avatar.dart';
 enum _ProfilePhotoAction { camera, gallery, delete }
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  const EditProfileScreen({super.key, this.recoverInterruptedSelection = true});
+
+  final bool recoverInterruptedSelection;
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -36,6 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _saving = false;
   bool _photoLoading = false;
   bool _hasProfilePhoto = false;
+  bool _lostDataChecked = false;
   Uint8List? _profilePhotoBytes;
   String? _loadError;
 
@@ -81,12 +84,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _loading = false;
       });
       await _loadProfilePhoto();
+      if (widget.recoverInterruptedSelection) {
+        await _recoverLostPhoto();
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _loadError = e.toString();
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _recoverLostPhoto() async {
+    if (_lostDataChecked || !mounted) return;
+    _lostDataChecked = true;
+    setState(() => _photoLoading = true);
+
+    try {
+      final bytes = await _profilePhotoService.recoverLostUpload();
+      if (!mounted) return;
+      if (bytes != null) {
+        setState(() {
+          _profilePhotoBytes = bytes;
+          _hasProfilePhoto = true;
+        });
+        AppSnackbar.success(context, 'Foto recuperada y actualizada');
+      }
+    } catch (error) {
+      if (!mounted) return;
+      AppSnackbar.error(
+        context,
+        apiErrorMessage(
+          error,
+          fallback: 'No se pudo recuperar la foto seleccionada',
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _photoLoading = false);
     }
   }
 

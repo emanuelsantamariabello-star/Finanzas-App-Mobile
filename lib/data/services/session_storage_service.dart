@@ -1,7 +1,15 @@
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/data/services/profile_media_session_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionStorageService {
+  SessionStorageService({
+    ProfileMediaSessionStorageService? profileMediaStorage,
+  }) : _profileMediaStorage =
+           profileMediaStorage ?? ProfileMediaSessionStorageService();
+
+  final ProfileMediaSessionStorageService _profileMediaStorage;
+
   Future<bool> hasActiveSession() async {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool(SessionKeys.isLoggedIn) ?? false;
@@ -17,6 +25,10 @@ class SessionStorageService {
     required String userName,
     required String userEmail,
     String? occupation,
+    String? profileMediaToken,
+    DateTime? profileMediaTokenExpiresAt,
+    bool profilePhotoAvailable = false,
+    DateTime? profilePhotoUpdatedAt,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final previousUserId = prefs.getInt(SessionKeys.userId);
@@ -25,6 +37,7 @@ class SessionStorageService {
               prefs.getString(SessionKeys.userOccupation)
         : null;
     await _clearSessionFrom(prefs);
+    await _profileMediaStorage.clear();
 
     await prefs.setInt(SessionKeys.userId, userId);
     await prefs.setString(SessionKeys.userName, userName);
@@ -37,6 +50,25 @@ class SessionStorageService {
     if (effectiveOccupation.isNotEmpty) {
       await prefs.setString(SessionKeys.occupation, effectiveOccupation);
       await prefs.setString(SessionKeys.userOccupation, effectiveOccupation);
+    }
+
+    await prefs.setBool(
+      SessionKeys.profilePhotoAvailable,
+      profilePhotoAvailable,
+    );
+    if (profilePhotoUpdatedAt != null) {
+      await prefs.setString(
+        SessionKeys.profilePhotoUpdatedAt,
+        profilePhotoUpdatedAt.toUtc().toIso8601String(),
+      );
+    }
+
+    final normalizedToken = profileMediaToken?.trim() ?? '';
+    if (normalizedToken.isNotEmpty && profileMediaTokenExpiresAt != null) {
+      await _profileMediaStorage.save(
+        token: normalizedToken,
+        expiresAt: profileMediaTokenExpiresAt,
+      );
     }
 
     await prefs.setBool(SessionKeys.isLoggedIn, true);
@@ -54,9 +86,27 @@ class SessionStorageService {
     await prefs.setString(SessionKeys.userOccupation, occupation);
   }
 
+  Future<void> updateProfilePhotoMetadata({
+    required bool available,
+    DateTime? updatedAt,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(SessionKeys.profilePhotoAvailable, available);
+
+    if (available && updatedAt != null) {
+      await prefs.setString(
+        SessionKeys.profilePhotoUpdatedAt,
+        updatedAt.toUtc().toIso8601String(),
+      );
+    } else {
+      await prefs.remove(SessionKeys.profilePhotoUpdatedAt);
+    }
+  }
+
   Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await _clearSessionFrom(prefs);
+    await _profileMediaStorage.clear();
   }
 
   Future<void> _clearSessionFrom(SharedPreferences prefs) async {

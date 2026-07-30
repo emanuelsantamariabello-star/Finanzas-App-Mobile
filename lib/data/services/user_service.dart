@@ -1,6 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
 
 class UserService {
+  static Map<String, String> _authorization(String token) => {
+    'Authorization': 'Bearer ${token.trim()}',
+  };
+
   static Future<Map<String, dynamic>> changePassword({
     required int userId,
     required String currentPassword,
@@ -34,6 +40,45 @@ class UserService {
         'occupation': occupation,
         'job': occupation,
       },
+    );
+  }
+
+  static Future<Map<String, dynamic>> uploadProfilePhoto({
+    required List<int> bytes,
+    required String filename,
+    required String token,
+  }) {
+    return ApiClient.multipartJson(
+      'upload_profile_photo.php',
+      fieldName: 'photo',
+      bytes: bytes,
+      filename: filename,
+      headers: _authorization(token),
+    );
+  }
+
+  static Future<Uint8List> getProfilePhoto({required String token}) {
+    return ApiClient.getBytes(
+      'profile_photo.php',
+      headers: _authorization(token),
+    );
+  }
+
+  static Future<Map<String, dynamic>> deleteProfilePhoto({
+    required String token,
+  }) {
+    return ApiClient.postJson(
+      'delete_profile_photo.php',
+      headers: _authorization(token),
+    );
+  }
+
+  static Future<Map<String, dynamic>> revokeProfileMediaToken({
+    required String token,
+  }) {
+    return ApiClient.postJson(
+      'revoke_profile_media_token.php',
+      headers: _authorization(token),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:http/http.dart' as http;
@@ -39,11 +40,14 @@ class ApiClient {
   static Future<http.Response> postRaw(
     String path, {
     Map<String, String>? body,
+    Map<String, String>? headers,
   }) async {
     final url = buildUri(path);
 
     try {
-      return await http.post(url, body: body).timeout(timeout);
+      return await http
+          .post(url, body: body, headers: headers)
+          .timeout(timeout);
     } on TimeoutException {
       throw const ApiException(
         type: ApiErrorType.timeout,
@@ -65,24 +69,86 @@ class ApiClient {
   static Future<http.Response> post(
     String path, {
     Map<String, String>? body,
+    Map<String, String>? headers,
   }) async {
-    final response = await postRaw(path, body: body);
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiException(
-        type: ApiErrorType.http,
-        statusCode: response.statusCode,
-        message: _httpErrorMessage(response),
-      );
-    }
+    final response = await postRaw(path, body: body, headers: headers);
+    _ensureSuccessful(response);
     return response;
   }
 
   static Future<Map<String, dynamic>> postJson(
     String path, {
     Map<String, String>? body,
+    Map<String, String>? headers,
   }) async {
-    final response = await post(path, body: body);
+    final response = await post(path, body: body, headers: headers);
     return decodeJsonMap(response.body);
+  }
+
+  static Future<Uint8List> getBytes(
+    String path, {
+    Map<String, String>? headers,
+  }) async {
+    final url = buildUri(path);
+
+    try {
+      final response = await http.get(url, headers: headers).timeout(timeout);
+      _ensureSuccessful(response);
+      return response.bodyBytes;
+    } on TimeoutException {
+      throw const ApiException(
+        type: ApiErrorType.timeout,
+        message: 'El servidor tardó demasiado en responder',
+      );
+    } on SocketException {
+      throw const ApiException(
+        type: ApiErrorType.connection,
+        message: 'No se pudo conectar con el servidor',
+      );
+    } on http.ClientException {
+      throw const ApiException(
+        type: ApiErrorType.connection,
+        message: 'No se pudo conectar con el servidor',
+      );
+    }
+  }
+
+  static Future<Map<String, dynamic>> multipartJson(
+    String path, {
+    required String fieldName,
+    required List<int> bytes,
+    required String filename,
+    Map<String, String>? fields,
+    Map<String, String>? headers,
+  }) async {
+    final request = http.MultipartRequest('POST', buildUri(path));
+    if (headers != null) request.headers.addAll(headers);
+    if (fields != null) request.fields.addAll(fields);
+    request.files.add(
+      http.MultipartFile.fromBytes(fieldName, bytes, filename: filename),
+    );
+
+    try {
+      final streamedResponse = await request.send().timeout(timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+      _ensureSuccessful(response);
+      return decodeJsonMap(response.body);
+    } on TimeoutException {
+      throw const ApiException(
+        type: ApiErrorType.timeout,
+        message: 'El servidor tardó demasiado en responder',
+      );
+    } on SocketException {
+      throw const ApiException(
+        type: ApiErrorType.connection,
+        message: 'No se pudo conectar con el servidor',
+      );
+    } on http.ClientException {
+      throw const ApiException(
+        type: ApiErrorType.connection,
+        message: 'No se pudo conectar con el servidor',
+      );
+    }
   }
 
   static Map<String, dynamic> decodeJsonMap(String rawBody) {
@@ -99,6 +165,16 @@ class ApiClient {
     throw const ApiException(
       type: ApiErrorType.invalidResponse,
       message: 'El servidor devolvió una respuesta no válida',
+    );
+  }
+
+  static void _ensureSuccessful(http.Response response) {
+    if (response.statusCode >= 200 && response.statusCode < 300) return;
+
+    throw ApiException(
+      type: ApiErrorType.http,
+      statusCode: response.statusCode,
+      message: _httpErrorMessage(response),
     );
   }
 

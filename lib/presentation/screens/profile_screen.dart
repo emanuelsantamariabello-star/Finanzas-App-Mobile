@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
+import 'package:finanzas_app_mobile/data/services/profile_photo_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/financial_goals_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/change_password_screen.dart';
@@ -14,6 +17,7 @@ import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
 import 'package:finanzas_app_mobile/presentation/screens/settings_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_confirmation_dialog.dart';
+import 'package:finanzas_app_mobile/presentation/widgets/profile_avatar.dart';
 import 'package:finanzas_app_mobile/providers/dashboard_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -32,7 +36,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _userName = '';
   String _userEmail = '';
+  Uint8List? _profilePhotoBytes;
+  bool _loadingProfilePhoto = false;
   final SessionStorageService _sessionStorageService = SessionStorageService();
+  final ProfilePhotoService _profilePhotoService = ProfilePhotoService();
 
   @override
   void initState() {
@@ -47,6 +54,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _userName = prefs.getString(SessionKeys.userName) ?? '';
       _userEmail = prefs.getString(SessionKeys.userEmail) ?? '';
     });
+    await _loadProfilePhoto();
+  }
+
+  Future<void> _loadProfilePhoto() async {
+    if (!mounted) return;
+    setState(() => _loadingProfilePhoto = true);
+
+    try {
+      final snapshot = await _profilePhotoService.load();
+      if (!mounted) return;
+      setState(() {
+        _profilePhotoBytes = snapshot.bytes;
+        _loadingProfilePhoto = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loadingProfilePhoto = false);
+    }
   }
 
   String _formatAmount(dynamic amount) {
@@ -94,34 +119,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Column(
         children: [
-          Container(
-            width: 76,
-            height: 76,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [AppTheme.corporateGreen, Color(0xFF00E676)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.corporateGreen.withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                _userInitial(),
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSecondary,
-                ),
-              ),
-            ),
+          ProfileAvatar(
+            fallbackText: _userInitial(),
+            imageBytes: _profilePhotoBytes,
+            isLoading: _loadingProfilePhoto,
           ),
           const SizedBox(height: 16),
           Text(
@@ -275,7 +276,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             label: 'Editar perfil',
             subtitle: 'Nombre, email y más',
             onTap: () async {
-              final updated = await Navigator.push(
+              await Navigator.push(
                 context,
                 AppPageRoute.build(
                   context,
@@ -283,9 +284,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               );
 
-              if (updated == true) {
-                await _loadUserData();
-              }
+              if (!context.mounted) return;
+              await _loadUserData();
             },
           ),
           Divider(color: theme.dividerColor.withValues(alpha: 0.5), height: 4),

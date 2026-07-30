@@ -202,10 +202,14 @@ No se devolverá una ruta física ni el nombre interno del archivo.
 
 ### Fase 3 — Interfaz de perfil
 
-- Adaptar avatar de Perfil y Editar perfil.
-- Agregar bottom sheet de cámara, galería y eliminación.
-- Mantener estados de carga, fallback y feedback visual.
-- Refrescar el perfil al completar una operación.
+- Completada el 29 de julio de 2026.
+- Perfil y Editar perfil utilizan un avatar reutilizable con imagen protegida,
+  iniciales como fallback y estado de carga.
+- Editar perfil incluye un bottom sheet adaptable con cámara, galería y
+  eliminación, protegido frente a las barras del sistema.
+- Las operaciones muestran feedback consistente, evitan envíos duplicados y
+  conservan el formulario personal existente.
+- Perfil vuelve a cargar nombre, email y fotografía al regresar de la edición.
 
 ### Fase 4 — Ciclo de vida y accesibilidad
 

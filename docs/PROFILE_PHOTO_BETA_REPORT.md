@@ -35,9 +35,9 @@ El APK y los demás artefactos generados permanecen excluidos del repositorio.
 - Logcat no presentó excepciones fatales de la aplicación después del arranque.
 - La API Beta respondió HTTP 200 mediante HTTPS con verificación TLS correcta.
 
-## Validación manual pendiente
+## Validación manual completada
 
-Antes de fusionar y publicar deben comprobarse en un dispositivo físico:
+El 29 de julio de 2026 se confirmó exitosamente en un dispositivo físico:
 
 1. Instalación de la Beta 7 sobre la versión existente.
 2. Inicio de sesión y apertura de Perfil.
@@ -46,5 +46,5 @@ Antes de fusionar y publicar deben comprobarse en un dispositivo físico:
 5. Persistencia después de cerrar sesión e iniciar nuevamente.
 6. Reemplazo y eliminación de la fotografía.
 
-La rama `codex/profile-photo` debe permanecer abierta hasta recibir esta
-aprobación manual.
+La aprobación manual permite cerrar la rama `codex/profile-photo` y publicar
+la integración.

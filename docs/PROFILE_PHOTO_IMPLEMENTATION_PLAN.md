@@ -240,15 +240,16 @@ No se devolverá una ruta física ni el nombre interno del archivo.
 
 ### Fase 6 — Beta y cierre
 
-- Preparada el 29 de julio de 2026.
+- Completada el 29 de julio de 2026.
 - La versión se incrementó a `1.0.0-beta.7+7`.
 - El APK release se generó con `APP_ENV=beta`, firma v2 de depuración y hash
   SHA-256 documentado.
 - La actualización, instalación y apertura de `MainActivity` se validaron en
   el emulador sin excepciones fatales.
-- Pendiente: validación manual en dispositivo físico.
-- Pendiente: fusionar, publicar y eliminar ramas únicamente después de la
-  aprobación manual.
+- La instalación, cámara, galería, persistencia, reemplazo y eliminación se
+  validaron exitosamente en un dispositivo físico.
+- La aprobación manual autoriza fusionar, publicar y eliminar las ramas de la
+  funcionalidad.
 - La evidencia está en `docs/PROFILE_PHOTO_BETA_REPORT.md`.
 
 ## Estrategia de repositorios

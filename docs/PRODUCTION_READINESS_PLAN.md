@@ -120,6 +120,8 @@ Estado: completada.
 
 ### Fase 1 — Backend canónico y respaldo
 
+Estado: completada en ramas aisladas.
+
 - Respaldar código XAMPP y base de datos antes de cualquier cambio.
 - Separar código fuente, configuración, logs, uploads y temporales.
 - Consolidar los 20 endpoints activos en un repositorio limpio.
@@ -242,7 +244,7 @@ cerrado.
 
 ## Próximo paso recomendado
 
-Comenzar la **Fase 1 — Backend canónico y respaldo**. No debe modificarse
-autenticación mientras el backend activo siga mezclado con archivos locales no
-versionados, porque no existiría una fuente reproducible ni una reversión
-confiable.
+Comenzar la **Fase 2 — Contraseñas y sesiones** sobre la línea base canónica.
+La migración debe ser reversible, mantener acceso para las cuentas existentes y
+no desplegarse sobre la Beta activa hasta completar las pruebas automatizadas y
+manuales del flujo de autenticación.

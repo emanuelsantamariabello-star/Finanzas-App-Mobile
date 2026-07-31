@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
 import 'package:finanzas_app_mobile/core/theme.dart';
+import 'package:finanzas_app_mobile/data/services/auth_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/profile_photo_service.dart';
 import 'package:finanzas_app_mobile/presentation/screens/budgets_screen.dart';
@@ -96,6 +97,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (!confirm || !mounted) return;
+
+    final authToken = await _sessionStorageService.readAuthToken();
+    if (authToken != null) {
+      await AuthService.logout(authToken);
+    }
 
     await _sessionStorageService.clearSession();
 

@@ -8,14 +8,14 @@ class UserService {
   };
 
   static Future<Map<String, dynamic>> changePassword({
-    required int userId,
+    required String token,
     required String currentPassword,
     required String newPassword,
   }) async {
     return ApiClient.postJson(
       'change_password.php',
+      headers: _authorization(token),
       body: {
-        'user_id': userId.toString(),
         'current_password': currentPassword,
         'new_password': newPassword,
         'password_current': currentPassword,

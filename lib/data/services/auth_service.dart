@@ -2,6 +2,10 @@ import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
 
 class AuthService {
+  static Map<String, String> _authorization(String token) => {
+    'Authorization': 'Bearer ${token.trim()}',
+  };
+
   static Future<Map<String, dynamic>> login(
     String email,
     String password,
@@ -30,6 +34,17 @@ class AuthService {
           'email': email,
           'password': password,
         },
+      );
+    } on ApiException catch (error) {
+      return {'success': false, 'message': error.message};
+    }
+  }
+
+  static Future<Map<String, dynamic>> logout(String token) async {
+    try {
+      return await ApiClient.postJson(
+        'logout.php',
+        headers: _authorization(token),
       );
     } on ApiException catch (error) {
       return {'success': false, 'message': error.message};

@@ -351,7 +351,6 @@ Antes de un despliegue productivo todavía conviene reforzar:
 - migrar la API Beta Local a infraestructura productiva disponible 24/7;
 - configurar firma release definitiva y Play App Signing;
 - proteger todos los endpoints con autenticación y autorización del servidor;
-- migrar las contraseñas heredadas a hashes seguros;
 - incorporar eliminación de cuenta, política de privacidad y Data Safety;
 - ampliar la cobertura con pruebas de integración contra un backend controlado;
 - revisar las actualizaciones mayores pendientes de dependencias de forma
@@ -422,3 +421,9 @@ La guía de instalación, riesgos y validación se encuentra en:
 - `docs/INTERACTIVE_UX_ANIMATION_PLAN.md`
 - `docs/PROFILE_PHOTO_IMPLEMENTATION_PLAN.md`
 - `docs/PRODUCTION_READINESS_PLAN.md`
+- `docs/PRODUCTION_PHASE_2_REPORT.md`
+
+La Beta 8 incorpora contraseñas con hash y sesiones globales almacenadas
+mediante `FlutterSecureStorage`. El cierre y el cambio de contraseña revocan
+sesiones en el servidor. La autorización del resto de endpoints se completará
+en la siguiente fase productiva.

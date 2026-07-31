@@ -135,6 +135,8 @@ repetible sin pérdida funcional.
 
 ### Fase 2 — Contraseñas y sesiones
 
+Estado: implementada y desplegada en Beta; pendiente validación manual.
+
 - Crear migración compatible para contraseñas heredadas.
 - Utilizar `password_hash` y `password_verify`.
 - Emitir tokens de sesión seguros, expirables y revocables.
@@ -244,7 +246,7 @@ cerrado.
 
 ## Próximo paso recomendado
 
-Comenzar la **Fase 2 — Contraseñas y sesiones** sobre la línea base canónica.
-La migración debe ser reversible, mantener acceso para las cuentas existentes y
-no desplegarse sobre la Beta activa hasta completar las pruebas automatizadas y
-manuales del flujo de autenticación.
+Validar manualmente la **Fase 2 — Contraseñas y sesiones** en un dispositivo
+real antes de iniciar la Fase 3. Deben comprobarse login de una cuenta
+existente, registro, cierre de sesión, reinicio de la aplicación y cambio de
+contraseña con nuevo inicio de sesión obligatorio.

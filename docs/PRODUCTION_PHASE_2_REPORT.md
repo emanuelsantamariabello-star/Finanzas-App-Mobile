@@ -43,6 +43,9 @@ El respaldo contiene:
 - copias de los endpoints reemplazados;
 - sumas SHA-256.
 
+La restauración temporal reprodujo 6 tablas y 5 usuarios. La base de
+verificación se eliminó al finalizar.
+
 La transformación de una contraseña a hash no puede revertirse. Una reversión
 de datos debe restaurar este dump y los endpoints compatibles del respaldo.
 

@@ -194,6 +194,9 @@ dependencia del computador personal.
 
 ### Fase 6 — Android release
 
+Estado: configuración release y AAB estructural validados; pendiente upload
+key, Play App Signing, AAB firmado y prueba de actualización.
+
 - Crear upload key fuera del repositorio y respaldarla de forma segura.
 - Configurar Play App Signing.
 - Forzar HTTPS en release mediante Network Security Configuration.

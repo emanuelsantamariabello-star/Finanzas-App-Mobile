@@ -1,0 +1,3 @@
+Mejora el manejo de permisos de notificaciones y muestra instrucciones claras cuando están bloqueadas.
+
+Mantiene el acceso privado a cámara y galería mediante los selectores seguros de Android.

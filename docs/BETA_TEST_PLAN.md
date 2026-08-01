@@ -4,8 +4,8 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versión | `1.0.0-beta.6` |
-| Build | `6` |
+| Versión | `1.0.0-rc.2` |
+| Build | `10` |
 | Commit | Completar después del commit de preparación |
 | Dispositivo |  |
 | Android |  |
@@ -42,6 +42,8 @@ severidad (`Crítica`, `Alta`, `Media` o `Baja`).
 | NOTIF-02 | Badge | Recibir notificaciones pendientes. | El badge coincide con la cantidad de elementos no leídos. |
 | NOTIF-03 | Estado leído | Marcar todas como leídas y reabrir la app. | El estado permanece para el mismo usuario y no se comparte con otros. |
 | NOTIF-04 | Actualización | Actualizar manualmente el panel. | Consulta nuevamente la API y conserva un estado visual válido. |
+| NOTIF-05 | Permiso denegado | Bloquear notificaciones y guardar un recordatorio activo. | Se guarda desactivado e informa que debe habilitarse desde Ajustes del sistema. |
+| MEDIA-01 | Cámara y galería | Abrir ambos selectores y escoger una imagen. | Usa los selectores seguros de Android sin exigir permisos amplios innecesarios. |
 | NET-01 | Wi-Fi/datos | Cambiar de Wi-Fi a datos móviles con la app abierta. | Las operaciones posteriores continúan por HTTPS. |
 | NET-02 | Internet lento | Limitar la red e intentar cargar datos. | Muestra carga y un error comprensible si vence el timeout. |
 | NET-03 | Sin conexión | Activar modo avión durante una carga. | No se bloquea y permite reintentar al recuperar red. |

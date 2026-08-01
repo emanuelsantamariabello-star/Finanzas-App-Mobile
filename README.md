@@ -423,8 +423,15 @@ La guía de instalación, riesgos y validación se encuentra en:
 - `docs/PRODUCTION_READINESS_PLAN.md`
 - `docs/PRODUCTION_PHASE_2_REPORT.md`
 - `docs/PRODUCTION_PHASE_3_REPORT.md`
+- `docs/PRODUCTION_PHASE_4_REPORT.md`
+- `docs/PRIVACY_POLICY_DRAFT.md`
+- `docs/DATA_SAFETY_INVENTORY.md`
 
 La Beta 8 incorpora contraseñas con hash y sesiones globales almacenadas
 mediante `FlutterSecureStorage`. El cierre y el cambio de contraseña revocan
 sesiones en el servidor. La autorización del resto de endpoints se completará
 con el despliegue coordinado de la Fase 3 y la futura Beta 9.
+
+La Fase 4 incorpora en Configuración el control de privacidad y la solicitud de
+eliminación de cuenta. La política pública, el mecanismo web y la validación en
+Beta permanecen pendientes hasta recuperar conectividad.

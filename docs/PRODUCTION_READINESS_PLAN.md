@@ -164,6 +164,9 @@ acceso horizontal.
 
 ### Fase 4 — Privacidad y ciclo de cuenta
 
+Estado: implementada y validada offline; pendiente publicación legal,
+despliegue coordinado y prueba manual.
+
 - Publicar política de privacidad en una URL pública y no editable.
 - Mostrar enlace dentro de Configuración.
 - Implementar solicitud de eliminación desde la app y desde la web.
@@ -249,7 +252,8 @@ cerrado.
 
 ## Próximo paso recomendado
 
-Validar manualmente la **Fase 2 — Contraseñas y sesiones** en un dispositivo
-real antes de iniciar la Fase 3. Deben comprobarse login de una cuenta
-existente, registro, cierre de sesión, reinicio de la aplicación y cambio de
-contraseña con nuevo inicio de sesión obligatorio.
+Cuando regrese la conectividad, empaquetar conjuntamente los clientes de las
+Fases 3 y 4, validar los flujos principales contra el backend anterior y después
+desplegar de forma coordinada las migraciones y endpoints protegidos. La
+eliminación debe probarse únicamente con una cuenta desechable y un respaldo
+previo.

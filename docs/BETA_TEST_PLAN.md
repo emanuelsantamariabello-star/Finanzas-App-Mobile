@@ -4,14 +4,14 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versión | `1.0.0-rc.2` |
-| Build | `10` |
-| Commit | Completar después del commit de preparación |
+| Versión | `1.0.0-rc.5` |
+| Build | `13` |
+| Commit | `12f4a67` |
 | Dispositivo |  |
 | Android |  |
 | Red |  |
-| Fecha |  |
-| Probador |  |
+| Fecha | 1 de agosto de 2026 |
+| Probador | Validación manual confirmada por el responsable del proyecto |
 
 ## Registro de resultados
 
@@ -71,3 +71,11 @@ Observaciones:
 
 No usar cuentas ni movimientos financieros reales durante capturas o videos que
 se vayan a compartir.
+
+## Resultado de Beta 13
+
+Los casos ejecutados sobre el dispositivo físico fueron aprobados, incluidos
+instalación, autenticación, movimientos, estadísticas, perfil, permisos,
+conectividad, recuperación, texto ampliado e icono oficial. El detalle y las
+limitaciones de la evidencia se encuentran en
+`docs/BETA_13_VALIDATION_REPORT.md`.

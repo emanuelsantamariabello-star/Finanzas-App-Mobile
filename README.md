@@ -264,6 +264,19 @@ La validación manual debe incluir:
 
 ## Estado actual
 
+Validación de Beta 13 completada el 1 de agosto de 2026:
+
+- versión `1.0.0-rc.5+13` instalada y aprobada en un dispositivo Android físico;
+- `flutter analyze` sin diagnósticos y 115 pruebas automatizadas aprobadas;
+- API Beta operativa mediante HTTPS y Cloudflare Tunnel;
+- autenticación, movimientos, estadísticas, perfil, exportaciones, permisos,
+  recuperación, accesibilidad e icono oficial validados manualmente;
+- informe completo en `docs/BETA_13_VALIDATION_REPORT.md`.
+
+La Beta 13 es una candidata estable para continuar con Google Play, pero aún
+requiere infraestructura productiva, firma definitiva y pruebas internas y
+cerradas antes de publicarse.
+
 Validación técnica realizada el 25 de julio de 2026:
 
 - `flutter analyze`: sin diagnósticos.

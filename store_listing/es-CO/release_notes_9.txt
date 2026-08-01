@@ -1,0 +1,3 @@
+Primera versión candidata para pruebas internas.
+
+Incluye movimientos, estadísticas, recordatorios, metas, presupuestos, reportes, personalización, foto de perfil, privacidad y mejoras generales de estabilidad.

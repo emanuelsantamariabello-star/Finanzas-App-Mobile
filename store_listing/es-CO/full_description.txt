@@ -1,0 +1,17 @@
+Finanzas App te ayuda a entender y organizar tu dinero desde una experiencia clara, moderna y privada.
+
+Registra ingresos y gastos, consulta tu balance y visualiza cómo evolucionan tus finanzas. Usa recordatorios para pagos y compromisos, define metas financieras, crea presupuestos por categoría y exporta tus movimientos cuando los necesites.
+
+Funciones principales:
+• Registro y edición de ingresos y gastos.
+• Dashboard con balance y resumen mensual.
+• Estadísticas visuales y evolución financiera.
+• Recordatorios locales programables.
+• Metas y presupuestos personales.
+• Clasificación entre gastos necesarios y gustos.
+• Sugerencias e insights basados en tus propios movimientos.
+• Exportación de movimientos en CSV y reportes PDF.
+• Perfil, foto opcional y temas claro, oscuro o sistema.
+• Eliminación de cuenta y datos desde la aplicación.
+
+Finanzas App no ofrece créditos, inversiones, transferencias ni asesoría financiera profesional. Su propósito es ayudarte a registrar y analizar la información que tú mismo proporcionas.

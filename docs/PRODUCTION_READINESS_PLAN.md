@@ -224,6 +224,9 @@ carga representativa, simulacro operativo y auditoría externa.
 
 ### Fase 8 — Google Play y lanzamiento gradual
 
+Estado: preparación offline completada; pendientes Play Console, URLs legales
+públicas, firma, capturas reales, pruebas de tracks y aprobación.
+
 - Crear o verificar la cuenta de desarrollador.
 - Preparar icono, screenshots, feature graphic y descripción.
 - Completar privacidad, Data Safety, eliminación de cuenta y clasificación de
@@ -261,8 +264,7 @@ cerrado.
 
 ## Próximo paso recomendado
 
-Cuando regrese la conectividad, empaquetar conjuntamente los clientes de las
-Fases 3 y 4, validar los flujos principales contra el backend anterior y después
-desplegar de forma coordinada las migraciones y endpoints protegidos. La
-eliminación debe probarse únicamente con una cuenta desechable y un respaldo
-previo.
+Cuando regrese la conectividad, completar las validaciones manuales acumuladas,
+aprovisionar producción y publicar las URLs legales. Después se podrá crear la
+aplicación en Play Console, configurar la firma, generar el AAB final y comenzar
+la prueba interna según `docs/GOOGLE_PLAY_RELEASE_RUNBOOK.md`.

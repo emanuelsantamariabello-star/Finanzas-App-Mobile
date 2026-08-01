@@ -356,6 +356,15 @@ Antes de un despliegue productivo todavía conviene reforzar:
 - revisar las actualizaciones mayores pendientes de dependencias de forma
   aislada y con pruebas de regresión.
 
+La preparación controlada para producción se documenta en:
+
+- `docs/PRODUCTION_READINESS_PLAN.md`;
+- `docs/ANDROID_RELEASE_SIGNING.md`;
+- `docs/QUALITY_TEST_MATRIX.md`;
+- `docs/GOOGLE_PLAY_RELEASE_RUNBOOK.md`;
+- `docs/PLAY_CONSOLE_DATA_SAFETY.md`;
+- `docs/CLOSED_TEST_ROLLOUT.md`.
+
 ## Hoja de ruta
 
 - Mejorar la gestión de sesión.

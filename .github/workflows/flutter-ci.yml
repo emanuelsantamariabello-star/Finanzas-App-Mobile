@@ -1,0 +1,44 @@
+name: Flutter CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flutter-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar Flutter estable fijado
+        run: |
+          git clone --depth 1 --branch 3.41.6 https://github.com/flutter/flutter.git "$HOME/flutter"
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
+      - name: Preparar Flutter
+        run: |
+          flutter config --no-analytics
+          flutter pub get
+      - name: Verificar formato
+        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Analizar
+        run: flutter analyze
+      - name: Ejecutar pruebas
+        run: flutter test --coverage
+      - name: Compilar release estructural
+        env:
+          ALLOW_UNSIGNED_RELEASE: 'true'
+        run: >-
+          flutter build appbundle
+          --release
+          --dart-define=APP_ENV=production
+          --dart-define=API_BASE_URL=https://api.finanzasappsan.com
+          --obfuscate
+          --split-debug-info=build/symbols/android

@@ -179,6 +179,9 @@ coherente con el comportamiento real.
 
 ### Fase 5 — Infraestructura productiva
 
+Estado: automatización y plantillas validadas offline; pendiente
+aprovisionamiento, restauración real y pruebas con conectividad.
+
 - Aprovisionar servidor independiente de XAMPP.
 - Configurar `api.finanzasappsan.com` con HTTPS.
 - Mantener MySQL en red privada y con usuario de privilegios mínimos.

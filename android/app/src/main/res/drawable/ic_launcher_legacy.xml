@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <path android:fillColor="#00C853" android:pathData="M0,0 H108 V108 H0 Z" />
-    <path
-        android:fillColor="#071C1A"
-        android:pathData="M27,34 C27,29 31,25 36,25 L76,25 C81,25 85,29 85,34 L85,73 C85,79 81,83 75,83 L33,83 C27,83 23,79 23,73 L23,40 C23,37 25,35 27,34 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M66,50 C66,47 68,45 71,45 L85,45 L85,60 L71,60 C68,60 66,58 66,55 Z M33,69 L42,60 L49,66 L62,52 L67,57 L49,75 L42,69 L37,74 Z" />
-    <path android:fillColor="#00C853" android:pathData="M72,50 L78,50 L78,56 L72,56 Z" />
-</vector>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:antialias="true"
+    android:filter="true"
+    android:gravity="fill"
+    android:src="@drawable/finanzas_app_logo" />

@@ -4,6 +4,7 @@ Add-Type -AssemblyName System.Drawing
 $root = Split-Path -Parent $PSScriptRoot
 $listing = Join-Path $root 'store_listing\es-CO'
 $assets = Join-Path $root 'store_assets\generated'
+$brandLogo = Join-Path $root 'assets\branding\finanzas_app_logo.png'
 
 $title = (Get-Content -Raw -Encoding utf8 (Join-Path $listing 'title.txt')).Trim()
 $short = (
@@ -24,6 +25,14 @@ try {
     }
 } finally {
     $icon.Dispose()
+}
+
+$brandHash = (Get-FileHash -Algorithm SHA256 $brandLogo).Hash
+$iconHash = (
+    Get-FileHash -Algorithm SHA256 (Join-Path $assets 'app_icon_512.png')
+).Hash
+if ($brandHash -ne $iconHash) {
+    throw 'El icono de Play no coincide con el logo oficial.'
 }
 
 $feature = [System.Drawing.Image]::FromFile(

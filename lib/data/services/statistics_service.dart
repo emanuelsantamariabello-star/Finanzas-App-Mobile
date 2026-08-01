@@ -1,8 +1,8 @@
-import 'package:finanzas_app_mobile/core/network/http_client.dart';
+import 'package:finanzas_app_mobile/data/services/authenticated_api_client.dart';
 
 class StatisticsService {
   static Future<Map<String, dynamic>> getMonthlyStats(int userId) async {
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'statistics_monthly.php',
       body: {'user_id': userId.toString()},
     );

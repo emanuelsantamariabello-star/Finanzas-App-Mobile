@@ -1,4 +1,4 @@
-import 'package:finanzas_app_mobile/core/network/http_client.dart';
+import 'package:finanzas_app_mobile/data/services/authenticated_api_client.dart';
 
 class IncomeService {
   static String _normalizeDate(String date) {
@@ -20,7 +20,7 @@ class IncomeService {
       body['end_date'] = endDate;
     }
 
-    return ApiClient.postJson('incomes.php', body: body);
+    return AuthenticatedApiClient.postJson('incomes.php', body: body);
   }
 
   static Future<Map<String, dynamic>> createIncome({
@@ -32,7 +32,7 @@ class IncomeService {
   }) async {
     final safeDate = _normalizeDate(date);
 
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'create_income.php',
       body: {
         'user_id': userId.toString(),
@@ -55,7 +55,7 @@ class IncomeService {
   }) async {
     final safeDate = _normalizeDate(date);
 
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'update_income.php',
       body: {
         'id': id.toString(),
@@ -73,7 +73,7 @@ class IncomeService {
     required int id,
     required int userId,
   }) async {
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'delete_income.php',
       body: {'id': id.toString(), 'user_id': userId.toString()},
     );

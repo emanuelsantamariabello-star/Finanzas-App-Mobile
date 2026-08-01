@@ -1,4 +1,4 @@
-import 'package:finanzas_app_mobile/core/network/http_client.dart';
+import 'package:finanzas_app_mobile/data/services/authenticated_api_client.dart';
 
 class ExpenseService {
   static Future<Map<String, dynamic>> getExpenses(
@@ -12,7 +12,7 @@ class ExpenseService {
       body['end_date'] = endDate;
     }
 
-    return ApiClient.postJson('expenses.php', body: body);
+    return AuthenticatedApiClient.postJson('expenses.php', body: body);
   }
 
   static Future<Map<String, dynamic>> createExpense({
@@ -23,7 +23,7 @@ class ExpenseService {
     required String expenseDate,
     required String reflectionType,
   }) async {
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'create_expense.php',
       body: {
         'user_id': userId.toString(),
@@ -43,7 +43,7 @@ class ExpenseService {
     required String expenseDate,
     required String reflectionType,
   }) async {
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'update_expense.php',
       body: {
         'id': id.toString(),
@@ -59,7 +59,7 @@ class ExpenseService {
     required int id,
     required int userId,
   }) async {
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'delete_expense.php',
       body: {'id': id.toString(), 'user_id': userId.toString()},
     );

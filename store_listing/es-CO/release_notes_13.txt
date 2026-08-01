@@ -1,0 +1,1 @@
+Mejora la legibilidad de las gráficas cuando Android utiliza texto ampliado y evita que las etiquetas se recorten.

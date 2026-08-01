@@ -1,0 +1,1 @@
+Ajusta la zona segura y el tamaño del icono oficial para evitar recortes en diferentes lanzadores Android.

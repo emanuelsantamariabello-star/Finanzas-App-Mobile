@@ -3,4 +3,4 @@
     android:antialias="true"
     android:filter="true"
     android:gravity="fill"
-    android:src="@drawable/finanzas_app_logo" />
+    android:src="@drawable/finanzas_app_logo_legacy" />

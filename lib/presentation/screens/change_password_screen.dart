@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/core/motion/app_page_route.dart';
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/user_service.dart';
+import 'package:finanzas_app_mobile/presentation/screens/login_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_form_components.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_state_widgets.dart';
@@ -29,14 +30,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _showNew = false;
   bool _showConfirm = false;
 
-  int? _userId;
+  final SessionStorageService _sessionStorageService = SessionStorageService();
+  String? _authToken;
 
   static const int _minPasswordLength = 6;
 
   @override
   void initState() {
     super.initState();
-    _loadUserId();
+    _loadSession();
   }
 
   @override
@@ -47,17 +49,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _loadUserId() async {
+  Future<void> _loadSession() async {
     setState(() {
       _loading = true;
       _loadError = null;
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final authToken = await _sessionStorageService.readAuthToken();
       if (!mounted) return;
       setState(() {
-        _userId = prefs.getInt(SessionKeys.userId);
+        _authToken = authToken;
         _loading = false;
       });
     } catch (e) {
@@ -71,9 +73,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _save() async {
     if (_saving) return;
-    final userId = _userId;
-    if (userId == null) {
-      AppSnackbar.error(context, 'Usuario no identificado');
+    final authToken = _authToken;
+    if (authToken == null) {
+      AppSnackbar.error(context, 'Sesión no identificada');
       return;
     }
 
@@ -87,7 +89,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     setState(() => _saving = true);
     try {
       final response = await UserService.changePassword(
-        userId: userId,
+        token: authToken,
         currentPassword: currentPassword,
         newPassword: newPassword,
       );
@@ -95,8 +97,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (!mounted) return;
 
       if (response['success'] == true) {
+        await _sessionStorageService.clearSession();
+        if (!mounted) return;
         AppSnackbar.success(context, 'Contraseña actualizada');
-        Navigator.pop(context, true);
+        Navigator.of(context).pushAndRemoveUntil(
+          AppPageRoute.build(context, builder: (_) => const LoginScreen()),
+          (_) => false,
+        );
       } else {
         AppSnackbar.error(
           context,
@@ -124,7 +131,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       body: _loading
           ? const AppLoadingState(message: 'Preparando la configuración…')
           : _loadError != null
-          ? AppErrorState(message: _loadError!, onRetry: _loadUserId)
+          ? AppErrorState(message: _loadError!, onRetry: _loadSession)
           : AppFormScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

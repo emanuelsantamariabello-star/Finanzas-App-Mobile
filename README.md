@@ -264,6 +264,19 @@ La validación manual debe incluir:
 
 ## Estado actual
 
+Validación de Beta 13 completada el 1 de agosto de 2026:
+
+- versión `1.0.0-rc.5+13` instalada y aprobada en un dispositivo Android físico;
+- `flutter analyze` sin diagnósticos y 115 pruebas automatizadas aprobadas;
+- API Beta operativa mediante HTTPS y Cloudflare Tunnel;
+- autenticación, movimientos, estadísticas, perfil, exportaciones, permisos,
+  recuperación, accesibilidad e icono oficial validados manualmente;
+- informe completo en `docs/BETA_13_VALIDATION_REPORT.md`.
+
+La Beta 13 es una candidata estable para continuar con Google Play, pero aún
+requiere infraestructura productiva, firma definitiva y pruebas internas y
+cerradas antes de publicarse.
+
 Validación técnica realizada el 25 de julio de 2026:
 
 - `flutter analyze`: sin diagnósticos.
@@ -348,12 +361,22 @@ Estado de cierre de la etapa:
 
 Antes de un despliegue productivo todavía conviene reforzar:
 
-- migrar la API a HTTPS y definir entornos de desarrollo y producción;
-- reemplazar el identificador Android de ejemplo y configurar firma release;
-- migrar la sesión a un mecanismo seguro basado en tokens antes de producción;
+- migrar la API Beta Local a infraestructura productiva disponible 24/7;
+- configurar firma release definitiva y Play App Signing;
+- proteger todos los endpoints con autenticación y autorización del servidor;
+- incorporar eliminación de cuenta, política de privacidad y Data Safety;
 - ampliar la cobertura con pruebas de integración contra un backend controlado;
 - revisar las actualizaciones mayores pendientes de dependencias de forma
   aislada y con pruebas de regresión.
+
+La preparación controlada para producción se documenta en:
+
+- `docs/PRODUCTION_READINESS_PLAN.md`;
+- `docs/ANDROID_RELEASE_SIGNING.md`;
+- `docs/QUALITY_TEST_MATRIX.md`;
+- `docs/GOOGLE_PLAY_RELEASE_RUNBOOK.md`;
+- `docs/PLAY_CONSOLE_DATA_SAFETY.md`;
+- `docs/CLOSED_TEST_ROLLOUT.md`.
 
 ## Hoja de ruta
 
@@ -419,3 +442,23 @@ La guía de instalación, riesgos y validación se encuentra en:
 - `docs/BETA_INTEGRATION_REPORT.md`
 - `docs/INTERACTIVE_UX_ANIMATION_PLAN.md`
 - `docs/PROFILE_PHOTO_IMPLEMENTATION_PLAN.md`
+- `docs/PRODUCTION_READINESS_PLAN.md`
+- `docs/PRODUCTION_PHASE_2_REPORT.md`
+- `docs/PRODUCTION_PHASE_3_REPORT.md`
+- `docs/PRODUCTION_PHASE_4_REPORT.md`
+- `docs/PRODUCTION_PHASE_5_REPORT.md`
+- `docs/PRODUCTION_PHASE_6_REPORT.md`
+- `docs/ANDROID_RELEASE_SIGNING.md`
+- `docs/PRODUCTION_PHASE_7_REPORT.md`
+- `docs/QUALITY_TEST_MATRIX.md`
+- `docs/PRIVACY_POLICY_DRAFT.md`
+- `docs/DATA_SAFETY_INVENTORY.md`
+
+La Beta 8 incorpora contraseñas con hash y sesiones globales almacenadas
+mediante `FlutterSecureStorage`. El cierre y el cambio de contraseña revocan
+sesiones en el servidor. La autorización del resto de endpoints se completará
+con el despliegue coordinado de la Fase 3 y la futura Beta 9.
+
+La Fase 4 incorpora en Configuración el control de privacidad y la solicitud de
+eliminación de cuenta. La política pública, el mecanismo web y la validación en
+Beta permanecen pendientes hasta recuperar conectividad.

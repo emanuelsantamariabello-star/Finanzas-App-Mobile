@@ -78,10 +78,10 @@ class ReminderProvider extends ChangeNotifier {
     try {
       return await _notificationService.requestPermissions().timeout(
         _notificationTimeout,
-        onTimeout: () => true,
+        onTimeout: () => false,
       );
     } catch (_) {
-      return true;
+      return false;
     }
   }
 

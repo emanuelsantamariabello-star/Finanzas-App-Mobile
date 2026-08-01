@@ -53,9 +53,35 @@ void main() {
     expect(find.text('Apariencia'), findsOneWidget);
     expect(find.text('Contenido de Inicio'), findsOneWidget);
     expect(find.text('Notificaciones'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Privacidad'), 200);
+    expect(find.text('Privacidad'), findsOneWidget);
     expect(find.text('Insights rápidos'), findsOneWidget);
     expect(find.text('Sugerencias de ahorro'), findsOneWidget);
     expect(find.text('Recordatorios y avisos'), findsOneWidget);
+    expect(find.text('Privacidad y datos'), findsOneWidget);
+  });
+
+  testWidgets('abre el control de privacidad y eliminación de cuenta', (
+    tester,
+  ) async {
+    final appSettingsProvider = AppSettingsProvider();
+    final themeProvider = ThemeProvider();
+    await appSettingsProvider.initialize();
+    await themeProvider.loadThemeMode();
+
+    await pumpSettings(
+      tester,
+      appSettingsProvider: appSettingsProvider,
+      themeProvider: themeProvider,
+    );
+
+    await tester.scrollUntilVisible(find.text('Privacidad y datos'), 250);
+    await tester.tap(find.text('Privacidad y datos'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Control de tus datos'), findsOneWidget);
+    expect(find.text('Eliminar mi cuenta'), findsWidgets);
+    expect(find.text('Escribe ELIMINAR para confirmar'), findsOneWidget);
   });
 
   testWidgets('actualiza las preferencias visibles de Inicio', (tester) async {

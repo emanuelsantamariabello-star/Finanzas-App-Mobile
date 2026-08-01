@@ -286,6 +286,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     Map<String, dynamic> dashboardData,
   ) {
     final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final accessibilityExtra = (textScale - 1).clamp(0.0, 1.0);
+    final chartHeight = 240 + (32 * accessibilityExtra);
+    final bottomReservedSize = 42 + (12 * accessibilityExtra);
     final chartData =
         (dashboardData['chart'] as Map?)?.cast<String, dynamic>() ?? {};
     final incomeValue =
@@ -316,7 +320,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
               )
             : SizedBox(
-                height: 240,
+                height: chartHeight,
                 child: BarChart(
                   BarChartData(
                     maxY: maxValue * 1.25,
@@ -364,6 +368,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
+                          reservedSize: bottomReservedSize,
                           getTitlesWidget: (value, meta) {
                             switch (value.toInt()) {
                               case 0:
@@ -453,6 +458,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   Widget _buildMonthlyEvolutionChart(BuildContext context) {
     final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final accessibilityExtra = (textScale - 1).clamp(0.0, 1.0);
+    final chartHeight = 260 + (24 * accessibilityExtra);
+    final bottomReservedSize = 40 + (10 * accessibilityExtra);
 
     if (_monthlyLoading) {
       return _buildSectionCard(
@@ -564,7 +573,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 260,
+          height: chartHeight,
           child: LineChart(
             LineChartData(
               minY: 0,
@@ -614,6 +623,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
+                    reservedSize: bottomReservedSize,
                     interval: 1,
                     getTitlesWidget: (value, meta) {
                       final idx = value.toInt();

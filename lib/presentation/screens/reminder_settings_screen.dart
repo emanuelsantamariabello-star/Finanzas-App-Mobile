@@ -64,7 +64,7 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
     if (saved == 'saved_disabled') {
       AppSnackbar.info(
         context,
-        'Recordatorio guardado sin activar notificaciones',
+        'Recordatorio guardado. Activa las notificaciones en Ajustes del sistema.',
       );
       return;
     }

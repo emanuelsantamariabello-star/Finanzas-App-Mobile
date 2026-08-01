@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
+import 'package:finanzas_app_mobile/data/services/authenticated_api_client.dart';
 
 class UserService {
   static Map<String, String> _authorization(String token) => {
@@ -8,14 +9,14 @@ class UserService {
   };
 
   static Future<Map<String, dynamic>> changePassword({
-    required int userId,
+    required String token,
     required String currentPassword,
     required String newPassword,
   }) async {
     return ApiClient.postJson(
       'change_password.php',
+      headers: _authorization(token),
       body: {
-        'user_id': userId.toString(),
         'current_password': currentPassword,
         'new_password': newPassword,
         'password_current': currentPassword,
@@ -30,7 +31,7 @@ class UserService {
     required String email,
     required String occupation,
   }) async {
-    return ApiClient.postJson(
+    return AuthenticatedApiClient.postJson(
       'update_profile.php',
       body: {
         'user_id': userId.toString(),
@@ -40,6 +41,15 @@ class UserService {
         'occupation': occupation,
         'job': occupation,
       },
+    );
+  }
+
+  static Future<Map<String, dynamic>> deleteAccount({
+    required String currentPassword,
+  }) {
+    return AuthenticatedApiClient.postJson(
+      'delete_account.php',
+      body: {'current_password': currentPassword},
     );
   }
 

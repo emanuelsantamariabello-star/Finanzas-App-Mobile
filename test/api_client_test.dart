@@ -1,6 +1,8 @@
 import 'package:finanzas_app_mobile/core/network/api_exception.dart';
 import 'package:finanzas_app_mobile/core/network/http_client.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 void main() {
   test('construye la URL sin barras duplicadas', () {
@@ -60,6 +62,51 @@ void main() {
     expect(
       apiErrorMessage(Exception('detalle interno'), fallback: 'Error genérico'),
       'Error genérico',
+    );
+  });
+
+  test('clasifica una desconexión sin exponer detalles internos', () async {
+    await http.runWithClient(() async {
+      await expectLater(
+        ApiClient.postRaw('login.php'),
+        throwsA(
+          isA<ApiException>()
+              .having((error) => error.type, 'type', ApiErrorType.connection)
+              .having(
+                (error) => error.message,
+                'message',
+                'No se pudo conectar con el servidor',
+              ),
+        ),
+      );
+    }, () => MockClient((_) async => throw http.ClientException('secreto')));
+  });
+
+  test('conserva el mensaje seguro de un error HTTP', () async {
+    await http.runWithClient(
+      () async {
+        await expectLater(
+          ApiClient.post('dashboard.php'),
+          throwsA(
+            isA<ApiException>()
+                .having((error) => error.type, 'type', ApiErrorType.http)
+                .having((error) => error.statusCode, 'statusCode', 503)
+                .having(
+                  (error) => error.message,
+                  'message',
+                  'Servicio temporalmente no disponible',
+                ),
+          ),
+        );
+      },
+      () {
+        return MockClient((_) async {
+          return http.Response(
+            '{"success":false,"message":"Servicio temporalmente no disponible"}',
+            503,
+          );
+        });
+      },
     );
   });
 }

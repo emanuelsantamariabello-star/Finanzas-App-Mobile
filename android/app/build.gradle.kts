@@ -1,9 +1,20 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val releaseKeyPropertiesFile = rootProject.file("key.properties")
+val releaseKeyProperties = Properties()
+val hasReleaseSigning = releaseKeyPropertiesFile.isFile
+if (hasReleaseSigning) {
+    releaseKeyPropertiesFile.inputStream().use(releaseKeyProperties::load)
+}
+val allowUnsignedRelease =
+    providers.environmentVariable("ALLOW_UNSIGNED_RELEASE").orNull == "true"
 
 android {
     namespace = "com.finanzas_app_san.emanuelsantamariabello"
@@ -30,13 +41,42 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                keyAlias = releaseKeyProperties.getProperty("keyAlias")
+                keyPassword = releaseKeyProperties.getProperty("keyPassword")
+                storeFile = rootProject.file(
+                    releaseKeyProperties.getProperty("storeFile"),
+                )
+                storePassword = releaseKeyProperties.getProperty("storePassword")
+            }
         }
     }
+
+    buildTypes {
+        release {
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+    }
+}
+
+tasks.register("validateReleaseSigning") {
+    doLast {
+        if (!hasReleaseSigning && !allowUnsignedRelease) {
+            throw GradleException(
+                "Falta android/key.properties. No se permite firmar release con la clave debug.",
+            )
+        }
+    }
+}
+
+tasks.matching {
+    it.name == "bundleRelease" || it.name == "assembleRelease"
+}.configureEach {
+    dependsOn("validateReleaseSigning")
 }
 
 flutter {

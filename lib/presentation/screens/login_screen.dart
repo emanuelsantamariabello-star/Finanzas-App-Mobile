@@ -134,8 +134,15 @@ class _LoginScreenState extends State<LoginScreen> {
         final profileMediaTokenExpiresAt = DateTime.tryParse(
           response['profile_media_token_expires_at']?.toString() ?? '',
         );
+        final authSessionToken = response['session_token']?.toString() ?? '';
+        final authSessionTokenExpiresAt = DateTime.tryParse(
+          response['session_token_expires_at']?.toString() ?? '',
+        );
 
-        if (userId == null || userName.isEmpty) {
+        if (userId == null ||
+            userName.isEmpty ||
+            authSessionToken.isEmpty ||
+            authSessionTokenExpiresAt == null) {
           showMessage('Respuesta de sesión inválida', isError: true);
           return;
         }
@@ -144,6 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
           userId: userId,
           userName: userName,
           userEmail: email,
+          authSessionToken: authSessionToken,
+          authSessionTokenExpiresAt: authSessionTokenExpiresAt,
           occupation: occupation,
           profileMediaToken: profileMediaToken,
           profileMediaTokenExpiresAt: profileMediaTokenExpiresAt,

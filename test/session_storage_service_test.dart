@@ -1,4 +1,5 @@
 import 'package:finanzas_app_mobile/core/constants/session_keys.dart';
+import 'package:finanzas_app_mobile/data/services/auth_session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/profile_media_session_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/session_storage_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -14,11 +15,14 @@ void main() {
   test('guarda y restaura una sesión válida', () async {
     final service = SessionStorageService();
     final token = List.filled(64, 'a').join();
+    final authToken = List.filled(64, 'c').join();
 
     await service.saveAuthenticatedUser(
       userId: 7,
       userName: 'Usuario de prueba',
       userEmail: 'usuario@prueba.com',
+      authSessionToken: authToken,
+      authSessionTokenExpiresAt: DateTime.now().add(const Duration(days: 30)),
       occupation: 'Desarrollador',
       profileMediaToken: token,
       profileMediaTokenExpiresAt: DateTime.now().add(const Duration(days: 30)),
@@ -41,6 +45,7 @@ void main() {
       DateTime.utc(2026, 7, 29).toIso8601String(),
     );
     expect(prefs.getString('profile_media_token'), isNull);
+    expect(await AuthSessionStorageService().readToken(), authToken);
     expect(await ProfileMediaSessionStorageService().readToken(), token);
     expect(prefs.getString('password'), isNull);
   });
@@ -72,7 +77,13 @@ void main() {
 
   test('limpia solo los datos de sesión', () async {
     final token = List.filled(64, 'b').join();
+    final authToken = List.filled(64, 'd').join();
     FlutterSecureStorage.setMockInitialValues({
+      'auth_session_token': authToken,
+      'auth_session_token_expires_at': DateTime.now()
+          .add(const Duration(days: 30))
+          .toUtc()
+          .toIso8601String(),
       'profile_media_token': token,
       'profile_media_token_expires_at': DateTime.now()
           .add(const Duration(days: 30))
@@ -104,6 +115,28 @@ void main() {
     expect(prefs.getBool('show_home_insights'), isFalse);
     expect(prefs.getBool('show_home_saving_recommendations'), isFalse);
     expect(await ProfileMediaSessionStorageService().readToken(), isNull);
+    expect(await AuthSessionStorageService().readToken(), isNull);
+  });
+
+  test('elimina credenciales recordadas al borrar la cuenta', () async {
+    SharedPreferences.setMockInitialValues({
+      SessionKeys.isLoggedIn: true,
+      SessionKeys.userId: 7,
+      SessionKeys.userEmail: 'usuario@prueba.com',
+      SessionKeys.rememberCredentials: true,
+      SessionKeys.rememberedEmail: 'usuario@prueba.com',
+      'themeMode': 'light',
+    });
+    final service = SessionStorageService();
+
+    await service.clearDeletedAccountData();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool(SessionKeys.isLoggedIn), isNull);
+    expect(prefs.getInt(SessionKeys.userId), isNull);
+    expect(prefs.getString(SessionKeys.rememberedEmail), isNull);
+    expect(prefs.getBool(SessionKeys.rememberCredentials), isFalse);
+    expect(prefs.getString('themeMode'), 'light');
   });
 
   test('actualiza los metadatos de la foto sin guardar rutas', () async {
@@ -158,6 +191,8 @@ void main() {
       userId: 2,
       userName: 'Usuario nuevo',
       userEmail: 'nuevo@prueba.com',
+      authSessionToken: List.filled(64, 'e').join(),
+      authSessionTokenExpiresAt: DateTime.now().add(const Duration(days: 30)),
     );
 
     final prefs = await SharedPreferences.getInstance();
@@ -184,6 +219,8 @@ void main() {
         userId: 7,
         userName: 'Usuario',
         userEmail: 'usuario@prueba.com',
+        authSessionToken: List.filled(64, 'f').join(),
+        authSessionTokenExpiresAt: DateTime.now().add(const Duration(days: 30)),
       );
 
       final prefs = await SharedPreferences.getInstance();

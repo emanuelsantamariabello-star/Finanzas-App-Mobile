@@ -125,6 +125,13 @@ class SessionStorageService {
     await _profileMediaStorage.clear();
   }
 
+  Future<void> clearDeletedAccountData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await clearSession();
+    await prefs.remove(SessionKeys.rememberedEmail);
+    await prefs.setBool(SessionKeys.rememberCredentials, false);
+  }
+
   Future<String?> readAuthToken() => _authSessionStorage.readToken();
 
   Future<void> _clearSessionFrom(SharedPreferences prefs) async {

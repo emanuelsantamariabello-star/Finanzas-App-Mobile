@@ -5,6 +5,7 @@ import 'package:finanzas_app_mobile/data/services/budget_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/goal_storage_service.dart';
 import 'package:finanzas_app_mobile/data/services/movement_filter_preferences_service.dart';
 import 'package:finanzas_app_mobile/data/services/reminder_storage_service.dart';
+import 'package:finanzas_app_mobile/data/services/user_scoped_storage_service.dart';
 import 'package:finanzas_app_mobile/providers/goal_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -141,6 +142,30 @@ void main() {
     expect((await goalService.loadGoals()).single.id, 'goal-user-1');
     expect((await budgetService.loadBudgets()).single.id, 'budget-user-1');
     expect(await filterService.load(), {'query': 'usuario 1'});
+  });
+
+  test('elimina únicamente los datos locales del usuario activo', () async {
+    SharedPreferences.setMockInitialValues({
+      'userId': 7,
+      'reminders_user_7': <String>['recordatorio'],
+      'financial_goals_user_7': <String>['meta'],
+      'category_budgets_user_7': <String>['presupuesto'],
+      'movement_filters_user_7': '{}',
+      'read_internal_notifications_user_7': <String>['1'],
+      'reminders_user_8': <String>['otro recordatorio'],
+      'themeMode': 'dark',
+    });
+
+    await UserScopedStorageService.clearCurrentUserData();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.containsKey('reminders_user_7'), isFalse);
+    expect(prefs.containsKey('financial_goals_user_7'), isFalse);
+    expect(prefs.containsKey('category_budgets_user_7'), isFalse);
+    expect(prefs.containsKey('movement_filters_user_7'), isFalse);
+    expect(prefs.containsKey('read_internal_notifications_user_7'), isFalse);
+    expect(prefs.getStringList('reminders_user_8'), ['otro recordatorio']);
+    expect(prefs.getString('themeMode'), 'dark');
   });
 
   test('migra los datos legacy únicamente al usuario activo', () async {

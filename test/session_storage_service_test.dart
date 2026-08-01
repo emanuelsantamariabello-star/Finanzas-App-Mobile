@@ -118,6 +118,27 @@ void main() {
     expect(await AuthSessionStorageService().readToken(), isNull);
   });
 
+  test('elimina credenciales recordadas al borrar la cuenta', () async {
+    SharedPreferences.setMockInitialValues({
+      SessionKeys.isLoggedIn: true,
+      SessionKeys.userId: 7,
+      SessionKeys.userEmail: 'usuario@prueba.com',
+      SessionKeys.rememberCredentials: true,
+      SessionKeys.rememberedEmail: 'usuario@prueba.com',
+      'themeMode': 'light',
+    });
+    final service = SessionStorageService();
+
+    await service.clearDeletedAccountData();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool(SessionKeys.isLoggedIn), isNull);
+    expect(prefs.getInt(SessionKeys.userId), isNull);
+    expect(prefs.getString(SessionKeys.rememberedEmail), isNull);
+    expect(prefs.getBool(SessionKeys.rememberCredentials), isFalse);
+    expect(prefs.getString('themeMode'), 'light');
+  });
+
   test('actualiza los metadatos de la foto sin guardar rutas', () async {
     final service = SessionStorageService();
     final updatedAt = DateTime.utc(2026, 7, 29, 18, 30);

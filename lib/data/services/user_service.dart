@@ -44,6 +44,15 @@ class UserService {
     );
   }
 
+  static Future<Map<String, dynamic>> deleteAccount({
+    required String currentPassword,
+  }) {
+    return AuthenticatedApiClient.postJson(
+      'delete_account.php',
+      body: {'current_password': currentPassword},
+    );
+  }
+
   static Future<Map<String, dynamic>> uploadProfilePhoto({
     required List<int> bytes,
     required String filename,

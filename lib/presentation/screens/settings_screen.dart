@@ -1,5 +1,6 @@
 import 'package:finanzas_app_mobile/core/theme.dart';
 import 'package:finanzas_app_mobile/presentation/screens/reminder_settings_screen.dart';
+import 'package:finanzas_app_mobile/presentation/screens/privacy_and_data_screen.dart';
 import 'package:finanzas_app_mobile/presentation/widgets/app_snackbar.dart';
 import 'package:finanzas_app_mobile/providers/app_settings_provider.dart';
 import 'package:finanzas_app_mobile/providers/theme_provider.dart';
@@ -430,6 +431,28 @@ class SettingsScreen extends StatelessWidget {
                       AppPageRoute.build(
                         context,
                         builder: (_) => const ReminderSettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 22),
+            _buildSection(
+              context,
+              title: 'Privacidad',
+              children: [
+                _buildNavigationTile(
+                  context,
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacidad y datos',
+                  subtitle: 'Consulta y administra los datos de tu cuenta',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      AppPageRoute.build(
+                        context,
+                        builder: (_) => const PrivacyAndDataScreen(),
                       ),
                     );
                   },

@@ -149,6 +149,9 @@ expiración y revocación aprobadas.
 
 ### Fase 3 — Autorización y endurecimiento de API
 
+Estado: implementada y validada de forma aislada; pendiente empaquetado y
+despliegue coordinado cuando haya conectividad.
+
 - Proteger todos los endpoints.
 - Derivar el usuario desde el token, nunca desde `user_id` del cliente.
 - Validar propiedad de ingresos, gastos, perfil, estadísticas y archivos.

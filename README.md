@@ -422,8 +422,9 @@ La guía de instalación, riesgos y validación se encuentra en:
 - `docs/PROFILE_PHOTO_IMPLEMENTATION_PLAN.md`
 - `docs/PRODUCTION_READINESS_PLAN.md`
 - `docs/PRODUCTION_PHASE_2_REPORT.md`
+- `docs/PRODUCTION_PHASE_3_REPORT.md`
 
 La Beta 8 incorpora contraseñas con hash y sesiones globales almacenadas
 mediante `FlutterSecureStorage`. El cierre y el cambio de contraseña revocan
 sesiones en el servidor. La autorización del resto de endpoints se completará
-en la siguiente fase productiva.
+con el despliegue coordinado de la Fase 3 y la futura Beta 9.

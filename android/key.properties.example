@@ -1,0 +1,5 @@
+# Copiar como android/key.properties y completar fuera de Git.
+storePassword=<upload_store_password>
+keyPassword=<upload_key_password>
+keyAlias=<upload_key_alias>
+storeFile=<absolute_path_to_upload_keystore>

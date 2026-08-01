@@ -209,6 +209,9 @@ producción.
 
 ### Fase 7 — Calidad, seguridad y operación
 
+Estado: CI y validaciones locales implementadas; pendiente matriz manual,
+carga representativa, simulacro operativo y auditoría externa.
+
 - Incorporar CI para análisis, pruebas y build.
 - Ejecutar pruebas integrales, de autorización, migración y recuperación.
 - Validar Android 7 a Android 16, texto ampliado y modos claro/oscuro.

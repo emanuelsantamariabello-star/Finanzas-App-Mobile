@@ -427,6 +427,8 @@ La guía de instalación, riesgos y validación se encuentra en:
 - `docs/PRODUCTION_PHASE_5_REPORT.md`
 - `docs/PRODUCTION_PHASE_6_REPORT.md`
 - `docs/ANDROID_RELEASE_SIGNING.md`
+- `docs/PRODUCTION_PHASE_7_REPORT.md`
+- `docs/QUALITY_TEST_MATRIX.md`
 - `docs/PRIVACY_POLICY_DRAFT.md`
 - `docs/DATA_SAFETY_INVENTORY.md`
 

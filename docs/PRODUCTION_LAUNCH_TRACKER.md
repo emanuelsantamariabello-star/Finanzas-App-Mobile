@@ -37,7 +37,7 @@ infraestructura, cumplimiento o distribución.
 | --- | --- | --- | --- |
 | 1 | Rama y línea base de lanzamiento | Completada | Repositorios aislados y alcance documentado |
 | 2 | Repositorio privado del backend | Completada | Backend respaldado en un remoto privado |
-| 3 | Infraestructura productiva | Pendiente | Servidor 24/7, DNS, HTTPS y almacenamiento preparados |
+| 3 | Infraestructura productiva | En curso | Servidor 24/7, DNS, HTTPS y almacenamiento preparados |
 | 4 | Despliegue y operación | Pendiente | API, migraciones, backups, monitoreo y restauración validados |
 | 5 | Privacidad y eliminación web | Pendiente | URLs públicas y retenciones aprobadas |
 | 6 | Firma y AAB productivo | Pendiente | Upload key respaldada y AAB firmado verificable |
@@ -62,6 +62,13 @@ infraestructura, cumplimiento o distribución.
 3. No existe upload key ni AAB productivo firmado.
 4. Faltan política de privacidad y eliminación de cuenta mediante web pública.
 5. Faltan capturas reales y configuración definitiva de Play Console.
+
+## Estado de la Fase 3
+
+La configuración reproducible del backend y el preflight del host están
+preparados en el repositorio privado. La fase permanece abierta porque todavía
+no existe un servidor 24/7 aprovisionado y `api.finanzasappsan.com` no resuelve
+en DNS. No se modificó la Beta local ni la base `finanzas_app_web`.
 
 Este documento debe actualizarse al cerrar cada fase sin sustituir los informes
 técnicos específicos de móvil y backend.
